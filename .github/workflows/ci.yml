@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install dependencies (Backend)
+      run: cd medseek-backend && npm ci
+      
+    - name: Build (Backend)
+      run: cd medseek-backend && npm run build
+
+    - name: Typecheck (Backend)
+      run: cd medseek-backend && npm run typecheck
+      
+    - name: Lint (Backend)
+      run: cd medseek-backend && npm run lint
+
+    - name: Install dependencies (Frontend)
+      run: cd medseek-frontend && npm ci
+      
+    - name: Build (Frontend)
+      run: cd medseek-frontend && npm run build
+      
+    - name: Lint (Frontend)
+      run: cd medseek-frontend && npm run lint
