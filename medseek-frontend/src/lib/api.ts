@@ -1,8 +1,8 @@
 // MedSeek Backend API Client
 // All business logic lives in the backend — this is a thin HTTP client.
 
-const API_BASE_URL =
-  (process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000").replace(/\/+$/, "");
+import { API_BASE_URL } from "./config";
+export { API_BASE_URL };
 
 // ─── Types ───────────────────────────────────────────────────────
 

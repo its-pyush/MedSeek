@@ -1,8 +1,7 @@
 // MedSeek Vault API — encrypted health record management.
 
 import { fetchWithAuth } from "./auth";
-
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000").replace(/\/+$/, "");
+import { API_BASE_URL } from "./config";
 
 export type RecordType = "condition" | "medication" | "allergy" | "report";
 

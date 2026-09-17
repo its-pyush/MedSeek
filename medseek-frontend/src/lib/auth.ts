@@ -1,8 +1,7 @@
 // MedSeek Auth — Token management and authenticated API helpers.
 // Tokens are stored in localStorage (client-side only).
 
-const API_BASE_URL =
-  (process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000").replace(/\/+$/, "");
+import { API_BASE_URL } from "./config";
 
 // ─── Types ───────────────────────────────────────────────────────
 
