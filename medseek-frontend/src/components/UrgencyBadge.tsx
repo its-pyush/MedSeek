@@ -8,26 +8,22 @@ const urgencyConfig: Record<
 > = {
   low: {
     label: "Low",
-    className:
-      "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300",
+    className: "bg-emerald-50 text-emerald-800 border border-emerald-200/80",
     dotColor: "bg-emerald-500",
   },
   moderate: {
     label: "Moderate",
-    className:
-      "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
+    className: "bg-amber-50 text-amber-800 border border-amber-200/80",
     dotColor: "bg-amber-500",
   },
   high: {
     label: "High",
-    className:
-      "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300",
+    className: "bg-orange-50 text-orange-800 border border-orange-200/80",
     dotColor: "bg-orange-500",
   },
   emergency: {
     label: "Emergency",
-    className:
-      "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300",
+    className: "bg-red-50 text-red-800 border border-red-200/80",
     dotColor: "bg-red-500",
   },
 };

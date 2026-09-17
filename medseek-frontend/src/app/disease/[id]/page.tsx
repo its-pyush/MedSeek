@@ -61,21 +61,21 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 mb-8">
+      <nav className="flex items-center gap-2 text-sm text-slate-500 mb-8">
         <Link
           href="/"
-          className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          className="hover:text-blue-600 transition-colors"
         >
           Search
         </Link>
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <svg className="w-4 h-4 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
           <path
             fillRule="evenodd"
             d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
             clipRule="evenodd"
           />
         </svg>
-        <span className="text-zinc-700 dark:text-zinc-200 font-medium capitalize">
+        <span className="text-slate-800 font-semibold capitalize">
           {disease.name.replace(/_/g, " ")}
         </span>
       </nav>
@@ -83,23 +83,23 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
       {/* Disease header */}
       <div className="mb-10">
         <div className="flex items-start gap-4 mb-4">
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-zinc-900 dark:text-zinc-50 capitalize">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-800 capitalize">
             {disease.name.replace(/_/g, " ")}
           </h1>
           <UrgencyBadge level={disease.urgency_level} size="md" />
         </div>
 
         {disease.icd11_code && (
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
+          <p className="text-sm text-slate-500 mb-4">
             ICD-11 Code:{" "}
-            <code className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-mono text-xs">
+            <code className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-xs border border-slate-200">
               {disease.icd11_code}
             </code>
           </p>
         )}
 
         {disease.description && (
-          <p className="text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed">
+          <p className="text-lg text-slate-600 leading-relaxed">
             {disease.description}
           </p>
         )}
@@ -111,16 +111,16 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
         <div
           className={`mb-8 p-5 rounded-2xl border ${
             disease.urgency_level === "emergency"
-              ? "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800/50"
-              : "bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-800/50"
+              ? "bg-red-50 border-red-200"
+              : "bg-orange-50 border-orange-200"
           }`}
         >
           <div className="flex gap-3">
             <svg
               className={`w-6 h-6 shrink-0 mt-0.5 ${
                 disease.urgency_level === "emergency"
-                  ? "text-red-600 dark:text-red-400"
-                  : "text-orange-600 dark:text-orange-400"
+                  ? "text-red-600"
+                  : "text-orange-600"
               }`}
               fill="currentColor"
               viewBox="0 0 20 20"
@@ -133,10 +133,10 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
             </svg>
             <div>
               <h2
-                className={`text-sm font-semibold ${
+                className={`text-sm font-bold ${
                   disease.urgency_level === "emergency"
-                    ? "text-red-800 dark:text-red-300"
-                    : "text-orange-800 dark:text-orange-300"
+                    ? "text-red-900"
+                    : "text-orange-900"
                 }`}
               >
                 {disease.urgency_level === "emergency"
@@ -144,10 +144,10 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
                   : "Consult a Doctor Soon"}
               </h2>
               <p
-                className={`text-sm mt-1 ${
+                className={`text-sm mt-1 leading-relaxed ${
                   disease.urgency_level === "emergency"
-                    ? "text-red-700 dark:text-red-400"
-                    : "text-orange-700 dark:text-orange-400"
+                    ? "text-red-800/80"
+                    : "text-orange-800/80"
                 }`}
               >
                 {disease.urgency_level === "emergency"
@@ -161,7 +161,7 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
 
       {/* Symptoms section */}
       <div className="mb-10">
-        <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">
+        <h2 className="text-xl font-bold text-slate-800 mb-4">
           Associated Symptoms ({disease.symptoms.length})
         </h2>
         <div className="space-y-2">
@@ -172,18 +172,18 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
             return (
               <div
                 key={symptom.id}
-                className="flex items-center gap-4 p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800"
+                className="flex items-center gap-4 p-3.5 rounded-xl bg-white border border-slate-200/80 hover:border-blue-200 transition-colors"
               >
-                <span className="flex-1 text-sm font-medium text-zinc-800 dark:text-zinc-200 capitalize">
+                <span className="flex-1 text-sm font-medium text-slate-800 capitalize">
                   {symptom.name.replace(/_/g, " ")}
                 </span>
-                <div className="w-32 sm:w-48 h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                <div className="w-32 sm:w-48 h-2 bg-slate-100 rounded-full overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-700"
+                    className="h-full rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all duration-700"
                     style={{ width: `${percentage}%` }}
                   />
                 </div>
-                <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400 w-12 text-right tabular-nums">
+                <span className="text-xs font-mono text-slate-500 w-12 text-right tabular-nums">
                   {symptom.weight.toFixed(3)}
                 </span>
               </div>
@@ -195,7 +195,7 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
       {/* Back to search */}
       <Link
         href="/"
-        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-medium text-sm hover:bg-slate-50 hover:text-blue-600 shadow-xs transition-colors"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />

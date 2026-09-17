@@ -13,11 +13,12 @@ async function main() {
 
   const app = createApp();
 
-  const server = app.listen(env.PORT, () => {
+  const server = app.listen(env.PORT, "0.0.0.0", () => {
     console.log(`
 🏥 MedSeek Backend
    Environment: ${env.NODE_ENV}
    Port:        ${env.PORT}
+   Host:        0.0.0.0
    CORS origin: ${env.CORS_ORIGIN}
    Health:      http://localhost:${env.PORT}/health
     `);

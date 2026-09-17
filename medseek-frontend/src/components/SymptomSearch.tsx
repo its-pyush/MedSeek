@@ -5,10 +5,11 @@ import { autocompleteSymptoms, AutocompleteItem } from "@/lib/api";
 
 interface SymptomSearchProps {
   onSearch: (symptoms: string[]) => void;
+  onSymptomsChange?: (symptoms: string[]) => void;
   isLoading?: boolean;
 }
 
-export default function SymptomSearch({ onSearch, isLoading = false }: SymptomSearchProps) {
+export default function SymptomSearch({ onSearch, onSymptomsChange, isLoading = false }: SymptomSearchProps) {
   const [inputValue, setInputValue] = useState("");
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [suggestions, setSuggestions] = useState<AutocompleteItem[]>([]);
@@ -55,7 +56,9 @@ export default function SymptomSearch({ onSearch, isLoading = false }: SymptomSe
 
   const addSymptom = (name: string) => {
     if (!selectedSymptoms.includes(name)) {
-      setSelectedSymptoms((prev) => [...prev, name]);
+      const newSymptoms = [...selectedSymptoms, name];
+      setSelectedSymptoms(newSymptoms);
+      if (onSymptomsChange) onSymptomsChange(newSymptoms);
     }
     setInputValue("");
     setSuggestions([]);
@@ -64,7 +67,9 @@ export default function SymptomSearch({ onSearch, isLoading = false }: SymptomSe
   };
 
   const removeSymptom = (name: string) => {
-    setSelectedSymptoms((prev) => prev.filter((s) => s !== name));
+    const newSymptoms = selectedSymptoms.filter((s) => s !== name);
+    setSelectedSymptoms(newSymptoms);
+    if (onSymptomsChange) onSymptomsChange(newSymptoms);
   };
 
   // ─── Keyboard navigation ────────────────────────────────────
@@ -133,13 +138,13 @@ export default function SymptomSearch({ onSearch, isLoading = false }: SymptomSe
   }, []);
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full max-w-3xl mx-auto">
       {/* Search input container */}
-      <div className="relative">
-        <div className="flex items-center flex-wrap gap-2 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-3 focus-within:border-indigo-500 dark:focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-500/10 dark:focus-within:ring-indigo-400/10 transition-all shadow-sm hover:shadow-md">
+      <div className="relative group">
+        <div className="flex items-center flex-wrap gap-3 rounded-full border border-blue-300 bg-white/60 glass px-6 py-4 focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-500/20 transition-all duration-500 shadow-[0_0_20px_rgba(59,130,246,0.05)] hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] group-focus-within:shadow-[0_0_30px_rgba(59,130,246,0.2)]">
           {/* Search icon */}
           <svg
-            className="w-5 h-5 text-zinc-400 shrink-0"
+            className="w-6 h-6 text-slate-500 shrink-0 transition-colors duration-300 group-focus-within:text-blue-600 group-focus-within:animate-pulse"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -156,13 +161,13 @@ export default function SymptomSearch({ onSearch, isLoading = false }: SymptomSe
           {selectedSymptoms.map((symptom) => (
             <span
               key={symptom}
-              className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300 capitalize"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200 shadow-xs capitalize transition-all hover:bg-blue-100/70"
             >
               {symptom.replace(/_/g, " ")}
               <button
                 type="button"
                 onClick={() => removeSymptom(symptom)}
-                className="ml-0.5 rounded-full p-0.5 hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-colors"
+                className="ml-0.5 rounded-full p-0.5 hover:bg-blue-200/80 hover:text-blue-900 transition-colors"
                 aria-label={`Remove ${symptom}`}
               >
                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
@@ -191,7 +196,7 @@ export default function SymptomSearch({ onSearch, isLoading = false }: SymptomSe
                 ? "Add more symptoms..."
                 : "Type your symptoms — e.g. headache, fever, fatigue..."
             }
-            className="flex-1 min-w-[200px] bg-transparent text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none text-base"
+            className="flex-1 min-w-[200px] bg-transparent text-slate-800 placeholder:text-slate-400 outline-none text-base sm:text-lg font-normal tracking-normal"
             autoComplete="off"
             id="symptom-search-input"
           />
@@ -201,7 +206,7 @@ export default function SymptomSearch({ onSearch, isLoading = false }: SymptomSe
             type="button"
             onClick={handleSearch}
             disabled={selectedSymptoms.length === 0 || isLoading}
-            className="shrink-0 px-5 py-2 rounded-xl bg-indigo-600 text-white font-semibold text-sm transition-all hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 shadow-sm hover:shadow-md"
+            className="shrink-0 px-6 py-2.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white font-semibold text-sm tracking-wide transition-all duration-200 hover:shadow-md hover:shadow-blue-500/25 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none relative overflow-hidden"
             id="search-button"
           >
             {isLoading ? (
@@ -213,7 +218,7 @@ export default function SymptomSearch({ onSearch, isLoading = false }: SymptomSe
                 Searching
               </span>
             ) : (
-              "Search"
+              "Analyze"
             )}
           </button>
         </div>
@@ -222,7 +227,7 @@ export default function SymptomSearch({ onSearch, isLoading = false }: SymptomSe
         {showDropdown && (
           <div
             ref={dropdownRef}
-            className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-xl overflow-hidden z-50 max-h-72 overflow-y-auto"
+            className="absolute top-full left-0 right-0 mt-3 bg-white/95 border border-slate-200/90 rounded-2xl shadow-xl overflow-hidden z-50 max-h-80 overflow-y-auto animate-slide-up backdrop-blur-xl"
             role="listbox"
             id="symptom-suggestions"
           >
@@ -233,23 +238,23 @@ export default function SymptomSearch({ onSearch, isLoading = false }: SymptomSe
                 role="option"
                 aria-selected={index === highlightedIndex}
                 onClick={() => addSymptom(item.name)}
-                className={`w-full text-left px-4 py-3 flex items-center justify-between transition-colors ${
+                className={`w-full text-left px-5 py-3.5 flex items-center justify-between transition-colors border-b border-slate-100 last:border-0 ${
                   index === highlightedIndex
-                    ? "bg-indigo-50 dark:bg-indigo-900/30"
-                    : "hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                    ? "bg-blue-50 text-blue-900 border-l-4 border-l-blue-600"
+                    : "hover:bg-slate-50 text-slate-800 border-l-4 border-l-transparent"
                 }`}
               >
                 <div>
-                  <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100 capitalize">
+                  <span className="text-sm font-medium capitalize">
                     {item.name.replace(/_/g, " ")}
                   </span>
                   {item.match_source === "synonym" && (
-                    <span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">
-                      (matched: {item.matched_text})
+                    <span className="ml-2.5 text-xs text-blue-600 font-normal">
+                      (matched: <span className="font-medium text-blue-700">{item.matched_text}</span>)
                     </span>
                   )}
                 </div>
-                <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                <span className="text-xs font-semibold text-slate-500">
                   {Math.round(item.similarity * 100)}% match
                 </span>
               </button>
@@ -260,13 +265,13 @@ export default function SymptomSearch({ onSearch, isLoading = false }: SymptomSe
 
       {/* Hint text */}
       {selectedSymptoms.length === 0 && (
-        <p className="mt-3 text-center text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-6 text-center text-sm text-slate-500 font-light tracking-wide animate-fade-in delay-200">
           Enter one or more symptoms to find possible conditions.
           <br />
-          <span className="text-xs">
-            Try: <button type="button" onClick={() => addSymptom("headache")} className="text-indigo-600 dark:text-indigo-400 hover:underline">headache</button>{", "}
-            <button type="button" onClick={() => addSymptom("fever")} className="text-indigo-600 dark:text-indigo-400 hover:underline">fever</button>{", "}
-            <button type="button" onClick={() => addSymptom("fatigue")} className="text-indigo-600 dark:text-indigo-400 hover:underline">fatigue</button>
+          <span className="text-xs opacity-80 mt-2 inline-block">
+            Try: <button type="button" onClick={() => addSymptom("headache")} className="text-blue-600 hover:text-slate-600 hover:underline transition-colors px-1">headache</button>{", "}
+            <button type="button" onClick={() => addSymptom("fever")} className="text-blue-600 hover:text-slate-600 hover:underline transition-colors px-1">fever</button>{", "}
+            <button type="button" onClick={() => addSymptom("fatigue")} className="text-blue-600 hover:text-slate-600 hover:underline transition-colors px-1">fatigue</button>
           </span>
         </p>
       )}

@@ -52,12 +52,13 @@ Patient app ─► API Gateway (auth + audit) ─┬─► Disease Search Servic
 ## Build roadmap
 
 - [x] **Phase 0 — Setup**: repos, Express scaffold, Postgres schema, CI
-- [x] **Phase 1 — Search engine MVP**: symptom search, sf-idf ranking, disease detail pages, synonym matching, Kaggle dataset. Code complete. **DB seed pending on `DATABASE_URL`.**
+- [x] **Phase 1 — Search engine MVP**: symptom search, sf-idf ranking, disease detail pages, synonym matching, Kaggle dataset. Code complete. DB seeded and verified with Neon Postgres.
 - [x] **Phase 2 — Patient auth + profile**: JWT auth (bcryptjs + jsonwebtoken), signup/login/refresh, profile CRUD, AuthGuard, frontend login/signup/dashboard pages.
 - [x] **Phase 3 — AI health chat**: Deepseek API integration via OpenAI SDK, RAG context building from patient profile + health records, escalation logic for red-flag symptoms (cardiac, stroke, breathing, allergic, suicidal, meningitis, abdominal emergencies), recurring medical disclaimer, chat session management. Frontend: chat page with session sidebar, message bubbles, disclaimer modal, typing indicator.
 - [x] **Phase 4 — Encrypted data vault**: AES-256-GCM encryption (Node crypto), envelope encryption with per-record IV, CRUD with encrypt-on-write/decrypt-on-read, record type management (conditions, medications, allergies, reports). Frontend: vault page with type filter tabs, record detail panel, add/delete modal, encryption notice.
 - [x] **Phase 5 — Audit log**: audit logging middleware (auto-logs all authenticated API access with action/target/success), audit service with paginated queries and action filters. Frontend: activity page with action filter dropdown, paginated log entries, human-readable action labels.
 - [x] **Phase 6 — Ranking refinement**: added demographic filter support (age, sex, pregnancy) to search validation schema. Full signal blending (seasonal/geographic) deferred to data availability.
+- [x] **Phase 7 — UI/UX & Design System Standardization**: Unified visual language across all pages (Blue `#3b82f6` + Emerald `#10b981` + Slate `#0f172a`), eliminated rogue indigo/violet/zinc palettes, resolved light-theme contrast leaks and dead dark-mode styling, fixed mobile navigation drawer, and standardized component cards and alerts.
 - [ ] **Future / post-MVP**: OCR report upload, PWA, React Native, Typesense migration, DDXPlus model training, ICD-11 taxonomy, MedlinePlus content
 
 ---
@@ -122,6 +123,26 @@ Patient app ─► API Gateway (auth + audit) ─┬─► Disease Search Servic
 
 ---
 
+## How to Run Locally
+
+To start the project manually when everything is stopped, open two terminal windows from the repository root:
+
+### 1. Start the Backend (API Server)
+```bash
+cd medseek-backend
+npm run dev
+```
+> Runs at **http://localhost:4000** (Health check: `http://localhost:4000/health`)
+
+### 2. Start the Frontend (Web App)
+```bash
+cd medseek-frontend
+npm run dev
+```
+> Runs at **http://localhost:3000**
+
+---
+
 ## Environment Variables Required
 
 ```bash
@@ -136,7 +157,7 @@ ENCRYPTION_KEY=<openssl rand -hex 32>  # Vault encryption
 
 ## Resolved decisions
 
-backend framework (Express) · search (Postgres FTS + pg_trgm) · AI (Deepseek API, not trained model) · repo structure (separate) · dataset (Kaggle → DDXPlus → ICD-11) · encryption (AES-256-GCM, server-managed) · no hospitals/third-party access · hosting (Vercel + GCP + Neon) · auth (bcryptjs + JWT dual-token) · audit (auto-logging middleware) · vault encryption (envelope pattern, per-record IV)
+backend framework (Express) · search (Postgres FTS + pg_trgm) · AI (Deepseek API, not trained model) · repo structure (separate) · dataset (Kaggle → DDXPlus → ICD-11) · encryption (AES-256-GCM, server-managed) · no hospitals/third-party access · hosting (Vercel + GCP + Neon) · auth (bcryptjs + JWT dual-token) · audit (auto-logging middleware) · vault encryption (envelope pattern, per-record IV) · UI design system (Cerulean Blue + Emerald accent + Slate neutral, light-mode first with WCAG AA contrast)
 
 ## Agent Rules & Guidelines
 - **Task Completion:** After finishing any task or setup phase, immediately update `CLAUDE.md` before concluding the response.

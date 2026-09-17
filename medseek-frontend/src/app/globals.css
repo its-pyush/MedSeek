@@ -1,13 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafbfc;
+  --background: #f8fafc;
   --foreground: #0f172a;
-  --accent: #4f46e5;
-  --accent-light: #818cf8;
+  --accent: #3b82f6;
+  --accent-light: #60a5fa;
   --surface: #ffffff;
   --surface-elevated: #f1f5f9;
-  --border: #e2e8f0;
+  --border: #cbd5e1;
+  --matrix-glow: rgba(59, 130, 246, 0.15);
 }
 
 @theme inline {
@@ -18,19 +19,7 @@
   --color-surface: var(--surface);
   --color-surface-elevated: var(--surface-elevated);
   --color-border: var(--border);
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0b0f1a;
-    --foreground: #e2e8f0;
-    --accent: #818cf8;
-    --accent-light: #a5b4fc;
-    --surface: #111827;
-    --surface-elevated: #1e293b;
-    --border: #334155;
-  }
+  --font-sans: var(--font-roboto), system-ui, -apple-system, sans-serif;
 }
 
 body {
@@ -44,9 +33,10 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Selection color */
+/* Matrix blue selection */
 ::selection {
-  background: rgba(79, 70, 229, 0.2);
+  background: rgba(59, 130, 246, 0.25);
+  color: #3b82f6;
 }
 
 /* ─── Keyframe Animations ─────────────────────────────────────── */
@@ -112,6 +102,25 @@ html {
   30% { transform: translateY(-6px); }
 }
 
+@keyframes data-rain {
+  0% { transform: translateY(-100%); opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.8; }
+  94% { opacity: 1; }
+  96% { opacity: 0.9; }
+  97% { opacity: 1; }
+}
+
 /* ─── Animation Utility Classes ───────────────────────────────── */
 
 .animate-fade-in {
@@ -151,6 +160,10 @@ html {
   animation: gradient-shift 3s ease infinite;
 }
 
+.animate-flicker {
+  animation: flicker 4s ease-in-out infinite;
+}
+
 /* Staggered animation delays */
 .delay-100 { animation-delay: 100ms; }
 .delay-200 { animation-delay: 200ms; }
@@ -160,21 +173,16 @@ html {
 .delay-600 { animation-delay: 600ms; }
 .delay-700 { animation-delay: 700ms; }
 
-/* ─── Glassmorphism ───────────────────────────────────────────── */
+/* ─── Glassmorphism (Matrix style) ───────────────────────────── */
 
 .glass {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(59, 130, 246, 0.08);
 }
 
-@media (prefers-color-scheme: dark) {
-  .glass {
-    background: rgba(17, 24, 39, 0.7);
-  }
-}
-
-/* ─── Scrollbar ───────────────────────────────────────────────── */
+/* ─── Scrollbar (Matrix blue) ────────────────────────────────── */
 
 ::-webkit-scrollbar {
   width: 6px;
@@ -186,17 +194,17 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.3);
+  background: rgba(59, 130, 246, 0.2);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.5);
+  background: rgba(59, 130, 246, 0.4);
 }
 
 /* ─── Focus Visible ───────────────────────────────────────────── */
 
-*:focus-visible {
+*:focus-visible:not(.outline-none) {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 4px;
@@ -208,4 +216,21 @@ a, button, input, select, textarea {
   transition-property: color, background-color, border-color, box-shadow, transform, opacity;
   transition-duration: 200ms;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Matrix scan line overlay ────────────────────────────────── */
+
+.medical-scanline::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(59, 130, 246, 0.015) 2px,
+    rgba(59, 130, 246, 0.015) 4px
+  );
+  z-index: 1;
 }

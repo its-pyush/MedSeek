@@ -22,10 +22,26 @@ export function createApp() {
   // Security headers
   app.use(helmet());
 
-  // CORS — allow frontend origin
+  // CORS — allow frontend origin (supports comma-separated origins and Vercel preview domains)
+  const allowedOrigins = env.CORS_ORIGIN.split(",").map((o) => o.trim().replace(/\/$/, ""));
+
   app.use(
     cors({
-      origin: env.CORS_ORIGIN,
+      origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, curl, server-to-server, SSR)
+        if (!origin) return callback(null, true);
+
+        const normalizedOrigin = origin.replace(/\/$/, "");
+        if (
+          allowedOrigins.includes("*") ||
+          allowedOrigins.includes(normalizedOrigin) ||
+          normalizedOrigin.endsWith(".vercel.app")
+        ) {
+          return callback(null, true);
+        }
+
+        callback(null, false);
+      },
       credentials: true,
     })
   );
