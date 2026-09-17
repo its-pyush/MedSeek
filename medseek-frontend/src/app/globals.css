@@ -92,11 +92,6 @@ html {
   20%, 40%, 60%, 80% { transform: translateX(4px); }
 }
 
-@keyframes gradient-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
 @keyframes dot-wave {
   0%, 60%, 100% { transform: translateY(0); }
   30% { transform: translateY(-6px); }
@@ -143,11 +138,6 @@ html {
 
 .animate-float-delayed {
   animation: float-delayed 8s ease-in-out infinite;
-}
-
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient-shift 3s ease infinite;
 }
 
 .animate-flicker {

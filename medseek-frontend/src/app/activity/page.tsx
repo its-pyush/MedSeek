@@ -77,17 +77,17 @@ function ActivityContent() {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-      <div className="mb-8 animate-fade-in">
-        <h1 className="text-3xl font-extrabold text-slate-800 flex items-center gap-3">
-          <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-emerald-600 flex items-center justify-center shadow-md shadow-blue-500/20">
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-12">
+      <div className="mb-6 sm:mb-8 animate-fade-in">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-800 flex items-center gap-2.5 sm:gap-3">
+          <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-md shadow-blue-600/20 text-white shrink-0">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
           </span>
           Activity Log
         </h1>
-        <p className="mt-2 text-sm text-slate-500 ml-[52px]">
+        <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-slate-500">
           Your account activity and data access history
         </p>
       </div>
@@ -97,7 +97,7 @@ function ActivityContent() {
         <select
           value={filterAction}
           onChange={(e) => { setFilterAction(e.target.value); setPage(0); }}
-          className="px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+          className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
         >
           <option value="">All actions ({total})</option>
           {actions.map((a) => (
@@ -112,7 +112,7 @@ function ActivityContent() {
       <div className="relative">
         {/* Connecting line */}
         {entries.length > 1 && (
-          <div className="absolute left-[23px] top-4 bottom-4 w-px bg-slate-200" />
+          <div className="absolute left-[21px] sm:left-[23px] top-4 bottom-4 w-px bg-slate-200" />
         )}
 
         <div className="space-y-3">
@@ -121,11 +121,11 @@ function ActivityContent() {
             return (
               <div
                 key={entry.id}
-                className="relative flex items-start gap-4 p-4 rounded-xl bg-white border border-slate-200/80 hover:border-blue-200 hover:shadow-sm hover:-translate-y-0.5 transition-all animate-slide-up group"
+                className="relative flex items-start gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200/80 hover:border-blue-200 hover:shadow-sm hover:-translate-y-0.5 transition-all animate-slide-up group"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 {/* Icon */}
-                <div className={`w-[30px] h-[30px] rounded-lg flex items-center justify-center text-sm shrink-0 z-10 ${
+                <div className={`w-7 h-7 sm:w-[30px] sm:h-[30px] rounded-lg flex items-center justify-center text-xs sm:text-sm shrink-0 z-10 ${
                   entry.success
                     ? "bg-slate-100"
                     : "bg-red-50 text-red-600 border border-red-200"
@@ -145,7 +145,7 @@ function ActivityContent() {
                     )}
                   </div>
                   {entry.target_table && (
-                    <p className="text-xs text-slate-500 mt-0.5">
+                    <p className="text-xs text-slate-500 mt-0.5 truncate">
                       {entry.target_table}
                       {entry.target_id ? ` #${entry.target_id}` : ""}
                     </p>
@@ -153,11 +153,11 @@ function ActivityContent() {
                 </div>
 
                 <div className="text-right shrink-0">
-                  <p className="text-xs font-medium text-slate-600">
+                  <p className="text-xs font-medium text-slate-600 tabular-nums">
                     {relativeTime(entry.timestamp)}
                   </p>
-                  <p className="text-[11px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {entry.timestamp ? new Date(entry.timestamp.replace(' ', 'T')).toLocaleString() : "Unknown"}
+                  <p className="text-[11px] text-slate-400">
+                    {entry.timestamp ? new Date(entry.timestamp.replace(' ', 'T')).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
                   </p>
                 </div>
               </div>

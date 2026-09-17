@@ -95,24 +95,24 @@ function VaultContent() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-      <div className="flex items-center justify-between mb-8 animate-fade-in">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-12">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 animate-fade-in">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-800 flex items-center gap-3">
-            <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-emerald-600 flex items-center justify-center shadow-md shadow-blue-500/20">
-              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-800 flex items-center gap-2.5 sm:gap-3">
+            <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-md shadow-blue-600/20 text-white shrink-0">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
               </svg>
             </span>
             Health Vault
           </h1>
-          <p className="mt-2 text-sm text-slate-500 ml-[52px]">
+          <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-slate-500">
             Your encrypted health records — only you can access this data
           </p>
         </div>
         <button
           onClick={() => setShowAddForm(true)}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-emerald-600 text-white text-sm font-semibold hover:shadow-md hover:shadow-blue-500/20 active:scale-[0.98] transition-all flex items-center gap-2"
+          className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold hover:shadow-md hover:shadow-blue-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -136,9 +136,9 @@ function VaultContent() {
       <div className="flex gap-2 mb-6 overflow-x-auto pb-2 animate-slide-up delay-100">
         <button
           onClick={() => setActiveType(undefined)}
-          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
+          className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
             !activeType
-              ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-xs"
+              ? "bg-blue-600 text-white shadow-xs"
               : "text-slate-600 hover:bg-slate-100/80 border border-slate-200/80 bg-white/70"
           }`}
         >
@@ -148,9 +148,9 @@ function VaultContent() {
           <button
             key={t.value}
             onClick={() => setActiveType(t.value)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
+            className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
               activeType === t.value
-                ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-xs"
+                ? "bg-blue-600 text-white shadow-xs"
                 : "text-slate-600 hover:bg-slate-100/80 border border-slate-200/80 bg-white/70"
             }`}
           >
@@ -207,7 +207,7 @@ function VaultContent() {
             </p>
             <button
               onClick={() => setShowAddForm(true)}
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-emerald-600 text-white text-sm font-semibold hover:shadow-md hover:shadow-blue-500/20 active:scale-[0.98] transition-all"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold hover:shadow-md hover:shadow-blue-600/20 active:scale-[0.98] transition-all"
             >
               Add Your First Record
             </button>
@@ -217,9 +217,9 @@ function VaultContent() {
 
       {/* Record detail panel */}
       {selectedRecord && (
-        <div className="mt-6 p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm animate-scale-in">
+        <div className="mt-6 p-4 sm:p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm animate-scale-in">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-slate-800 capitalize flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-slate-800 capitalize flex items-center gap-2">
               <span>{RECORD_TYPES.find((t) => t.value === selectedRecord.record_type)?.icon}</span>
               {selectedRecord.record_type} Details
             </h3>
@@ -252,8 +252,8 @@ function VaultContent() {
 
       {/* Add record modal */}
       {showAddForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in">
-          <div className="max-w-md w-full mx-4 p-6 rounded-2xl bg-white border border-slate-200 shadow-2xl animate-scale-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
+          <div className="max-w-md w-full p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
             <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
               <span className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-sm">➕</span>
               Add Health Record
@@ -266,7 +266,7 @@ function VaultContent() {
                 <select
                   value={newType}
                   onChange={(e) => setNewType(e.target.value as RecordType)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 >
                   {RECORD_TYPES.map((t) => (
                     <option key={t.value} value={t.value}>
@@ -285,7 +285,7 @@ function VaultContent() {
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder="e.g. Diabetes Type 2, Metformin, Penicillin allergy"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
               <div>
@@ -297,14 +297,14 @@ function VaultContent() {
                   onChange={(e) => setNewNotes(e.target.value)}
                   placeholder="Additional details..."
                   rows={3}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
                 />
               </div>
               <div className="flex gap-3 pt-2">
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-emerald-600 text-white font-semibold text-sm hover:shadow-md hover:shadow-blue-500/20 active:scale-[0.98] transition-all disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm hover:shadow-md hover:shadow-blue-600/20 active:scale-[0.98] transition-all disabled:opacity-50"
                 >
                   {isSaving ? "Saving..." : "Save Record"}
                 </button>

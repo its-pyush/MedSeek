@@ -75,20 +75,20 @@ function DashboardContent() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-12">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 animate-fade-in">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-800">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-800">
             {getGreeting()} 👋
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-xs sm:text-sm text-slate-500">
             {profile?.email ?? "Manage your health profile and data"}
           </p>
         </div>
         <button
           onClick={handleLogout}
-          className="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 bg-slate-100 border border-slate-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-all"
+          className="self-start sm:self-auto px-4 py-2 rounded-xl text-sm font-medium text-slate-600 bg-slate-100 border border-slate-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-all"
         >
           Sign out
         </button>
@@ -107,7 +107,7 @@ function DashboardContent() {
       )}
 
       {/* Quick Actions Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
         <QuickAction
           href="/"
           icon="🔍"
@@ -139,7 +139,7 @@ function DashboardContent() {
       </div>
 
       {/* Profile Card */}
-      <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs animate-slide-up delay-200">
+      <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs animate-slide-up delay-200">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
             <span className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-sm">👤</span>
@@ -163,7 +163,7 @@ function DashboardContent() {
           </div>
         ) : isEditing ? (
           <form onSubmit={handleSave} className="space-y-5 animate-fade-in">
-            <div className="grid gap-5 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="profile-age" className="block text-sm font-medium text-slate-700 mb-1.5">
                   Age
@@ -176,7 +176,7 @@ function DashboardContent() {
                   value={age}
                   onChange={(e) => setAge(e.target.value)}
                   placeholder="Your age"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
 
@@ -188,7 +188,7 @@ function DashboardContent() {
                   id="profile-sex"
                   value={sex}
                   onChange={(e) => setSex(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 >
                   <option value="">Prefer not to say</option>
                   <option value="male">Male</option>
@@ -222,7 +222,7 @@ function DashboardContent() {
                 onChange={(e) => setConditions(e.target.value)}
                 placeholder="e.g. Diabetes, Hypertension, Asthma (comma-separated)"
                 rows={3}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
               />
               <p className="mt-1 text-xs text-slate-400">
                 Separate multiple conditions with commas
@@ -233,14 +233,14 @@ function DashboardContent() {
               <button
                 type="submit"
                 disabled={isSaving}
-                className="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-emerald-600 text-white font-semibold text-sm hover:shadow-md hover:shadow-blue-500/20 active:scale-[0.98] transition-all disabled:opacity-50"
+                className="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm hover:shadow-md hover:shadow-blue-600/20 active:scale-[0.98] transition-all disabled:opacity-50"
               >
                 {isSaving ? "Saving..." : "Save changes"}
               </button>
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="px-5 py-2 rounded-xl text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
               >
                 Cancel
               </button>

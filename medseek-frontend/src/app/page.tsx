@@ -44,8 +44,8 @@ export default function Home() {
     <div className="flex flex-col flex-1">
       {/* Hero / Search Section */}
       <section className={`relative overflow-hidden medical-scanline flex flex-col ${!hasSearched ? 'flex-1 justify-center' : ''}`}>
-        {/* Dark background with subtle blue gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-50/40 via-slate-50 to-slate-50" />
+        {/* Subtle background */}
+        <div className="absolute inset-0 bg-slate-50" />
 
         {/* Matrix-style floating orbs */}
         <div className="absolute top-20 left-1/4 w-72 h-72 bg-blue-500/5 rounded-full blur-3xl animate-float" />
@@ -55,10 +55,10 @@ export default function Home() {
         {/* 3D Human Body — rotating in background */}
         <HumanBodyModel activeSymptoms={activeSymptoms} />
 
-        <div className="relative max-w-4xl mx-auto lg:mx-0 lg:ml-[10%] xl:ml-[15%] px-4 sm:px-6 pt-16 pb-12 sm:pt-24 sm:pb-16">
-          <div className="text-left mb-10 animate-fade-in">
+        <div className="relative max-w-4xl mx-auto lg:mx-0 lg:ml-[10%] xl:ml-[15%] px-4 sm:px-6 pt-8 pb-8 sm:pt-20 sm:pb-16">
+          <div className="text-left mb-6 sm:mb-10 animate-fade-in">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50/60 text-blue-600 text-xs font-semibold mb-6 border border-blue-300/40">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50/60 text-blue-600 text-xs font-semibold mb-4 sm:mb-6 border border-blue-300/40">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
@@ -66,15 +66,15 @@ export default function Home() {
               Powered by 41 diseases · 131 symptoms
             </div>
 
-            <h1 className="font-extrabold tracking-tight mb-5 animate-slide-up animate-flicker">
-              <span className="block text-3xl sm:text-4xl lg:text-5xl text-slate-800 mb-2">
+            <h1 className="font-extrabold tracking-tight mb-4 sm:mb-5 animate-slide-up animate-flicker">
+              <span className="block text-2xl sm:text-4xl lg:text-5xl text-slate-800 mb-1 sm:mb-2">
                 What are your
               </span>
-              <span className="block text-6xl sm:text-7xl lg:text-8xl text-blue-600 capitalize">
+              <span className="block text-4xl sm:text-6xl lg:text-8xl text-blue-600 capitalize break-words tracking-tight">
                 Symptoms<span className="text-slate-800">?</span>
               </span>
             </h1>
-            <p className="text-lg sm:text-xl text-slate-600/60 max-w-2xl leading-relaxed animate-slide-up delay-200">
+            <p className="text-base sm:text-xl text-slate-600/70 max-w-2xl leading-relaxed animate-slide-up delay-200">
               Enter your symptoms to find possible conditions, ranked by
               relevance. We&apos;ll highlight anything urgent you shouldn&apos;t
               ignore.
@@ -91,7 +91,7 @@ export default function Home() {
 
           {/* Feature highlights */}
           {!hasSearched && (
-            <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6 animate-slide-up delay-500">
+            <div className="mt-10 sm:mt-16 grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-6 animate-slide-up delay-500">
               <FeatureCard
                 icon="🔍"
                 title="Smart Matching"

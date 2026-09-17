@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { isLoggedIn } from "@/lib/auth";
+import { isLoggedIn, logout } from "@/lib/auth";
 
 const allNavLinks = [
   { href: "/", label: "Search", icon: "🔍", public: true },
@@ -27,6 +27,17 @@ export default function NavAuthLinks() {
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
+
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    if (mobileOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mobileOpen]);
 
   if (!mounted) return null;
 
@@ -56,9 +67,9 @@ export default function NavAuthLinks() {
         })}
       </div>
 
-      {/* Auth action buttons for unauthenticated state */}
+      {/* Auth action buttons for unauthenticated state (desktop) */}
       {!authed ? (
-        <div className="flex items-center gap-1.5">
+        <div className="hidden sm:flex items-center gap-1.5">
           <Link
             href="/login"
             className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
@@ -72,7 +83,7 @@ export default function NavAuthLinks() {
           </Link>
           <Link
             href="/signup"
-            className="px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-emerald-600 text-white text-sm font-semibold shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+            className="px-4 py-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
             id="nav-signup"
           >
             Sign up
@@ -83,8 +94,9 @@ export default function NavAuthLinks() {
       {/* Mobile hamburger button */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="sm:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
-        aria-label="Toggle menu"
+        className="sm:hidden p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:bg-slate-200 transition-colors focus:outline-none"
+        aria-label="Toggle navigation menu"
+        aria-expanded={mobileOpen}
       >
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           {mobileOpen ? (
@@ -94,6 +106,15 @@ export default function NavAuthLinks() {
           )}
         </svg>
       </button>
+
+      {/* Mobile backdrop */}
+      {mobileOpen && (
+        <div
+          className="sm:hidden fixed inset-0 z-40 bg-slate-900/30 backdrop-blur-xs"
+          onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
+        />
+      )}
 
       {/* Mobile dropdown */}
       {mobileOpen && (
@@ -106,34 +127,48 @@ export default function NavAuthLinks() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
                     isActive
                       ? "text-blue-600 bg-blue-50 border border-blue-200/60 font-semibold"
                       : "text-slate-700 hover:bg-slate-100 hover:text-blue-600"
                   }`}
                 >
-                  <span className="text-base">{link.icon}</span>
+                  <span className="text-lg">{link.icon}</span>
                   {link.label}
                 </Link>
               );
             })}
 
-            {!authed && (
-              <div className="pt-2 mt-1 border-t border-slate-100 flex flex-col gap-1">
+            {!authed ? (
+              <div className="pt-2 mt-1 border-t border-slate-100 flex flex-col gap-1.5">
                 <Link
                   href="/login"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-100"
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-100"
                 >
-                  <span>🔑</span> Log in
+                  <span className="text-lg">🔑</span> Log in
                 </Link>
                 <Link
                   href="/signup"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-blue-600 to-emerald-600 text-white shadow-sm"
+                  className="flex items-center justify-center py-3 rounded-xl text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
                 >
                   Sign up
                 </Link>
+              </div>
+            ) : (
+              <div className="pt-2 mt-1 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileOpen(false);
+                    logout();
+                    window.location.href = "/";
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                >
+                  <span className="text-lg">🚪</span> Sign out
+                </button>
               </div>
             )}
           </nav>

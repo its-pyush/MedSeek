@@ -141,10 +141,10 @@ export default function SymptomSearch({ onSearch, onSymptomsChange, isLoading = 
     <div className="w-full max-w-3xl mx-auto">
       {/* Search input container */}
       <div className="relative group">
-        <div className="flex items-center flex-wrap gap-3 rounded-full border border-blue-300 bg-white/60 glass px-6 py-4 focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-500/20 transition-all duration-500 shadow-[0_0_20px_rgba(59,130,246,0.05)] hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] group-focus-within:shadow-[0_0_30px_rgba(59,130,246,0.2)]">
+        <div className="flex items-center flex-wrap gap-2 sm:gap-3 rounded-2xl sm:rounded-full border border-blue-300 bg-white/70 glass px-3.5 py-3 sm:px-6 sm:py-4 focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-500/20 transition-all duration-500 shadow-[0_0_20px_rgba(59,130,246,0.05)] hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] group-focus-within:shadow-[0_0_30px_rgba(59,130,246,0.2)]">
           {/* Search icon */}
           <svg
-            className="w-6 h-6 text-slate-500 shrink-0 transition-colors duration-300 group-focus-within:text-blue-600 group-focus-within:animate-pulse"
+            className="w-5 h-5 sm:w-6 sm:h-6 text-slate-400 shrink-0 transition-colors duration-300 group-focus-within:text-blue-600 group-focus-within:animate-pulse"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -161,7 +161,7 @@ export default function SymptomSearch({ onSearch, onSymptomsChange, isLoading = 
           {selectedSymptoms.map((symptom) => (
             <span
               key={symptom}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200 shadow-xs capitalize transition-all hover:bg-blue-100/70"
+              className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200 shadow-xs capitalize transition-all hover:bg-blue-100/70"
             >
               {symptom.replace(/_/g, " ")}
               <button
@@ -170,7 +170,7 @@ export default function SymptomSearch({ onSearch, onSymptomsChange, isLoading = 
                 className="ml-0.5 rounded-full p-0.5 hover:bg-blue-200/80 hover:text-blue-900 transition-colors"
                 aria-label={`Remove ${symptom}`}
               >
-                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
                     d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -193,10 +193,10 @@ export default function SymptomSearch({ onSearch, onSymptomsChange, isLoading = 
             }}
             placeholder={
               selectedSymptoms.length > 0
-                ? "Add more symptoms..."
-                : "Type your symptoms — e.g. headache, fever, fatigue..."
+                ? "Add more..."
+                : "Type symptoms — headache, fever, fatigue..."
             }
-            className="flex-1 min-w-[200px] bg-transparent text-slate-800 placeholder:text-slate-400 outline-none text-base sm:text-lg font-normal tracking-normal"
+            className="flex-1 min-w-[130px] sm:min-w-[200px] bg-transparent text-slate-800 placeholder:text-slate-400 outline-none text-base font-normal tracking-normal py-1"
             autoComplete="off"
             id="symptom-search-input"
           />
@@ -206,7 +206,7 @@ export default function SymptomSearch({ onSearch, onSymptomsChange, isLoading = 
             type="button"
             onClick={handleSearch}
             disabled={selectedSymptoms.length === 0 || isLoading}
-            className="shrink-0 px-6 py-2.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white font-semibold text-sm tracking-wide transition-all duration-200 hover:shadow-md hover:shadow-blue-500/25 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none relative overflow-hidden"
+            className="w-full sm:w-auto shrink-0 px-5 sm:px-6 py-2.5 rounded-xl sm:rounded-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-sm tracking-wide transition-all duration-200 hover:shadow-md hover:shadow-blue-600/25 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none flex items-center justify-center relative overflow-hidden"
             id="search-button"
           >
             {isLoading ? (
@@ -227,7 +227,7 @@ export default function SymptomSearch({ onSearch, onSymptomsChange, isLoading = 
         {showDropdown && (
           <div
             ref={dropdownRef}
-            className="absolute top-full left-0 right-0 mt-3 bg-white/95 border border-slate-200/90 rounded-2xl shadow-xl overflow-hidden z-50 max-h-80 overflow-y-auto animate-slide-up backdrop-blur-xl"
+            className="absolute top-full left-0 right-0 mt-2 sm:mt-3 bg-white/95 border border-slate-200/90 rounded-2xl shadow-xl overflow-hidden z-50 max-h-60 sm:max-h-80 overflow-y-auto animate-slide-up backdrop-blur-xl"
             role="listbox"
             id="symptom-suggestions"
           >
@@ -238,7 +238,7 @@ export default function SymptomSearch({ onSearch, onSymptomsChange, isLoading = 
                 role="option"
                 aria-selected={index === highlightedIndex}
                 onClick={() => addSymptom(item.name)}
-                className={`w-full text-left px-5 py-3.5 flex items-center justify-between transition-colors border-b border-slate-100 last:border-0 ${
+                className={`w-full text-left px-4 py-3 sm:px-5 sm:py-3.5 flex items-center justify-between transition-colors border-b border-slate-100 last:border-0 ${
                   index === highlightedIndex
                     ? "bg-blue-50 text-blue-900 border-l-4 border-l-blue-600"
                     : "hover:bg-slate-50 text-slate-800 border-l-4 border-l-transparent"
@@ -249,13 +249,13 @@ export default function SymptomSearch({ onSearch, onSymptomsChange, isLoading = 
                     {item.name.replace(/_/g, " ")}
                   </span>
                   {item.match_source === "synonym" && (
-                    <span className="ml-2.5 text-xs text-blue-600 font-normal">
+                    <span className="ml-2 text-xs text-blue-600 font-normal">
                       (matched: <span className="font-medium text-blue-700">{item.matched_text}</span>)
                     </span>
                   )}
                 </div>
-                <span className="text-xs font-semibold text-slate-500">
-                  {Math.round(item.similarity * 100)}% match
+                <span className="text-xs font-semibold text-slate-500 shrink-0 ml-2">
+                  {Math.round(item.similarity * 100)}%
                 </span>
               </button>
             ))}
@@ -265,10 +265,10 @@ export default function SymptomSearch({ onSearch, onSymptomsChange, isLoading = 
 
       {/* Hint text */}
       {selectedSymptoms.length === 0 && (
-        <p className="mt-6 text-center text-sm text-slate-500 font-light tracking-wide animate-fade-in delay-200">
+        <p className="mt-4 sm:mt-6 text-center text-xs sm:text-sm text-slate-500 font-light tracking-wide animate-fade-in delay-200">
           Enter one or more symptoms to find possible conditions.
           <br />
-          <span className="text-xs opacity-80 mt-2 inline-block">
+          <span className="text-xs opacity-80 mt-1.5 inline-block">
             Try: <button type="button" onClick={() => addSymptom("headache")} className="text-blue-600 hover:text-slate-600 hover:underline transition-colors px-1">headache</button>{", "}
             <button type="button" onClick={() => addSymptom("fever")} className="text-blue-600 hover:text-slate-600 hover:underline transition-colors px-1">fever</button>{", "}
             <button type="button" onClick={() => addSymptom("fatigue")} className="text-blue-600 hover:text-slate-600 hover:underline transition-colors px-1">fatigue</button>

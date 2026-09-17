@@ -59,38 +59,40 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
       : 1;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-12">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-slate-500 mb-8">
+      <nav className="flex items-center gap-2 text-xs sm:text-sm text-slate-500 mb-6 sm:mb-8 overflow-hidden">
         <Link
           href="/"
-          className="hover:text-blue-600 transition-colors"
+          className="hover:text-blue-600 transition-colors shrink-0"
         >
           Search
         </Link>
-        <svg className="w-4 h-4 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+        <svg className="w-3.5 h-3.5 text-slate-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
           <path
             fillRule="evenodd"
             d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
             clipRule="evenodd"
           />
         </svg>
-        <span className="text-slate-800 font-semibold capitalize">
+        <span className="text-slate-800 font-semibold capitalize truncate">
           {disease.name.replace(/_/g, " ")}
         </span>
       </nav>
 
       {/* Disease header */}
-      <div className="mb-10">
-        <div className="flex items-start gap-4 mb-4">
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-800 capitalize">
+      <div className="mb-8 sm:mb-10">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-800 capitalize">
             {disease.name.replace(/_/g, " ")}
           </h1>
-          <UrgencyBadge level={disease.urgency_level} size="md" />
+          <div className="self-start sm:self-auto shrink-0">
+            <UrgencyBadge level={disease.urgency_level} size="md" />
+          </div>
         </div>
 
         {disease.icd11_code && (
-          <p className="text-sm text-slate-500 mb-4">
+          <p className="text-xs sm:text-sm text-slate-500 mb-3 sm:mb-4">
             ICD-11 Code:{" "}
             <code className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-xs border border-slate-200">
               {disease.icd11_code}
@@ -99,7 +101,7 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
         )}
 
         {disease.description && (
-          <p className="text-lg text-slate-600 leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
             {disease.description}
           </p>
         )}
@@ -109,7 +111,7 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
       {(disease.urgency_level === "high" ||
         disease.urgency_level === "emergency") && (
         <div
-          className={`mb-8 p-5 rounded-2xl border ${
+          className={`mb-8 p-4 sm:p-5 rounded-2xl border ${
             disease.urgency_level === "emergency"
               ? "bg-red-50 border-red-200"
               : "bg-orange-50 border-orange-200"
@@ -117,7 +119,7 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
         >
           <div className="flex gap-3">
             <svg
-              className={`w-6 h-6 shrink-0 mt-0.5 ${
+              className={`w-5 h-5 sm:w-6 sm:h-6 shrink-0 mt-0.5 ${
                 disease.urgency_level === "emergency"
                   ? "text-red-600"
                   : "text-orange-600"
@@ -144,7 +146,7 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
                   : "Consult a Doctor Soon"}
               </h2>
               <p
-                className={`text-sm mt-1 leading-relaxed ${
+                className={`text-xs sm:text-sm mt-1 leading-relaxed ${
                   disease.urgency_level === "emergency"
                     ? "text-red-800/80"
                     : "text-orange-800/80"
@@ -161,7 +163,7 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
 
       {/* Symptoms section */}
       <div className="mb-10">
-        <h2 className="text-xl font-bold text-slate-800 mb-4">
+        <h2 className="text-lg sm:text-xl font-bold text-slate-800 mb-4">
           Associated Symptoms ({disease.symptoms.length})
         </h2>
         <div className="space-y-2">
@@ -172,18 +174,18 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
             return (
               <div
                 key={symptom.id}
-                className="flex items-center gap-4 p-3.5 rounded-xl bg-white border border-slate-200/80 hover:border-blue-200 transition-colors"
+                className="flex items-center gap-2.5 sm:gap-4 p-3 sm:p-3.5 rounded-xl bg-white border border-slate-200/80 hover:border-blue-200 transition-colors"
               >
-                <span className="flex-1 text-sm font-medium text-slate-800 capitalize">
+                <span className="flex-1 text-xs sm:text-sm font-medium text-slate-800 capitalize min-w-0">
                   {symptom.name.replace(/_/g, " ")}
                 </span>
-                <div className="w-32 sm:w-48 h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="w-20 sm:w-48 h-2 bg-slate-100 rounded-full overflow-hidden shrink-0">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all duration-700"
+                    className="h-full rounded-full bg-blue-600 transition-all duration-700"
                     style={{ width: `${percentage}%` }}
                   />
                 </div>
-                <span className="text-xs font-mono text-slate-500 w-12 text-right tabular-nums">
+                <span className="text-xs font-mono text-slate-500 w-10 sm:w-12 text-right tabular-nums shrink-0">
                   {symptom.weight.toFixed(3)}
                 </span>
               </div>
