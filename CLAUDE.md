@@ -34,7 +34,7 @@ People already use general AI chatbots (Claude, Gemini, ChatGPT) for symptom que
 | LLM | Deepseek API (OpenAI-compatible SDK) | RAG-grounded in patient context |
 | Auth | bcryptjs + jsonwebtoken | 15min access + 7d refresh tokens |
 | Encryption | AES-256-GCM (Node crypto) | Envelope encryption, per-record IV |
-| Hosting | Vercel + GCP e2-micro + Neon | All free tier |
+| Hosting | Vercel (Frontend) + Render (Backend) + Neon (Postgres) | All free tier (Live: https://med-seek-theta.vercel.app) |
 
 ---
 
