@@ -46,6 +46,14 @@ export function createApp() {
     })
   );
 
+  // Normalize redundant slashes in incoming request URLs
+  app.use((req, _res, next) => {
+    if (req.url.includes("//")) {
+      req.url = req.url.replace(/\/{2,}/g, "/");
+    }
+    next();
+  });
+
   // Body parsing
   app.use(express.json({ limit: "1mb" }));
   app.use(express.urlencoded({ extended: true }));

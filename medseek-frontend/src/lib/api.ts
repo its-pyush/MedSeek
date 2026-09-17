@@ -2,7 +2,7 @@
 // All business logic lives in the backend — this is a thin HTTP client.
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+  (process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000").replace(/\/+$/, "");
 
 // ─── Types ───────────────────────────────────────────────────────
 
