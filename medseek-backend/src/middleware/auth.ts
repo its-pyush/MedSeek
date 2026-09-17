@@ -89,27 +89,3 @@ export function optionalAuth(
 
   next();
 }
-
-// ─── Role-Based Authorization ────────────────────────────────────
-
-/**
- * Role-based authorization middleware.
- * For now, MedSeek only has "patient" role — this is a placeholder
- * for future roles like "admin" if needed.
- *
- * Must be used AFTER authenticate().
- */
-export function authorize(..._roles: string[]) {
-  return (req: Request, res: Response, next: NextFunction): void => {
-    if (!req.user) {
-      res.status(401).json({
-        error: { message: "Authentication required" },
-      });
-      return;
-    }
-
-    // For V1, all authenticated users are patients with full access
-    // to their own data. Role checking will be added if admin roles are introduced.
-    next();
-  };
-}

@@ -28,7 +28,3 @@ export function notFound(message = "Resource not found"): AppError {
 export function badRequest(message = "Bad request"): AppError {
   return new AppError(message, 400);
 }
-
-export function internal(message = "Internal server error"): AppError {
-  return new AppError(message, 500, false);
-}

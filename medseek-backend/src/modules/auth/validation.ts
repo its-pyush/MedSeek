@@ -14,8 +14,6 @@ export const signupSchema = z.object({
     .max(128, "Password must be at most 128 characters"),
 });
 
-export type SignupInput = z.infer<typeof signupSchema>;
-
 // ─── Login ───────────────────────────────────────────────────────
 
 export const loginSchema = z.object({
@@ -26,15 +24,11 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
-export type LoginInput = z.infer<typeof loginSchema>;
-
 // ─── Refresh Token ───────────────────────────────────────────────
 
 export const refreshSchema = z.object({
   refreshToken: z.string().min(1, "Refresh token is required"),
 });
-
-export type RefreshInput = z.infer<typeof refreshSchema>;
 
 // ─── Profile Update ──────────────────────────────────────────────
 
@@ -51,5 +45,3 @@ export const profileUpdateSchema = z.object({
     .nullable()
     .optional(),
 });
-
-export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;

@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MedSeek Frontend
 
-## Getting Started
+Next.js web application for MedSeek — featuring a public symptom search engine, disease detail pages (SSR/SEO), authenticated patient dashboard, RAG-grounded AI health chat, encrypted data vault, and audit activity log.
 
-First, run the development server:
+## Quick Start
 
 ```bash
+# 1. Install dependencies
+npm install
+
+# 2. Configure environment (optional, defaults to http://localhost:4000)
+# NEXT_PUBLIC_API_URL=http://localhost:4000
+
+# 3. Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app starts at `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Description |
+|---|---|
+| `npm run dev` | Start development server with Turbopack |
+| `npm run build` | Build optimized production bundle |
+| `npm run start` | Run production server |
+| `npm run lint` | Run ESLint across source files |
 
-## Learn More
+## Pages
 
-To learn more about Next.js, take a look at the following resources:
+- `/` — Public multi-symptom search engine with 3D human anatomy visualizer
+- `/disease/[id]` — SSR disease detail page with ICD-11 codes and weighted symptoms
+- `/login` & `/signup` — Patient authentication
+- `/dashboard` — Patient health profile editor and quick actions
+- `/chat` — Context-aware AI health chat with red-flag escalation
+- `/vault` — Encrypted health record management (AES-256-GCM at rest)
+- `/activity` — Access and activity audit log
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Tech Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Framework**: Next.js 16 (React 19, App Router)
+- **Styling**: Tailwind CSS v4
+- **3D Graphics**: Three.js + React Three Fiber / Drei
+- **Fonts**: Roboto (Google Fonts via `next/font`)

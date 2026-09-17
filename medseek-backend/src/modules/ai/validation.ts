@@ -1,15 +1,11 @@
 import { z } from "zod";
 
-export const createSessionSchema = z.object({});
-
 export const sendMessageSchema = z.object({
   content: z
     .string()
     .min(1, "Message cannot be empty")
     .max(4000, "Message is too long (max 4000 characters)"),
 });
-
-export type SendMessageInput = z.infer<typeof sendMessageSchema>;
 
 export const sessionIdSchema = z.object({
   sessionId: z.coerce.number().int().positive(),

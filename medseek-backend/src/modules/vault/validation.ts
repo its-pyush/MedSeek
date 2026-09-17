@@ -10,16 +10,12 @@ export const createRecordSchema = z.object({
   ),
 });
 
-export type CreateRecordInput = z.infer<typeof createRecordSchema>;
-
 export const updateRecordSchema = z.object({
   data: z.record(z.unknown()).refine(
     (obj) => Object.keys(obj).length > 0,
     "Record data cannot be empty"
   ),
 });
-
-export type UpdateRecordInput = z.infer<typeof updateRecordSchema>;
 
 export const recordIdSchema = z.object({
   id: z.coerce.number().int().positive(),

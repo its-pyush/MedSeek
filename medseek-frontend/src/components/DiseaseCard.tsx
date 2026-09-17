@@ -7,7 +7,7 @@ interface DiseaseCardProps {
   name: string;
   description: string | null;
   urgency_level: "low" | "moderate" | "high" | "emergency";
-  score: number;
+  score?: number;
   matched_symptoms: string[];
   total_symptoms: number;
   isWarning?: boolean;
@@ -18,7 +18,6 @@ export default function DiseaseCard({
   name,
   description,
   urgency_level,
-  score,
   matched_symptoms,
   total_symptoms,
   isWarning = false,

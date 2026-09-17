@@ -95,7 +95,7 @@ function CameraController({ activeRegions }: { activeRegions: string[] }) {
   const targetLookAt = useRef(new THREE.Vector3(0, 0, 0));
   const currentLookAt = useRef(new THREE.Vector3(0, 0, 0));
 
-  useFrame((state, delta) => {
+  useFrame(() => {
     // Determine target based on active regions
     if (activeRegions.length === 1) {
       const region = BODY_REGIONS[activeRegions[0]];

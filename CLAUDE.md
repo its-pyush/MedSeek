@@ -60,6 +60,7 @@ Patient app ─► API Gateway (auth + audit) ─┬─► Disease Search Servic
 - [x] **Phase 6 — Ranking refinement**: added demographic filter support (age, sex, pregnancy) to search validation schema. Full signal blending (seasonal/geographic) deferred to data availability.
 - [x] **Phase 7 — UI/UX & Design System Standardization**: Unified visual language across all pages (Blue `#3b82f6` + Emerald `#10b981` + Slate `#0f172a`), eliminated rogue indigo/violet/zinc palettes, resolved light-theme contrast leaks and dead dark-mode styling, fixed mobile navigation drawer, and standardized component cards and alerts.
 - [x] **Phase 8 — Cloud Deployment Preparation**: Express host binding to `0.0.0.0`, flexible multi-origin & Vercel preview domain CORS handling, comprehensive root `.gitignore`, verified 6/6 vitest tests and Next.js 16 production build.
+- [x] **Phase 9 — Codebase Cleanup & Bloat Elimination**: Purged unused starter SVG assets, redundant frontend CLAUDE/AGENTS stubs, dead placeholder functions (`authorize`, `internal`, `transaction`, `createSessionSchema`), unused Zod type exports, dead CSS keyframes (`data-rain`, `scan-line`), and fixed all ESLint warnings (unused vars in `DiseaseCard` and `HumanBodyModel`). Verified 0 ESLint warnings, 0 type errors, 6/6 vitest passes, and clean production build.
 - [ ] **Future / post-MVP**: OCR report upload, PWA, React Native, Typesense migration, DDXPlus model training, ICD-11 taxonomy, MedlinePlus content
 
 ---
@@ -158,7 +159,7 @@ ENCRYPTION_KEY=<openssl rand -hex 32>  # Vault encryption
 
 ## Resolved decisions
 
-backend framework (Express) · search (Postgres FTS + pg_trgm) · AI (Deepseek API, not trained model) · repo structure (separate) · dataset (Kaggle → DDXPlus → ICD-11) · encryption (AES-256-GCM, server-managed) · no hospitals/third-party access · hosting (Vercel + Render + Neon) · auth (bcryptjs + JWT dual-token) · audit (auto-logging middleware) · vault encryption (envelope pattern, per-record IV) · UI design system (Cerulean Blue + Emerald accent + Slate neutral, light-mode first with WCAG AA contrast) · deployment (Render for Express backend + Vercel for Next.js 16 frontend + Neon PostgreSQL) · flexible CORS (comma-separated origins + *.vercel.app)
+backend framework (Express) · search (Postgres FTS + pg_trgm) · AI (Deepseek API, not trained model) · repo structure (separate) · dataset (Kaggle → DDXPlus → ICD-11) · encryption (AES-256-GCM, server-managed) · no hospitals/third-party access · hosting (Vercel + Render + Neon) · auth (bcryptjs + JWT dual-token) · audit (auto-logging middleware) · vault encryption (envelope pattern, per-record IV) · UI design system (Cerulean Blue + Emerald accent + Slate neutral, light-mode first with WCAG AA contrast) · deployment (Render for Express backend + Vercel for Next.js 16 frontend + Neon PostgreSQL) · flexible CORS (comma-separated origins + *.vercel.app) · zero-warning code cleanup (dead code, starter bloat, unused schemas purged)
 
 ## Agent Rules & Guidelines
 - **Task Completion:** After finishing any task or setup phase, immediately update `CLAUDE.md` before concluding the response.
