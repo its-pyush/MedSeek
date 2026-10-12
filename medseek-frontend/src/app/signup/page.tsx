@@ -4,6 +4,8 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signupApi } from "@/lib/auth";
+import { IconProfile, IconWarning, IconArrowLeft } from "@/components/icons";
+import Threads from "@/components/Threads";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -18,12 +20,12 @@ export default function SignupPage() {
     setError(null);
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError("Password confirmation does not match");
       return;
     }
 
     if (password.length < 8) {
-      setError("Password must be at least 8 characters");
+      setError("Password must contain at least 8 characters");
       return;
     }
 
@@ -33,60 +35,59 @@ export default function SignupPage() {
       await signupApi(email, password);
       router.push("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Signup failed");
+      setError(err instanceof Error ? err.message : "Account registration failed");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Background orbs */}
-      <div className="absolute top-1/3 right-1/4 w-72 h-72 bg-blue-400/10 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/3 left-1/4 w-80 h-80 bg-emerald-400/10 rounded-full blur-3xl animate-float-delayed" />
+    <div className="min-h-[75vh] flex items-center justify-center px-4 py-8 relative overflow-hidden">
+      {/* Background Animated Threads Canvas */}
+      <div className="absolute inset-0 z-0 pointer-events-auto">
+        <Threads
+          color={[0.23, 0.37, 0.73]}
+          amplitude={1.1}
+          distance={0.15}
+          enableMouseInteraction={false}
+        />
+      </div>
 
-      <div className="w-full max-w-md relative animate-scale-in">
-        {/* Glass card */}
-        <div className="p-6 sm:p-8 rounded-2xl sm:rounded-3xl bg-white/80 backdrop-blur-xl border border-slate-200/80 shadow-xl shadow-blue-500/5">
+      {/* Ambient optical diffusion orbs */}
+      <div className="absolute top-[20%] left-[30%] w-72 h-72 rounded-full bg-[#fed7aa]/25 blur-[80px] pointer-events-none z-0" />
+      <div className="absolute bottom-[20%] right-[30%] w-80 h-80 rounded-full bg-[#3a5ebb]/10 blur-[90px] pointer-events-none z-0" />
+
+      <div className="w-full max-w-sm relative z-10">
+        {/* Optical Glass Card */}
+        <div className="p-6 sm:p-7 rounded-2xl glass-panel shadow-lg">
           {/* Header */}
-          <div className="text-center mb-6 sm:mb-8">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-3 sm:mb-4 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/20 text-white animate-float">
-              <svg
-                className="w-6 h-6 sm:w-7 sm:h-7 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                />
-              </svg>
+          <div className="text-center mb-5">
+            <div className="w-11 h-11 mx-auto mb-3 rounded-xl glass-chip flex items-center justify-center text-[#3a5ebb] shadow-xs">
+              <IconProfile size={20} />
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-800">
-              Create your account
+            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900">
+              Create Patient Account
             </h1>
-            <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-slate-500">
-              Store your health data securely and get personalized AI insights
+            <p className="mt-1 text-xs text-slate-500">
+              Initialize client-side encrypted vault and profile
             </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-3.5">
             {error && (
-              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm animate-shake">
-                {error}
+              <div className="p-2.5 rounded-lg bg-red-50/90 backdrop-blur-xs border border-red-200 text-red-700 text-xs flex items-center gap-2 animate-shake">
+                <IconWarning size={14} className="shrink-0" />
+                <span>{error}</span>
               </div>
             )}
 
-            <div className="animate-slide-up delay-100">
+            <div>
               <label
                 htmlFor="signup-email"
-                className="block text-sm font-medium text-slate-700 mb-1.5"
+                className="block text-xs font-semibold text-slate-700 mb-1"
               >
-                Email address
+                Email Address
               </label>
               <input
                 id="signup-email"
@@ -94,16 +95,16 @@ export default function SignupPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-base sm:text-sm"
+                placeholder="name@institution.com"
+                className="w-full px-3 py-2 rounded-lg border border-slate-300/80 bg-white/80 backdrop-blur-xs text-slate-800 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#3a5ebb] focus:ring-2 focus:ring-[#3a5ebb]/15 transition-all"
                 autoComplete="email"
               />
             </div>
 
-            <div className="animate-slide-up delay-200">
+            <div>
               <label
                 htmlFor="signup-password"
-                className="block text-sm font-medium text-slate-700 mb-1.5"
+                className="block text-xs font-semibold text-slate-700 mb-1"
               >
                 Password
               </label>
@@ -113,19 +114,19 @@ export default function SignupPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="At least 8 characters"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-base sm:text-sm"
+                placeholder="Minimum 8 characters"
+                className="w-full px-3 py-2 rounded-lg border border-slate-300/80 bg-white/80 backdrop-blur-xs text-slate-800 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#3a5ebb] focus:ring-2 focus:ring-[#3a5ebb]/15 transition-all"
                 autoComplete="new-password"
                 minLength={8}
               />
             </div>
 
-            <div className="animate-slide-up delay-300">
+            <div>
               <label
                 htmlFor="signup-confirm"
-                className="block text-sm font-medium text-slate-700 mb-1.5"
+                className="block text-xs font-semibold text-slate-700 mb-1"
               >
-                Confirm password
+                Confirm Password
               </label>
               <input
                 id="signup-confirm"
@@ -133,59 +134,44 @@ export default function SignupPage() {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Re-enter your password"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-base sm:text-sm"
+                placeholder="Repeat password"
+                className="w-full px-3 py-2 rounded-lg border border-slate-300/80 bg-white/80 backdrop-blur-xs text-slate-800 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#3a5ebb] focus:ring-2 focus:ring-[#3a5ebb]/15 transition-all"
                 autoComplete="new-password"
                 minLength={8}
               />
             </div>
 
-            <div className="animate-slide-up delay-400">
+            <div className="pt-1">
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-md shadow-blue-600/20 hover:shadow-lg hover:shadow-blue-600/30 hover:scale-[1.01] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-3d-primary w-full py-2 px-4 rounded-lg text-xs"
               >
-                {isLoading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
-                    Creating account...
-                  </span>
-                ) : (
-                  "Create account"
-                )}
+                {isLoading ? "Creating Vault..." : "Register Account"}
               </button>
             </div>
           </form>
 
-          {/* Terms notice */}
-          <p className="mt-4 text-center text-xs text-slate-400">
-            By creating an account, you agree to our terms of service. Your health
-            data is encrypted and stored securely.
-          </p>
-
-          {/* Footer */}
-          <p className="mt-5 text-center text-sm text-slate-500">
-            Already have an account?{" "}
+          {/* Footer Navigation */}
+          <p className="mt-4 text-center text-xs text-slate-500 pt-3 border-t border-slate-200/60">
+            Already have an active account?{" "}
             <Link
               href="/login"
-              className="font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+              className="font-semibold text-[#3a5ebb] hover:text-[#2a4693] hover:underline"
             >
-              Sign in
+              Sign In
             </Link>
           </p>
         </div>
 
-        {/* Back to search */}
-        <p className="mt-5 text-center text-sm">
+        {/* Back Link */}
+        <p className="mt-4 text-center text-xs">
           <Link
             href="/"
-            className="text-slate-500 hover:text-blue-600 font-medium transition-colors"
+            className="text-slate-500 hover:text-slate-800 font-medium transition-colors inline-flex items-center gap-1"
           >
-            ← Back to symptom search
+            <IconArrowLeft size={12} />
+            <span>Return to diagnostic search</span>
           </Link>
         </p>
       </div>

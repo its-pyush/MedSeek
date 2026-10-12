@@ -1,16 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { isLoggedIn, logout } from "@/lib/auth";
+import {
+  IconSearch,
+  IconConsultation,
+  IconVault,
+  IconActivity,
+  IconDashboard,
+  IconLogin,
+  IconLogout,
+  IconMenu,
+  IconClose,
+} from "./icons";
 
-const allNavLinks = [
-  { href: "/", label: "Search", icon: "🔍", public: true },
-  { href: "/chat", label: "AI Chat", icon: "💬", public: false },
-  { href: "/vault", label: "Vault", icon: "🔒", public: false },
-  { href: "/activity", label: "Activity", icon: "📊", public: false },
-  { href: "/dashboard", label: "Dashboard", icon: "👤", public: false },
+interface NavLinkItem {
+  href: string;
+  label: string;
+  Icon: React.ComponentType<{ size?: number; className?: string }>;
+  public: boolean;
+}
+
+const allNavLinks: NavLinkItem[] = [
+  { href: "/", label: "Search", Icon: IconSearch, public: true },
+  { href: "/chat", label: "Consultation", Icon: IconConsultation, public: false },
+  { href: "/vault", label: "Vault", Icon: IconVault, public: false },
+  { href: "/activity", label: "Activity", Icon: IconActivity, public: false },
+  { href: "/dashboard", label: "Dashboard", Icon: IconDashboard, public: false },
 ];
 
 export default function NavAuthLinks() {
@@ -27,7 +45,6 @@ export default function NavAuthLinks() {
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
-
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -46,118 +63,112 @@ export default function NavAuthLinks() {
     : allNavLinks.filter((l) => l.public);
 
   return (
-    <div className="flex items-center gap-1 sm:gap-2">
-      {/* Desktop Links */}
-      <div className="hidden sm:flex items-center gap-1">
+    <div className="flex items-center gap-1.5 sm:gap-2">
+      {/* Desktop Navigation Links */}
+      <div className="hidden sm:flex items-center gap-0.5">
         {linksToShow.map((link) => {
           const isActive = pathname === link.href;
+          const { Icon } = link;
           return (
             <Link
               key={link.href}
               href={link.href}
-              className={`relative px-3.5 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-all ${
                 isActive
-                  ? "text-blue-600 bg-blue-50/80 shadow-xs border border-blue-200/60"
-                  : "text-slate-600 hover:text-blue-600 hover:bg-slate-100/70"
+                  ? "text-[#3a5ebb] bg-white/90 border border-[#3a5ebb]/35 font-semibold shadow-xs backdrop-blur-sm"
+                  : "text-slate-700 hover:text-slate-950 hover:bg-white/60 border border-transparent"
               }`}
             >
+              <Icon size={14} className={isActive ? "text-[#3a5ebb]" : "text-slate-500"} />
               {link.label}
             </Link>
           );
         })}
       </div>
 
-      {/* Auth action buttons for unauthenticated state (desktop) */}
+      {/* Desktop Auth Actions */}
       {!authed ? (
-        <div className="hidden sm:flex items-center gap-1.5">
+        <div className="hidden sm:flex items-center gap-2 ml-1.5">
           <Link
             href="/login"
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
-              pathname === "/login"
-                ? "text-blue-600 bg-blue-50/80 border border-blue-200/60"
-                : "text-slate-700 hover:text-blue-600 hover:bg-slate-100/70"
-            }`}
+            className="btn-3d-secondary px-3 py-1 rounded-lg text-xs font-medium"
             id="nav-login"
           >
-            Log in
+            Sign In
           </Link>
           <Link
             href="/signup"
-            className="px-4 py-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+            className="btn-3d-primary px-3.5 py-1 rounded-lg text-xs font-semibold"
             id="nav-signup"
           >
-            Sign up
+            Register
           </Link>
         </div>
       ) : null}
 
-      {/* Mobile hamburger button */}
+      {/* Mobile Menu Button */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="sm:hidden p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:bg-slate-200 transition-colors focus:outline-none"
+        className="sm:hidden btn-3d-secondary p-1.5 rounded-lg text-slate-700"
         aria-label="Toggle navigation menu"
         aria-expanded={mobileOpen}
       >
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          {mobileOpen ? (
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          ) : (
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-          )}
-        </svg>
+        {mobileOpen ? <IconClose size={18} /> : <IconMenu size={18} />}
       </button>
 
-      {/* Mobile backdrop */}
+      {/* Mobile Backdrop */}
       {mobileOpen && (
         <div
-          className="sm:hidden fixed inset-0 z-40 bg-slate-900/30 backdrop-blur-xs"
+          className="sm:hidden fixed inset-0 z-40 bg-slate-950/20 backdrop-blur-xs"
           onClick={() => setMobileOpen(false)}
           aria-hidden="true"
         />
       )}
 
-      {/* Mobile dropdown */}
+      {/* Mobile Dropdown Menu */}
       {mobileOpen && (
-        <div className="absolute top-[calc(100%+0.5rem)] left-0 right-0 sm:hidden bg-white/95 backdrop-blur-2xl border border-slate-200/80 rounded-2xl shadow-xl p-3 animate-slide-up z-50">
-          <nav className="flex flex-col gap-1">
+        <div className="absolute top-[calc(100%+0.5rem)] left-3 right-3 sm:hidden glass-dropdown rounded-2xl p-3 animate-slide-up z-50">
+          <nav className="flex flex-col gap-1.5">
             {linksToShow.map((link) => {
               const isActive = pathname === link.href;
+              const { Icon } = link;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                     isActive
-                      ? "text-blue-600 bg-blue-50 border border-blue-200/60 font-semibold"
-                      : "text-slate-700 hover:bg-slate-100 hover:text-blue-600"
+                      ? "text-[#3a5ebb] bg-white/90 border border-[#3a5ebb]/35 font-semibold shadow-xs"
+                      : "text-slate-700 hover:bg-white/60 border border-transparent"
                   }`}
                 >
-                  <span className="text-lg">{link.icon}</span>
+                  <Icon size={16} className={isActive ? "text-[#3a5ebb]" : "text-slate-500"} />
                   {link.label}
                 </Link>
               );
             })}
 
             {!authed ? (
-              <div className="pt-2 mt-1 border-t border-slate-100 flex flex-col gap-1.5">
+              <div className="pt-2 mt-1 border-t border-slate-200 flex flex-col gap-2">
                 <Link
                   href="/login"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-100"
+                  className="btn-3d-secondary w-full py-2 text-xs font-medium"
                 >
-                  <span className="text-lg">🔑</span> Log in
+                  <IconLogin size={15} className="mr-1.5 text-slate-500" />
+                  Sign In
                 </Link>
                 <Link
                   href="/signup"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center py-3 rounded-xl text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+                  className="btn-3d-primary w-full py-2 text-xs font-semibold"
                 >
-                  Sign up
+                  Register Account
                 </Link>
               </div>
             ) : (
-              <div className="pt-2 mt-1 border-t border-slate-100">
+              <div className="pt-2 mt-1 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => {
@@ -165,9 +176,10 @@ export default function NavAuthLinks() {
                     logout();
                     window.location.href = "/";
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                  className="btn-3d-danger w-full py-2 text-xs font-medium flex items-center justify-center gap-2"
                 >
-                  <span className="text-lg">🚪</span> Sign out
+                  <IconLogout size={15} />
+                  <span>Sign Out</span>
                 </button>
               </div>
             )}

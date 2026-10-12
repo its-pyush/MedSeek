@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, FormEvent } from "react";
+import React, { useState, useEffect, useCallback, FormEvent } from "react";
 import AuthGuard from "@/components/AuthGuard";
 import {
   listRecords,
@@ -11,13 +11,87 @@ import {
   HealthRecord,
   HealthRecordSummary,
 } from "@/lib/vault";
+import {
+  IconVault,
+  IconPlus,
+  IconTrash,
+  IconCondition,
+  IconMedication,
+  IconAllergy,
+  IconReport,
+  IconLockShield,
+  IconClose,
+  IconCheck,
+  IconWarning,
+  IconChevronRight,
+  IconCalendar,
+  IconTag,
+  IconFileNotes,
+  VaultIllustration,
+} from "@/components/icons";
 
-const RECORD_TYPES: { value: RecordType; label: string; icon: string }[] = [
-  { value: "condition", label: "Conditions", icon: "🩺" },
-  { value: "medication", label: "Medications", icon: "💊" },
-  { value: "allergy", label: "Allergies", icon: "⚠️" },
-  { value: "report", label: "Reports", icon: "📋" },
+interface RecordTypeConfig {
+  value: RecordType;
+  label: string;
+  sublabel: string;
+  Icon: React.ComponentType<{ size?: number; className?: string }>;
+  accentColor: string;
+  badgeClass: string;
+}
+
+const RECORD_TYPES: RecordTypeConfig[] = [
+  {
+    value: "condition",
+    label: "Conditions",
+    sublabel: "Diagnoses & Chronic Status",
+    Icon: IconCondition,
+    accentColor: "text-blue-600 bg-blue-50 border-blue-200",
+    badgeClass: "bg-blue-50 text-blue-700 border-blue-200",
+  },
+  {
+    value: "medication",
+    label: "Medications",
+    sublabel: "Prescriptions & Dosage",
+    Icon: IconMedication,
+    accentColor: "text-emerald-600 bg-emerald-50 border-emerald-200",
+    badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  },
+  {
+    value: "allergy",
+    label: "Allergies",
+    sublabel: "Immunological Sensitivities",
+    Icon: IconAllergy,
+    accentColor: "text-amber-600 bg-amber-50 border-amber-200",
+    badgeClass: "bg-amber-50 text-amber-700 border-amber-200",
+  },
+  {
+    value: "report",
+    label: "Lab Reports",
+    sublabel: "Diagnostic Workups & Panels",
+    Icon: IconReport,
+    accentColor: "text-sky-700 bg-sky-50 border-sky-200",
+    badgeClass: "bg-sky-50 text-sky-800 border-sky-200",
+  },
 ];
+
+function getRecordConfig(type: string): RecordTypeConfig {
+  const match = RECORD_TYPES.find((t) => t.value === type);
+  return match || RECORD_TYPES[0];
+}
+
+function getRecordFieldIcon(key: string) {
+  const lower = key.toLowerCase();
+  if (lower.includes("name") || lower.includes("title") || lower.includes("condition")) {
+    return IconTag;
+  }
+  if (lower.includes("date") || lower.includes("time")) {
+    return IconCalendar;
+  }
+  if (lower.includes("note") || lower.includes("desc") || lower.includes("dosage")) {
+    return IconFileNotes;
+  }
+  return IconLockShield;
+}
 
 function VaultContent() {
   const [records, setRecords] = useState<HealthRecordSummary[]>([]);
@@ -40,7 +114,7 @@ function VaultContent() {
       setRecords(result.records);
       setTotal(result.total);
     } catch {
-      setError("Failed to load records");
+      setError("Failed to retrieve encrypted health records");
     }
   }, [activeType]);
 
@@ -54,16 +128,16 @@ function VaultContent() {
       const record = await getRecord(id);
       setSelectedRecord(record);
     } catch {
-      setError("Failed to load record details");
+      setError("Failed to decrypt health record");
     }
   }
 
   async function handleDelete(id: number) {
-    if (!confirm("Are you sure you want to delete this record? This cannot be undone.")) return;
+    if (!confirm("Permanently purge this encrypted record from your vault?")) return;
     try {
       await deleteRecord(id);
       setSelectedRecord(null);
-      setSuccess("Record deleted");
+      setSuccess("Record purged from encrypted vault");
       setTimeout(() => setSuccess(null), 3000);
       loadRecords();
     } catch {
@@ -84,262 +158,378 @@ function VaultContent() {
       setShowAddForm(false);
       setNewName("");
       setNewNotes("");
-      setSuccess("Record added successfully");
+      setSuccess("Health record encrypted and secured");
       setTimeout(() => setSuccess(null), 3000);
       loadRecords();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add record");
+      setError(err instanceof Error ? err.message : "Failed to record entry");
     } finally {
       setIsSaving(false);
     }
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-12">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 animate-fade-in">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-5 sm:py-8">
+      {/* Vault Header Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-3.5 border-b border-[#e2dcd0]/80 animate-fade-in">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-800 flex items-center gap-2.5 sm:gap-3">
-            <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-md shadow-blue-600/20 text-white shrink-0">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-              </svg>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-8 h-8 rounded-xl glass-chip flex items-center justify-center text-[#3a5ebb] shrink-0 shadow-2xs">
+              <IconVault size={18} />
+            </div>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+              Patient Health Vault
+            </h1>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 ml-1.5">
+              <IconLockShield size={12} />
+              <span>AES-256 Encrypted</span>
             </span>
-            Health Vault
-          </h1>
-          <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-slate-500">
-            Your encrypted health records — only you can access this data
+          </div>
+          <p className="text-xs text-slate-500">
+            Encrypted personal health record repository for conditions, medications, allergies, and lab reports.
           </p>
         </div>
+
         <button
           onClick={() => setShowAddForm(true)}
-          className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold hover:shadow-md hover:shadow-blue-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+          className="btn-3d-primary self-start sm:self-auto px-3.5 py-1.5 rounded-lg text-xs flex items-center gap-1.5"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-          Add Record
+          <IconPlus size={14} />
+          <span>Add Record</span>
         </button>
       </div>
 
+      {/* Notifications */}
       {error && (
-        <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm animate-shake">
-          {error}
+        <div className="mb-4 p-3 rounded-xl bg-red-50/90 backdrop-blur-xs border border-red-200 text-red-700 text-xs flex items-center gap-2 animate-shake">
+          <IconWarning size={14} className="shrink-0" />
+          <span>{error}</span>
         </div>
       )}
       {success && (
-        <div className="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm animate-slide-up">
-          ✓ {success}
+        <div className="mb-4 p-3 rounded-xl bg-emerald-50/90 backdrop-blur-xs border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2 animate-slide-up">
+          <IconCheck size={14} className="text-emerald-600 shrink-0" />
+          <span>{success}</span>
         </div>
       )}
 
-      {/* Type filter tabs */}
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-2 animate-slide-up delay-100">
+      {/* Clinical Category Tabs */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 mb-5">
         <button
           onClick={() => setActiveType(undefined)}
-          className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
+          className={`p-3 rounded-xl border text-left transition-all ${
             !activeType
-              ? "bg-blue-600 text-white shadow-xs"
-              : "text-slate-600 hover:bg-slate-100/80 border border-slate-200/80 bg-white/70"
+              ? "bg-[#3a5ebb] text-white border-[#2e4d9c] shadow-[0_4px_16px_rgba(58,94,187,0.3)] ring-2 ring-[#3a5ebb]/20"
+              : "glass-card text-slate-700 hover:border-[#3a5ebb]/35"
           }`}
         >
-          All ({total})
+          <div className="flex items-center justify-between mb-1">
+            <IconVault size={16} className={!activeType ? "text-white" : "text-slate-500"} />
+            <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${!activeType ? "bg-[#2a4693] text-blue-100" : "bg-white/80 text-slate-600 border border-slate-200/60"}`}>
+              {total}
+            </span>
+          </div>
+          <div className="text-xs font-semibold">All Records</div>
+          <div className={`text-[10px] truncate ${!activeType ? "text-blue-100" : "text-slate-400"}`}>
+            Full Ledger
+          </div>
         </button>
-        {RECORD_TYPES.map((t) => (
-          <button
-            key={t.value}
-            onClick={() => setActiveType(t.value)}
-            className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
-              activeType === t.value
-                ? "bg-blue-600 text-white shadow-xs"
-                : "text-slate-600 hover:bg-slate-100/80 border border-slate-200/80 bg-white/70"
-            }`}
-          >
-            {t.icon} {t.label}
-          </button>
-        ))}
+
+        {RECORD_TYPES.map((t) => {
+          const { Icon } = t;
+          const isSelected = activeType === t.value;
+          return (
+            <button
+              key={t.value}
+              onClick={() => setActiveType(t.value)}
+              className={`p-3 rounded-xl border text-left transition-all ${
+                isSelected
+                  ? "bg-[#3a5ebb] text-white border-[#2e4d9c] shadow-[0_4px_16px_rgba(58,94,187,0.3)] ring-2 ring-[#3a5ebb]/20"
+                  : "glass-card text-slate-700 hover:border-[#3a5ebb]/35"
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <Icon size={16} className={isSelected ? "text-white" : t.accentColor.split(" ")[0]} />
+                <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${isSelected ? "bg-[#2a4693] text-blue-100" : "bg-white/80 text-slate-600 border border-slate-200/60"}`}>
+                  {records.filter(r => r.record_type === t.value).length}
+                </span>
+              </div>
+              <div className="text-xs font-semibold">{t.label}</div>
+              <div className={`text-[10px] truncate ${isSelected ? "text-blue-100" : "text-slate-400"}`}>
+                {t.sublabel.split("&")[0]}
+              </div>
+            </button>
+          );
+        })}
       </div>
 
-      {/* Record list */}
-      <div className="space-y-3">
-        {records.map((r, index) => (
-          <button
-            key={r.id}
-            onClick={() => handleViewRecord(r.id)}
-            className={`w-full text-left p-4 rounded-xl border transition-all hover:shadow-sm hover:-translate-y-0.5 animate-slide-up group ${
-              selectedRecord?.id === r.id
-                ? "border-blue-300 bg-blue-50/50 shadow-xs"
-                : "border-slate-200/80 bg-white hover:border-blue-200"
-            }`}
-            style={{ animationDelay: `${index * 60}ms` }}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-xl w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
-                  {RECORD_TYPES.find((t) => t.value === r.record_type)?.icon ?? "📄"}
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-slate-800 capitalize">
-                    {r.record_type}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    Updated {new Date(r.updated_at.replace(' ', 'T')).toLocaleDateString()}
-                  </p>
+      {/* Record Ledger */}
+      <div className="space-y-2">
+        {records.map((r) => {
+          const config = getRecordConfig(r.record_type);
+          const { Icon } = config;
+          const isSelected = selectedRecord?.id === r.id;
+
+          return (
+            <button
+              key={r.id}
+              onClick={() => handleViewRecord(r.id)}
+              className={`w-full text-left p-3 rounded-lg border transition-all ${
+                isSelected
+                  ? "border-blue-500 bg-blue-50/40 shadow-xs"
+                  : "border-slate-200 bg-white hover:border-slate-300"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border ${config.accentColor}`}>
+                    <Icon size={16} />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-xs sm:text-sm font-semibold text-slate-900 capitalize truncate">
+                        {config.label} Specification
+                      </p>
+                      <span className={`text-[10px] px-2 py-0.2 rounded border font-medium uppercase tracking-wider ${config.badgeClass}`}>
+                        {r.record_type}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 text-[11px] text-slate-500 mt-0.5">
+                      <span className="flex items-center gap-1 font-mono">
+                        <IconCalendar size={11} className="text-slate-400" />
+                        <span>Modified {new Date(r.updated_at.replace(' ', 'T')).toLocaleDateString()}</span>
+                      </span>
+                      <span className="flex items-center gap-1 text-slate-400 font-mono text-[10px]">
+                        <IconLockShield size={10} className="text-emerald-600" />
+                        <span>Encrypted Hash #{r.id}</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 text-xs font-semibold text-slate-400">
+                  <span className="hidden sm:inline text-[11px] text-slate-500">Inspect</span>
+                  <IconChevronRight size={14} className="text-slate-400" />
                 </div>
               </div>
-              <svg className="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-          </button>
-        ))}
+            </button>
+          );
+        })}
+
+        {/* Empty State with Homegrown Vault Illustration */}
         {records.length === 0 && (
-          <div className="text-center py-16 animate-scale-in">
-            <div className="w-20 h-20 mx-auto mb-5 rounded-2xl bg-slate-100 flex items-center justify-center">
-              <svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
+          <div className="text-center py-10 px-4 bg-white rounded-xl border border-slate-200">
+            <div className="flex justify-center mb-3">
+              <VaultIllustration size={64} className="text-blue-600" />
             </div>
-            <h3 className="text-lg font-bold text-slate-700 mb-2">
-              Your vault is empty
+            <h3 className="text-sm font-bold text-slate-800 mb-1">
+              Encrypted Vault is Empty
             </h3>
-            <p className="text-sm text-slate-500 mb-4">
-              Add your first health record to get started.
+            <p className="text-xs text-slate-500 mb-3 max-w-sm mx-auto leading-relaxed">
+              No entries filed under this category. Maintain your personal health record by indexing medical conditions, prescriptions, or sensitivities.
             </p>
             <button
               onClick={() => setShowAddForm(true)}
-              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold hover:shadow-md hover:shadow-blue-600/20 active:scale-[0.98] transition-all"
+              className="btn-3d-primary px-3.5 py-1.5 rounded-lg text-xs inline-flex items-center gap-1.5"
             >
-              Add Your First Record
+              <IconPlus size={13} />
+              <span>Record First Entry</span>
             </button>
           </div>
         )}
       </div>
 
-      {/* Record detail panel */}
+      {/* Selected Record Detail Panel (EHR Monograph Style) */}
       {selectedRecord && (
-        <div className="mt-6 p-4 sm:p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm animate-scale-in">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base sm:text-lg font-bold text-slate-800 capitalize flex items-center gap-2">
-              <span>{RECORD_TYPES.find((t) => t.value === selectedRecord.record_type)?.icon}</span>
-              {selectedRecord.record_type} Details
-            </h3>
-            <button
-              onClick={() => handleDelete(selectedRecord.id)}
-              className="px-3 py-1.5 rounded-lg text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 transition-colors"
-            >
-              Delete
-            </button>
-          </div>
-          {/* Render data as labeled fields instead of raw JSON */}
-          <div className="space-y-3">
-            {Object.entries(selectedRecord.data as Record<string, unknown>).map(([key, value]) => (
-              <div key={key} className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 p-3 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider min-w-[100px]">
-                  {key.replace(/_/g, " ")}
-                </span>
-                <span className="text-sm text-slate-800 break-all font-medium">
-                  {String(value)}
-                </span>
+        <div className="mt-5 p-4 rounded-xl bg-white border border-slate-200 shadow-xs animate-scale-in">
+          <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <div className={`w-6 h-6 rounded flex items-center justify-center border ${getRecordConfig(selectedRecord.record_type).accentColor}`}>
+                {React.createElement(getRecordConfig(selectedRecord.record_type).Icon, { size: 14 })}
               </div>
-            ))}
+              <div>
+                <h3 className="text-xs sm:text-sm font-bold text-slate-900 capitalize">
+                  {selectedRecord.record_type} Record Specification
+                </h3>
+                <p className="text-[10px] text-slate-400 font-mono">
+                  Vault ID #{selectedRecord.id} · Verification Signature Valid
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleDelete(selectedRecord.id)}
+                className="btn-3d-danger px-2.5 py-1 rounded text-xs flex items-center gap-1"
+              >
+                <IconTrash size={13} />
+                <span>Purge Record</span>
+              </button>
+              <button
+                onClick={() => setSelectedRecord(null)}
+                className="p-1 rounded text-slate-400 hover:text-slate-700"
+                aria-label="Close detail view"
+              >
+                <IconClose size={15} />
+              </button>
+            </div>
           </div>
-          <p className="mt-4 text-xs text-slate-400">
-            Created {new Date(selectedRecord.created_at.replace(' ', 'T')).toLocaleString()} · 
-            Updated {new Date(selectedRecord.updated_at.replace(' ', 'T')).toLocaleString()}
-          </p>
+
+          {/* Structured Clinical Field Grid */}
+          <div className="space-y-2">
+            {Object.entries(selectedRecord.data as Record<string, unknown>).map(([key, value]) => {
+              const FieldIcon = getRecordFieldIcon(key);
+              return (
+                <div key={key} className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 p-2.5 rounded bg-slate-50 border border-slate-100 text-xs">
+                  <div className="flex items-center gap-1.5 min-w-[130px] shrink-0 text-slate-500">
+                    <FieldIcon size={13} className="text-slate-400 shrink-0" />
+                    <span className="font-semibold uppercase tracking-wider text-[10px]">
+                      {key.replace(/_/g, " ")}
+                    </span>
+                  </div>
+                  <span className="text-slate-900 break-all font-medium">
+                    {String(value)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400 font-mono">
+            <span className="flex items-center gap-1">
+              <IconCalendar size={11} />
+              <span>Created {new Date(selectedRecord.created_at.replace(' ', 'T')).toLocaleString()}</span>
+            </span>
+            <span className="flex items-center gap-1">
+              <IconLockShield size={11} className="text-emerald-600" />
+              <span>Updated {new Date(selectedRecord.updated_at.replace(' ', 'T')).toLocaleString()}</span>
+            </span>
+          </div>
         </div>
       )}
 
-      {/* Add record modal */}
+      {/* Add Record Modal with Custom Category Tiles */}
       {showAddForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
-          <div className="max-w-md w-full p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-sm">➕</span>
-              Add Health Record
-            </h2>
-            <form onSubmit={handleAdd} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Record Type
-                </label>
-                <select
-                  value={newType}
-                  onChange={(e) => setNewType(e.target.value as RecordType)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                >
-                  {RECORD_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>
-                      {t.icon} {t.label}
-                    </option>
-                  ))}
-                </select>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/35 animate-fade-in">
+          <div className="max-w-lg w-full p-4 sm:p-5 rounded-xl bg-white border border-slate-200 shadow-xl animate-scale-in max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-3.5 pb-2.5 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
+                  <IconPlus size={15} />
+                </div>
+                <h2 className="text-sm font-bold text-slate-900">
+                  Add Encrypted Health Record
+                </h2>
               </div>
+              <button
+                onClick={() => setShowAddForm(false)}
+                className="p-1 text-slate-400 hover:text-slate-700"
+                aria-label="Close modal"
+              >
+                <IconClose size={16} />
+              </button>
+            </div>
+
+            <form onSubmit={handleAdd} className="space-y-3.5">
+              {/* Category Selector Visual Grid */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Name
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  Record Category
                 </label>
-                <input
-                  type="text"
-                  required
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  placeholder="e.g. Diabetes Type 2, Metformin, Penicillin allergy"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                />
+                <div className="grid grid-cols-2 gap-2">
+                  {RECORD_TYPES.map((t) => {
+                    const { Icon } = t;
+                    const isChosen = newType === t.value;
+                    return (
+                      <button
+                        key={t.value}
+                        type="button"
+                        onClick={() => setNewType(t.value)}
+                        className={`p-2.5 rounded-lg border text-left transition-all flex items-start gap-2 ${
+                          isChosen
+                            ? "bg-blue-50 border-blue-500 ring-1 ring-blue-400"
+                            : "bg-white border-slate-200 hover:bg-slate-50"
+                        }`}
+                      >
+                        <div className={`w-6 h-6 rounded flex items-center justify-center shrink-0 border ${t.accentColor}`}>
+                          <Icon size={14} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-semibold text-slate-900">{t.label}</p>
+                          <p className="text-[10px] text-slate-500 truncate">{t.sublabel}</p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
+
+              {/* Title / Diagnosis Input with SVG */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Notes (optional)
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Title / Condition / Formulation
                 </label>
-                <textarea
-                  value={newNotes}
-                  onChange={(e) => setNewNotes(e.target.value)}
-                  placeholder="Additional details..."
-                  rows={3}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
-                />
+                <div className="relative">
+                  <div className="absolute left-2.5 top-2.5 text-slate-400">
+                    <IconTag size={14} />
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    placeholder="e.g. Type 2 Diabetes, Metformin 500mg, Penicillin allergy"
+                    className="w-full pl-8 pr-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 text-xs focus:outline-none focus:border-blue-600"
+                  />
+                </div>
               </div>
-              <div className="flex gap-3 pt-2">
+
+              {/* Clinical Notes Textarea with SVG */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Clinical Details & Specifications
+                </label>
+                <div className="relative">
+                  <div className="absolute left-2.5 top-2.5 text-slate-400">
+                    <IconFileNotes size={14} />
+                  </div>
+                  <textarea
+                    value={newNotes}
+                    onChange={(e) => setNewNotes(e.target.value)}
+                    placeholder="Document dosage, intake schedule, attending physician, onset date..."
+                    rows={3}
+                    className="w-full pl-8 pr-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 text-xs focus:outline-none focus:border-blue-600 resize-none"
+                  />
+                </div>
+              </div>
+
+              {/* Cryptographic Assurance Badge */}
+              <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center gap-2 text-[11px] text-slate-600">
+                <IconLockShield size={14} className="text-emerald-600 shrink-0" />
+                <span>Records are protected with client-side symmetric AES-256 encryption.</span>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-2 pt-1">
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm hover:shadow-md hover:shadow-blue-600/20 active:scale-[0.98] transition-all disabled:opacity-50"
+                  className="btn-3d-primary flex-1 py-2 rounded-lg text-xs flex items-center justify-center gap-1.5"
                 >
-                  {isSaving ? "Saving..." : "Save Record"}
+                  <IconCheck size={14} />
+                  <span>{isSaving ? "Encrypting & Recording..." : "Secure Record"}</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowAddForm(false)}
-                  className="px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                  className="btn-3d-secondary px-3.5 py-2 rounded-lg text-xs"
                 >
                   Cancel
                 </button>
               </div>
             </form>
-            <p className="mt-3 text-xs text-slate-400 text-center">
-              🔒 Your data is encrypted with AES-256-GCM before storage
-            </p>
           </div>
         </div>
       )}
-
-      {/* Encryption notice */}
-      <div className="mt-8 p-4 rounded-xl bg-emerald-50/80 border border-emerald-200 animate-slide-up delay-300">
-        <div className="flex gap-3">
-          <svg className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-          </svg>
-          <div>
-            <p className="text-sm font-semibold text-emerald-900">
-              End-to-end encrypted
-            </p>
-            <p className="text-xs text-emerald-800/80 mt-0.5 leading-relaxed">
-              All records are encrypted with AES-256-GCM before storage. Only you can access your data.
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

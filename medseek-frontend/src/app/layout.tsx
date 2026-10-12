@@ -2,10 +2,11 @@ import type { Metadata, Viewport } from "next";
 import { Roboto } from "next/font/google";
 import Link from "next/link";
 import NavAuthLinks from "@/components/NavAuthLinks";
+import { MedSeekLogo, IconWarning } from "@/components/icons";
 import "./globals.css";
 
 const roboto = Roboto({
-  weight: ["300", "400", "500", "700"],
+  weight: ["400", "500", "700"],
   subsets: ["latin"],
   display: "swap",
   variable: "--font-roboto",
@@ -19,17 +20,17 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "MedSeek — Symptom Search Engine",
+    default: "MedSeek — Clinical Diagnostic Search",
     template: "%s | MedSeek",
   },
   description:
-    "Search for possible conditions based on your symptoms. MedSeek uses advanced ranking algorithms to match your symptoms with diseases, highlighting urgent conditions you shouldn't ignore.",
+    "Clinical decision support and differential symptom diagnosis engine for patients and healthcare providers.",
   keywords: [
     "symptom checker",
+    "clinical differential",
     "disease search",
-    "medical symptoms",
-    "health search engine",
-    "symptom diagnosis",
+    "medical diagnosis engine",
+    "triage urgency",
   ],
 };
 
@@ -40,62 +41,46 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${roboto.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-slate-50 text-slate-800 overflow-x-hidden">
-        {/* Header */}
-        <div className="sticky top-2 sm:top-4 z-50 px-3 sm:px-6 pointer-events-none flex justify-center w-full">
-          <header className="pointer-events-auto w-full max-w-5xl rounded-2xl border border-white/60 bg-white/40 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-all duration-500 hover:shadow-[0_8px_32px_rgba(0,0,0,0.12)] hover:bg-white/50 relative">
-            <div className="px-3.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
-              <Link
-                href="/"
-                className="flex items-center gap-2 sm:gap-2.5 group shrink-0"
-                id="header-logo"
-              >
-                {/* Logo icon */}
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-600 flex items-center justify-center shadow-md shadow-blue-600/20 group-hover:shadow-lg group-hover:shadow-blue-600/30 group-hover:-translate-y-0.5 transition-all duration-300">
-                  <svg
-                    className="w-4 h-4 sm:w-5 sm:h-5 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2.5}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                </div>
-                <span className="text-lg sm:text-xl font-bold text-blue-600 group-hover:text-blue-700 transition-colors">
+      <body className="min-h-full flex flex-col bg-[#fff8eb] text-slate-900 overflow-x-hidden relative selection:bg-[#3a5ebb]/20 selection:text-[#1e336d]">
+        {/* Header - Frosted Optical Glass Command Bar */}
+        <header className="sticky top-0 z-50 w-full glass-header">
+          <div className="max-w-6xl mx-auto px-3.5 sm:px-6 h-13 sm:h-14 flex items-center justify-between">
+            <Link
+              href="/"
+              className="flex items-center gap-2.5 group shrink-0"
+              id="header-logo"
+            >
+              <MedSeekLogo size={28} className="text-[#3a5ebb] group-hover:opacity-90 transition-opacity" />
+              <div className="flex flex-col">
+                <span className="text-base sm:text-lg font-bold tracking-tight text-slate-900 leading-none">
                   MedSeek
                 </span>
-              </Link>
+                <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-500 leading-none mt-0.5">
+                  Clinical Diagnostics
+                </span>
+              </div>
+            </Link>
 
-              <nav className="flex items-center text-sm">
-                <NavAuthLinks />
-              </nav>
-            </div>
-          </header>
-        </div>
+            <nav className="flex items-center text-sm">
+              <NavAuthLinks />
+            </nav>
+          </div>
+        </header>
 
-        {/* Main content */}
+        {/* Main Content */}
         <main className="flex-1 flex flex-col">{children}</main>
 
-        {/* Footer */}
-        <footer className="border-t border-slate-200/80 bg-white/60 backdrop-blur-md py-6 relative">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-              <p className="text-xs text-slate-500">
-                © {new Date().getFullYear()} MedSeek. For informational purposes only.
-              </p>
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50/80 border border-amber-200 text-xs text-amber-800 font-medium">
-                <span>⚠️</span>
-                <span>Always consult a healthcare professional for medical advice.</span>
-              </div>
+        {/* Footer - Warm Frosted Glass Baseline */}
+        <footer className="border-t border-[#e2dcd0]/80 bg-[#fff8eb]/85 backdrop-blur-md py-4 sm:py-5">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+            <p>
+              © {new Date().getFullYear()} MedSeek Systems. Clinical decision support.
+            </p>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md glass-chip text-slate-700">
+              <IconWarning size={14} className="text-amber-600 shrink-0" />
+              <span>For reference only. Not a replacement for professional physician consultation.</span>
             </div>
-          </div>
-          <div className="mt-3 sm:mt-0 sm:absolute sm:bottom-2 sm:right-4 text-center sm:text-right text-xs text-slate-400">
-            v1.1
+            <span className="text-slate-400 font-mono text-[11px]">v1.2</span>
           </div>
         </footer>
       </body>

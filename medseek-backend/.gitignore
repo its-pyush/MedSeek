@@ -25,6 +25,8 @@ coverage/
 
 # Raw datasets (downloaded separately, not committed)
 data/kaggle/
+data/mayo/
+
 
 # Logs
 *.log

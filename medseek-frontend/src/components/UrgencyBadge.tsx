@@ -1,30 +1,45 @@
 import React from "react";
+import {
+  IconUrgencyEmergency,
+  IconUrgencyHigh,
+  IconUrgencyModerate,
+  IconUrgencyLow,
+} from "./icons";
 
-type UrgencyLevel = "low" | "moderate" | "high" | "emergency";
+export type UrgencyLevel = "low" | "moderate" | "high" | "emergency";
 
 const urgencyConfig: Record<
   UrgencyLevel,
-  { label: string; className: string; dotColor: string }
+  {
+    label: string;
+    badgeClass: string;
+    iconClass: string;
+    Icon: React.ComponentType<{ size?: number; className?: string }>;
+  }
 > = {
   low: {
-    label: "Low",
-    className: "bg-emerald-50 text-emerald-800 border border-emerald-200/80",
-    dotColor: "bg-emerald-500",
+    label: "Low Priority",
+    badgeClass: "bg-emerald-50/90 text-emerald-800 border-emerald-300",
+    iconClass: "text-emerald-700",
+    Icon: IconUrgencyLow,
   },
   moderate: {
     label: "Moderate",
-    className: "bg-amber-50 text-amber-800 border border-amber-200/80",
-    dotColor: "bg-amber-500",
+    badgeClass: "bg-amber-50/90 text-amber-800 border-amber-300",
+    iconClass: "text-amber-700",
+    Icon: IconUrgencyModerate,
   },
   high: {
-    label: "High",
-    className: "bg-orange-50 text-orange-800 border border-orange-200/80",
-    dotColor: "bg-orange-500",
+    label: "Urgent",
+    badgeClass: "bg-orange-50/90 text-orange-900 border-orange-300",
+    iconClass: "text-orange-700",
+    Icon: IconUrgencyHigh,
   },
   emergency: {
-    label: "Emergency",
-    className: "bg-red-50 text-red-800 border border-red-200/80",
-    dotColor: "bg-red-500",
+    label: "Critical",
+    badgeClass: "bg-red-50 text-red-900 border-red-300 font-bold",
+    iconClass: "text-red-700",
+    Icon: IconUrgencyEmergency,
   },
 };
 
@@ -35,35 +50,17 @@ interface UrgencyBadgeProps {
 
 export default function UrgencyBadge({ level, size = "sm" }: UrgencyBadgeProps) {
   const config = urgencyConfig[level] || urgencyConfig.low;
-  const sizeClasses =
-    size === "sm" ? "px-2.5 py-0.5 text-xs" : "px-3 py-1 text-sm";
+  const { Icon } = config;
+  const isSm = size === "sm";
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 font-semibold rounded-full ${sizeClasses} ${config.className}`}
+      className={`inline-flex items-center gap-1.5 rounded border tracking-tight font-medium ${
+        isSm ? "px-2 py-0.5 text-[11px]" : "px-2.5 py-1 text-xs"
+      } ${config.badgeClass}`}
     >
-      {/* Status dot with pulse for emergency */}
-      <span className="relative flex h-2 w-2">
-        {(level === "emergency" || level === "high") && (
-          <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${config.dotColor} opacity-75`} />
-        )}
-        <span className={`relative inline-flex rounded-full h-2 w-2 ${config.dotColor}`} />
-      </span>
-      {level === "emergency" && (
-        <svg
-          className="w-3 h-3"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-          aria-hidden="true"
-        >
-          <path
-            fillRule="evenodd"
-            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-            clipRule="evenodd"
-          />
-        </svg>
-      )}
-      {config.label}
+      <Icon size={isSm ? 12 : 14} className={config.iconClass} />
+      <span>{config.label}</span>
     </span>
   );
 }

@@ -4,6 +4,8 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { loginApi } from "@/lib/auth";
+import { IconLogin, IconWarning, IconArrowLeft } from "@/components/icons";
+import Threads from "@/components/Threads";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,60 +23,59 @@ export default function LoginPage() {
       await loginApi(email, password);
       router.push("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : "Authentication failed");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Background orbs */}
-      <div className="absolute top-1/4 left-1/3 w-80 h-80 bg-blue-400/10 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/4 right-1/3 w-64 h-64 bg-emerald-400/10 rounded-full blur-3xl animate-float-delayed" />
+    <div className="min-h-[75vh] flex items-center justify-center px-4 py-8 relative overflow-hidden">
+      {/* Background Animated Threads Canvas */}
+      <div className="absolute inset-0 z-0 pointer-events-auto">
+        <Threads
+          color={[0.23, 0.37, 0.73]}
+          amplitude={1.1}
+          distance={0.15}
+          enableMouseInteraction={false}
+        />
+      </div>
 
-      <div className="w-full max-w-md relative animate-scale-in">
-        {/* Glass card */}
-        <div className="p-6 sm:p-8 rounded-2xl sm:rounded-3xl bg-white/80 backdrop-blur-xl border border-slate-200/80 shadow-xl shadow-blue-500/5">
+      {/* Ambient optical diffusion orbs */}
+      <div className="absolute top-[20%] left-[30%] w-72 h-72 rounded-full bg-[#fed7aa]/25 blur-[80px] pointer-events-none z-0" />
+      <div className="absolute bottom-[20%] right-[30%] w-80 h-80 rounded-full bg-[#3a5ebb]/10 blur-[90px] pointer-events-none z-0" />
+
+      <div className="w-full max-w-sm relative z-10">
+        {/* Optical Glass Card */}
+        <div className="p-6 sm:p-7 rounded-2xl glass-panel shadow-lg">
           {/* Header */}
-          <div className="text-center mb-6 sm:mb-8">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-3 sm:mb-4 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/20 text-white animate-float">
-              <svg
-                className="w-6 h-6 sm:w-7 sm:h-7 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
+          <div className="text-center mb-5">
+            <div className="w-11 h-11 mx-auto mb-3 rounded-xl glass-chip flex items-center justify-center text-[#3a5ebb] shadow-xs">
+              <IconLogin size={20} />
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-800">
-              Welcome back
+            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900">
+              Clinical Portal Sign In
             </h1>
-            <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-slate-500">
-              Sign in to access your health dashboard
+            <p className="mt-1 text-xs text-slate-500">
+              Access your encrypted health profile and consultations
             </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-3.5">
             {error && (
-              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm animate-shake">
-                {error}
+              <div className="p-2.5 rounded-lg bg-red-50/90 backdrop-blur-xs border border-red-200 text-red-700 text-xs flex items-center gap-2 animate-shake">
+                <IconWarning size={14} className="shrink-0" />
+                <span>{error}</span>
               </div>
             )}
 
-            <div className="animate-slide-up delay-100">
+            <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-slate-700 mb-1.5"
+                className="block text-xs font-semibold text-slate-700 mb-1"
               >
-                Email address
+                Email Address
               </label>
               <input
                 id="email"
@@ -82,16 +83,16 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-base sm:text-sm"
+                placeholder="name@institution.com"
+                className="w-full px-3 py-2 rounded-lg border border-slate-300/80 bg-white/80 backdrop-blur-xs text-slate-800 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#3a5ebb] focus:ring-2 focus:ring-[#3a5ebb]/15 transition-all"
                 autoComplete="email"
               />
             </div>
 
-            <div className="animate-slide-up delay-200">
+            <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-slate-700 mb-1.5"
+                className="block text-xs font-semibold text-slate-700 mb-1"
               >
                 Password
               </label>
@@ -102,52 +103,43 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-base sm:text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-slate-300/80 bg-white/80 backdrop-blur-xs text-slate-800 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#3a5ebb] focus:ring-2 focus:ring-[#3a5ebb]/15 transition-all"
                 autoComplete="current-password"
                 minLength={8}
               />
             </div>
 
-            <div className="animate-slide-up delay-300">
+            <div className="pt-1">
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-md shadow-blue-600/20 hover:shadow-lg hover:shadow-blue-600/30 hover:scale-[1.01] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-3d-primary w-full py-2 px-4 rounded-lg text-xs"
               >
-                {isLoading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
-                    Signing in...
-                  </span>
-                ) : (
-                  "Sign in"
-                )}
+                {isLoading ? "Authenticating..." : "Sign In to Portal"}
               </button>
             </div>
           </form>
 
-          {/* Footer */}
-          <p className="mt-6 text-center text-sm text-slate-500">
-            Don&apos;t have an account?{" "}
+          {/* Footer Navigation */}
+          <p className="mt-4 text-center text-xs text-slate-500 pt-3 border-t border-slate-200/60">
+            Need to establish an account?{" "}
             <Link
               href="/signup"
-              className="font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+              className="font-semibold text-[#3a5ebb] hover:text-[#2a4693] hover:underline"
             >
-              Create one
+              Register
             </Link>
           </p>
         </div>
 
-        {/* Back to search */}
-        <p className="mt-5 text-center text-sm">
+        {/* Back Link */}
+        <p className="mt-4 text-center text-xs">
           <Link
             href="/"
-            className="text-slate-500 hover:text-blue-600 font-medium transition-colors"
+            className="text-slate-500 hover:text-slate-800 font-medium transition-colors inline-flex items-center gap-1"
           >
-            ← Back to symptom search
+            <IconArrowLeft size={12} />
+            <span>Return to diagnostic search</span>
           </Link>
         </p>
       </div>

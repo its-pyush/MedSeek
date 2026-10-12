@@ -15,11 +15,15 @@ export interface AuditEntry {
 
 export async function getAuditLog(options: {
   action?: string;
+  startDate?: string;
+  endDate?: string;
   limit?: number;
   offset?: number;
 } = {}): Promise<{ entries: AuditEntry[]; total: number }> {
   const params = new URLSearchParams();
   if (options.action) params.set("action", options.action);
+  if (options.startDate) params.set("start_date", options.startDate);
+  if (options.endDate) params.set("end_date", options.endDate);
   params.set("limit", String(options.limit ?? 50));
   params.set("offset", String(options.offset ?? 0));
 
