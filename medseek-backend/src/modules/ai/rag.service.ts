@@ -184,7 +184,7 @@ export async function retrieve(
   patientId: number,
   question: string,
   k = 5,
-  minSimilarity = 0.35
+  minSimilarity = 0.25
 ): Promise<RetrievedChunk[]> {
   if (!question || !question.trim()) {
     return [];
