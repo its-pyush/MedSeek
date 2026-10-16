@@ -46,7 +46,6 @@ coverage/
 # Local notes & documentation
 CLAUDE.md
 claude.md
-RESUME_HIGHLIGHTS.md
 
 # Raw datasets (downloaded separately, not committed)
 medseek-backend/data/kaggle/

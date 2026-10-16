@@ -1,16 +1,15 @@
 /**
- * AI Chat Service — context-aware health AI powered by Deepseek.
+ * AI Chat Service — context-aware health AI powered by NVIDIA NIM & pgvector RAG.
  *
- * Uses RAG (Retrieval-Augmented Generation) to ground responses
- * in the patient's stored health profile and conditions.
+ * Uses RAG (Retrieval-Augmented Generation) grounded in the patient's
+ * personal health records and profile via 1024-dimension pgvector embeddings.
  */
-
-import OpenAI from "openai";
 
 import { env } from "../../config/env.js";
 import { query } from "../../db/helpers.js";
-import { notFound, AppError } from "../../utils/AppError.js";
-import { decrypt } from "../vault/encryption.js";
+import { notFound } from "../../utils/AppError.js";
+import { getNimClient, withRetry } from "../../services/ai/nim.js";
+import { retrieve, RetrievedChunk } from "./rag.service.js";
 import { checkEscalation, getRecurringDisclaimer, EscalationResult } from "./escalation.js";
 
 // ─── Types ───────────────────────────────────────────────────────
@@ -30,113 +29,48 @@ export interface ChatSession {
   started_at: string;
 }
 
+export interface CitedSource {
+  source_id: number;
+  source_type: string;
+}
+
 export interface AIChatResponse {
   message: ChatMessage;
   escalation: EscalationResult | null;
   disclaimer: string;
+  sources?: CitedSource[];
 }
 
-// ─── Deepseek Client ─────────────────────────────────────────────
-
-function getDeepseekClient(): OpenAI {
-  const apiKey = env.DEEPSEEK_API_KEY;
-  if (!apiKey) {
-    throw new AppError("DEEPSEEK_API_KEY is not configured", 503);
-  }
-  return new OpenAI({
-    apiKey,
-    baseURL: env.DEEPSEEK_BASE_URL,
-  });
-}
-
-// ─── RAG Context Building ────────────────────────────────────────
+// ─── Reasoning Stripping ──────────────────────────────────────────
 
 /**
- * Build the patient context string from their profile and health records.
- * This becomes the system prompt grounding for the AI.
+ * Strip reasoning blocks (<think>...</think>) emitted by reasoning models
+ * such as DeepSeek-R1 before saving to database and returning to the client.
  */
-async function buildPatientContext(patientId: number): Promise<{
-  context: string;
-  citedRecordIds: number[];
-}> {
-  // Fetch patient profile
-  const profileResult = await query<{
-    email: string;
-    age: number | null;
-    sex: string | null;
-    pregnancy_status: boolean | null;
-    existing_conditions: string[];
-  }>(
-    `SELECT p.email, pp.age, pp.sex, pp.pregnancy_status,
-            COALESCE(pp.existing_conditions, '[]'::jsonb) AS existing_conditions
-     FROM patients p
-     LEFT JOIN patient_profiles pp ON pp.patient_id = p.id
-     WHERE p.id = $1`,
-    [patientId]
-  );
-
-  if (profileResult.rows.length === 0) {
-    return { context: "No patient profile available.", citedRecordIds: [] };
-  }
-
-  const profile = profileResult.rows[0];
-  const citedRecordIds: number[] = [];
-
-  let context = "## Patient Profile\n";
-  if (profile.age) context += `- Age: ${profile.age}\n`;
-  if (profile.sex) context += `- Sex: ${profile.sex}\n`;
-  if (profile.pregnancy_status) context += `- Currently pregnant: Yes\n`;
-  if (profile.existing_conditions && profile.existing_conditions.length > 0) {
-    context += `- Existing conditions: ${profile.existing_conditions.join(", ")}\n`;
-  }
-
-  // Fetch recent health records and decrypt for RAG context
-  const recordsResult = await query<{ id: number; record_type: string; encrypted_data: Buffer }>(
-    `SELECT id, record_type, encrypted_data FROM health_records
-     WHERE patient_id = $1
-     ORDER BY updated_at DESC LIMIT 20`,
-    [patientId]
-  );
-
-  if (recordsResult.rows.length > 0) {
-    context += "\n## Health Records on File\n";
-    for (const record of recordsResult.rows) {
-      citedRecordIds.push(record.id);
-      try {
-        const decrypted = decrypt(record.encrypted_data);
-        const data = JSON.parse(decrypted);
-        const summary = Object.entries(data)
-          .map(([key, value]) => `${key}: ${value}`)
-          .join(", ");
-        context += `- ${record.record_type} (ID: ${record.id}): ${summary}\n`;
-      } catch {
-        // Fallback if decryption fails (e.g., ENCRYPTION_KEY changed)
-        context += `- ${record.record_type} record (ID: ${record.id}) [unable to decrypt]\n`;
-      }
-    }
-  }
-
-  return { context, citedRecordIds };
+export function stripThinkTags(text: string): string {
+  if (!text) return "";
+  return text
+    .replace(/<think>[\s\S]*?<\/think>/gi, "")
+    .replace(/<think>[\s\S]*$/gi, "")
+    .trim();
 }
 
 // ─── System Prompt ───────────────────────────────────────────────
 
 function buildSystemPrompt(patientContext: string): string {
-  return `You are MedSeek Health Assistant, an AI health advisor that provides personalized health information grounded in the patient's own medical history.
+  return `You are MedSeek Health Assistant, an AI health advisor providing personalized, evidence-grounded health information.
 
-CRITICAL RULES:
-1. You are NOT a doctor. Always remind the user to consult a healthcare professional for medical decisions.
-2. NEVER diagnose conditions definitively. Use language like "this could indicate", "you may want to discuss with your doctor".
-3. When referencing the patient's data, cite what information you're using.
-4. If symptoms suggest an emergency, IMMEDIATELY direct the user to emergency services.
-5. Do not prescribe medications or recommend specific dosages.
-6. If you don't have enough information, ask clarifying questions.
-7. Keep responses concise but thorough — avoid walls of text.
+CRITICAL CLINICAL & COMMUNICATION RULES:
+1. You are NOT a doctor. NEVER provide definitive medical diagnoses or prescribe specific medications or dosages.
+2. Ground all statements about the patient's personal medical history STRICTLY in the PATIENT CONTEXT below.
+3. When referencing facts from the patient's records, cite the corresponding source using [n] (e.g. [1], [2]).
+4. If the patient context has no relevant information for the patient's question, state explicitly that the patient's records do not contain this information (e.g., "Your records do not indicate...", "Based on your medical history on file, there is no mention of..."). Do not fabricate or assume medical history.
+5. If symptoms suggest a severe or life-threatening emergency, IMMEDIATELY advise the user to contact emergency services (112/911) or visit the nearest emergency room.
+6. Use cautious, empathetic, and objective language: "this could indicate", "you may want to discuss with your healthcare provider".
+7. Keep responses concise, clear, and focused. Conclude with safe, practical next steps.
 
-PATIENT CONTEXT (use this to personalize your responses):
-${patientContext}
-
-Always end your response by suggesting relevant next steps (see a doctor, monitor symptoms, etc.).`;
+PATIENT CONTEXT:
+${patientContext}`;
 }
 
 // ─── Chat Session Management ─────────────────────────────────────
@@ -210,16 +144,17 @@ export async function getSessionWithMessages(
 // ─── Send Message ────────────────────────────────────────────────
 
 /**
- * Send a user message and get an AI response.
+ * Send a user message and get an AI response grounded in the patient's vault.
  *
  * Flow:
- * 1. Check for red-flag escalation patterns
- * 2. If escalation triggered → return escalation message (hard stop)
- * 3. Build patient context (RAG retrieval)
- * 4. Build conversation history
- * 5. Call Deepseek API
- * 6. Store both user message and AI response
- * 7. Return response with disclaimer
+ * 1. Check for red-flag escalation patterns (HARD STOP — runs before retrieval or AI)
+ * 2. Store user message in history
+ * 3. If escalated → store & return emergency alert immediately
+ * 4. Retrieve top-k relevant health records via pgvector (cosine similarity)
+ * 5. Build citation-indexed patient context (degrades gracefully if retrieval fails)
+ * 6. Call NVIDIA NIM chat model with temperature ~0.2
+ * 7. Strip <think>...</think> reasoning blocks from response
+ * 8. Return response alongside cited sources and medical disclaimer
  */
 export async function sendMessage(
   sessionId: number,
@@ -236,7 +171,7 @@ export async function sendMessage(
     throw notFound("Chat session not found");
   }
 
-  // 1. Check for escalation
+  // 1. Check for escalation BEFORE any retrieval or LLM call
   const escalation = checkEscalation(userContent);
 
   // 2. Store user message
@@ -247,7 +182,7 @@ export async function sendMessage(
     [sessionId, userContent]
   );
 
-  // 3. If escalation triggered, return escalation response without calling AI
+  // 3. Hard-stop escalation: return alert without invoking retrieval or AI
   if (escalation.triggered) {
     const escalationContent = `🚨 **${escalation.level === "emergency" ? "EMERGENCY" : "URGENT"} ALERT**\n\n${escalation.message}\n\n${getRecurringDisclaimer()}`;
 
@@ -262,14 +197,53 @@ export async function sendMessage(
       message: aiMsgResult.rows[0],
       escalation,
       disclaimer: getRecurringDisclaimer(),
+      sources: [],
     };
   }
 
-  // 4. Build patient context (RAG)
-  const { context: patientContext, citedRecordIds } =
-    await buildPatientContext(patientId);
+  // 4. Retrieve relevant records via pgvector (RAG) with graceful degradation
+  let retrievedChunks: RetrievedChunk[] = [];
+  let retrievalFailed = false;
 
-  // 5. Fetch conversation history (last 20 messages for context window)
+  try {
+    retrievedChunks = await retrieve(patientId, userContent, 5);
+  } catch (error) {
+    retrievalFailed = true;
+    console.error(
+      "RAG retrieval failed, degrading gracefully:",
+      error instanceof Error ? error.message : "Unknown error"
+    );
+  }
+
+  // 5. Build patient context for system prompt
+  let patientContextText: string;
+  const citedSources: CitedSource[] = [];
+  const citedRecordIds: number[] = [];
+
+  if (retrievalFailed) {
+    patientContextText =
+      "NOTICE: The patient's personal health records could not be retrieved at this time due to a temporary service issue. " +
+      "You MUST inform the patient that their health records could not be loaded and answer using general health awareness.";
+  } else if (retrievedChunks.length === 0) {
+    patientContextText =
+      "No relevant health records or history found in the patient's vault for this query. " +
+      "Explicitly state that the patient's records do not contain information related to this question.";
+  } else {
+    patientContextText = retrievedChunks
+      .map((chunk, index) => {
+        citedSources.push({
+          source_id: chunk.source_id,
+          source_type: chunk.source_type,
+        });
+        if (chunk.source_type !== "profile" && !citedRecordIds.includes(chunk.source_id)) {
+          citedRecordIds.push(chunk.source_id);
+        }
+        return `[${index + 1}] (${chunk.source_type.toUpperCase()} - Record ID: ${chunk.source_id}): ${chunk.text}`;
+      })
+      .join("\n");
+  }
+
+  // 6. Fetch conversation history (last 20 messages)
   const historyResult = await query<{ role: string; content: string }>(
     `SELECT role, content FROM chat_messages
      WHERE session_id = $1
@@ -284,37 +258,56 @@ export async function sendMessage(
       content: m.content,
     }));
 
-  // 6. Call Deepseek API
+  // 7. Call NVIDIA NIM Chat completion
   let aiContent: string;
 
   try {
-    const client = getDeepseekClient();
-    const systemPrompt = buildSystemPrompt(patientContext);
+    const client = getNimClient();
+    const systemPrompt = buildSystemPrompt(patientContextText);
 
-    const completion = await client.chat.completions.create({
-      model: env.DEEPSEEK_MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        ...conversationHistory,
-      ],
-      max_tokens: 1024,
-      temperature: 0.7,
+    const completion = await withRetry(async () => {
+      return client.chat.completions.create({
+        model: env.LLM_MODEL,
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...conversationHistory,
+        ],
+        max_tokens: 1024,
+        temperature: 0.2,
+      });
     });
 
-    aiContent = completion.choices[0]?.message?.content ?? "I apologize, but I was unable to generate a response. Please try again.";
+    const rawResponse = completion.choices[0]?.message?.content ?? "";
+    aiContent = stripThinkTags(rawResponse);
+
+    if (!aiContent) {
+      aiContent = "I apologize, but I was unable to generate a response. Please try again.";
+    }
+
+    // Ensure graceful degradation is made clear to the patient if retrieval had failed
+    if (
+      retrievalFailed &&
+      !aiContent.toLowerCase().includes("could not be loaded") &&
+      !aiContent.toLowerCase().includes("unable to load") &&
+      !aiContent.toLowerCase().includes("unable to retrieve")
+    ) {
+      aiContent = `⚠️ *Note: Your medical records could not be retrieved at this time. The following response is based on general health information.*\n\n${aiContent}`;
+    }
   } catch (error) {
-    // Fallback if API is unavailable
-    console.error("Deepseek API error:", error);
+    console.error(
+      "NIM Chat API error:",
+      error instanceof Error ? error.message : "Service unavailable"
+    );
     aiContent =
-      "I apologize, but I'm currently unable to process your request due to a service issue. " +
+      "I apologize, but I am currently unable to process your request due to a service issue. " +
       "Please try again in a moment, or consult a healthcare professional directly if your " +
-      "concern is urgent.\n\n" + getRecurringDisclaimer();
+      "concern is urgent.";
   }
 
-  // Append disclaimer
+  // 8. Append recurring medical disclaimer
   const fullResponse = `${aiContent}\n\n---\n${getRecurringDisclaimer()}`;
 
-  // 7. Store AI response
+  // 9. Store assistant response with cited records
   const aiMsgResult = await query<ChatMessage>(
     `INSERT INTO chat_messages (session_id, role, content, cited_record_ids)
      VALUES ($1, 'assistant', $2, $3::jsonb)
@@ -326,5 +319,6 @@ export async function sendMessage(
     message: aiMsgResult.rows[0],
     escalation: null,
     disclaimer: getRecurringDisclaimer(),
+    sources: citedSources,
   };
 }

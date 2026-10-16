@@ -8,6 +8,7 @@
 import { query } from "../../db/helpers.js";
 import { notFound, badRequest } from "../../utils/AppError.js";
 import { encrypt, decrypt } from "./encryption.js";
+import { syncVaultRecord, deleteVaultRecordChunk } from "../ai/rag.service.js";
 
 // ─── Types ───────────────────────────────────────────────────────
 
@@ -143,6 +144,10 @@ export async function createRecord(
   );
 
   const row = result.rows[0];
+
+  // Hook into RAG index: sync vector chunk
+  await syncVaultRecord(patientId, row.id, recordType, data);
+
   return {
     id: row.id,
     patient_id: patientId,
@@ -164,8 +169,8 @@ export async function updateRecord(
   data: Record<string, unknown>
 ): Promise<HealthRecord> {
   // Verify ownership first
-  const check = await query<{ id: number }>(
-    `SELECT id FROM health_records WHERE id = $1 AND patient_id = $2`,
+  const check = await query<{ id: number; record_type: RecordType }>(
+    `SELECT id, record_type FROM health_records WHERE id = $1 AND patient_id = $2`,
     [recordId, patientId]
   );
 
@@ -190,6 +195,10 @@ export async function updateRecord(
   );
 
   const row = result.rows[0];
+
+  // Hook into RAG index: update vector chunk
+  await syncVaultRecord(patientId, row.id, row.record_type, data);
+
   return {
     id: row.id,
     patient_id: patientId,
@@ -217,4 +226,7 @@ export async function deleteRecord(
   if (result.rowCount === 0) {
     throw notFound("Health record not found");
   }
+
+  // Hook into RAG index: delete vector chunk
+  await deleteVaultRecordChunk(patientId, recordId);
 }

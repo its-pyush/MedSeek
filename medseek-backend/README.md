@@ -6,20 +6,20 @@ Disease search engine, health AI chatbot, and encrypted personal health data vau
 
 ```bash
 # 1. Install dependencies
-pnpm install
+npm install
 
 # 2. Configure environment
 cp .env.example .env
-# Edit .env with your Neon database connection string
+# Edit .env with your PostgreSQL database connection string
 
 # 3. Run database migrations
-pnpm migrate:up
+npm run migrate:up
 
 # 4. (Optional) Seed test data
-pnpm seed
+npm run seed
 
 # 5. Start development server
-pnpm dev
+npm run dev
 ```
 
 The server starts at `http://localhost:4000`. Verify with:
@@ -32,18 +32,18 @@ curl http://localhost:4000/health
 
 | Command | Description |
 |---|---|
-| `pnpm dev` | Start dev server with hot reload |
-| `pnpm build` | Compile TypeScript to `dist/` |
-| `pnpm start` | Run production build |
-| `pnpm test` | Run tests |
-| `pnpm test:watch` | Run tests in watch mode |
-| `pnpm lint` | Lint source files |
-| `pnpm lint:fix` | Lint and auto-fix |
-| `pnpm format` | Format with Prettier |
-| `pnpm typecheck` | Type-check without emitting |
-| `pnpm migrate:up` | Run pending migrations |
-| `pnpm migrate:down` | Rollback last migration |
-| `pnpm migrate:create` | Create a new migration file |
+| `npm run dev` | Start dev server with hot reload |
+| `npm run build` | Compile TypeScript to `dist/` |
+| `npm start` | Run production build |
+| `npm test` | Run tests |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run lint` | Lint source files |
+| `npm run lint:fix` | Lint and auto-fix |
+| `npm run format` | Format with Prettier |
+| `npm run typecheck` | Type-check without emitting |
+| `npm run migrate:up` | Run pending migrations |
+| `npm run migrate:down` | Rollback last migration |
+| `npm run migrate:create` | Create a new migration file |
 
 ## Project Structure
 

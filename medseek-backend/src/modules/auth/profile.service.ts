@@ -1,5 +1,6 @@
 import { query } from "../../db/helpers.js";
 import { notFound } from "../../utils/AppError.js";
+import { syncPatientProfile } from "../ai/rag.service.js";
 
 // ─── Types ───────────────────────────────────────────────────────
 
@@ -96,5 +97,8 @@ export async function updatePatientProfile(
     [patientId, ...values]
   );
 
-  return getPatientProfile(patientId);
+  const updatedProfile = await getPatientProfile(patientId);
+  await syncPatientProfile(patientId, updatedProfile);
+
+  return updatedProfile;
 }

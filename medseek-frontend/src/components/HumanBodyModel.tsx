@@ -27,8 +27,6 @@ import {
   SubRegion,
   RegionProxy,
   RegionSelectionPayload,
-  getActiveProxiesForMode,
-  findNearestProxy,
   getRegionProxyPoints,
   getRegionCentroid,
   createRegionGroup,
@@ -800,15 +798,6 @@ function RotatingBody({
     activePointsRef.current = activePoints;
   }, [activePoints]);
 
-  // Track responsive screen size
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
   // 1. Runtime bounding box calibration of Object_4 via new THREE.Box3().setFromObject(mesh)
   const meshBounds = useMemo(() => {
     const mesh = scene.getObjectByName("Object_4") as THREE.Mesh | undefined;
@@ -1229,7 +1218,7 @@ function RotatingBody({
     }
 
     if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") {
-      (window as any).__cameraDebug = {
+      (window as unknown as Record<string, unknown>).__cameraDebug = {
         mode,
         activeMajorId,
         isMobileView,
@@ -1374,7 +1363,7 @@ function RotatingBody({
     }
   };
 
-  const handleMeshPointerMove = (e: ThreeEvent<PointerEvent>) => {
+  const handleMeshPointerMove = () => {
     if (!selectMode || isDraggingRef.current) return;
     if (
       typeof window !== "undefined" &&

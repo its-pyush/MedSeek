@@ -6,7 +6,6 @@ import { Html } from "@react-three/drei";
 import {
   REGION_HIERARCHY,
   RegionProxy,
-  RegionVolume,
   getMajorProxies,
   getSubRegionProxies,
   getVolumeCenter,
@@ -37,14 +36,13 @@ export default function RegionDebugOverlay({
   selectedSubRegionId,
   hoveredGroupId,
 }: RegionDebugOverlayProps) {
-  if (!enabled || process.env.NODE_ENV === "production") {
-    return null;
-  }
-
   const currentView = isBackView ? "back" : "front";
 
   // Derive visible proxies based on filter mode
   const proxiesToRender = useMemo(() => {
+    if (!enabled || process.env.NODE_ENV === "production") {
+      return [];
+    }
     const list: Array<RegionProxy & { type: "major" | "sub" }> = [];
 
     if (filter === "all") {
@@ -83,7 +81,11 @@ export default function RegionDebugOverlay({
     }
 
     return list;
-  }, [filter, currentView, mode, activeMajorId]);
+  }, [enabled, filter, currentView, mode, activeMajorId]);
+
+  if (!enabled || process.env.NODE_ENV === "production") {
+    return null;
+  }
 
   return (
     <group name="RegionDebugOverlay">
