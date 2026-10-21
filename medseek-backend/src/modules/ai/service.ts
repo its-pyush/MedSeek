@@ -272,13 +272,24 @@ export async function sendMessage(
           { role: "system", content: systemPrompt },
           ...conversationHistory,
         ],
-        max_tokens: 1024,
+        max_tokens: 4096,
         temperature: 0.2,
       });
     });
 
-    const rawResponse = completion.choices[0]?.message?.content ?? "";
+    const choice = completion.choices[0]?.message;
+    const rawResponse = choice?.content ?? "";
     aiContent = stripThinkTags(rawResponse);
+
+    // Fallback: If a reasoning model exhausted tokens before emitting to content,
+    // extract drafted answer from reasoning_content if available
+    if (!aiContent && (choice as unknown as { reasoning_content?: string })?.reasoning_content) {
+      const reasoning = (choice as unknown as { reasoning_content: string }).reasoning_content;
+      const draftMatch = reasoning.match(/(?:draft|response|final answer)[\s\S]*?["“]([\s\S]*?)["”]/i);
+      if (draftMatch && draftMatch[1].trim().length > 30) {
+        aiContent = draftMatch[1].trim();
+      }
+    }
 
     if (!aiContent) {
       aiContent = "I apologize, but I was unable to generate a response. Please try again.";
