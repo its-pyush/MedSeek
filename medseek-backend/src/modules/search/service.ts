@@ -8,7 +8,10 @@ export interface DiseaseResult {
   name: string;
   description: string | null;
   urgency_level: string;
+  prevalence: string;
   score: number;
+  /** 1 = best symptom match overall, before results are grouped by risk. */
+  relevance_rank?: number;
   matched_symptoms: string[];
   total_symptoms: number;
 }
@@ -33,6 +36,9 @@ export interface DiseaseDetail {
   name: string;
   description: string | null;
   urgency_level: string;
+  prevalence: string;
+  aliases: string[];
+  source_url: string | null;
   created_at: string;
   symptoms: Array<{
     id: number;
@@ -51,15 +57,20 @@ export interface AutocompleteResult {
 
 // ─── Symptom Resolution ─────────────────────────────────────────
 
+const FUZZY_THRESHOLD = 0.3;
+
 /**
  * Resolve a user-typed symptom string to a canonical symptom ID.
  *
  * Resolution order:
  *   1. Exact match on symptoms.name
- *   2. Fuzzy match via pg_trgm similarity on symptoms.name
- *   3. Synonym lookup (exact then fuzzy) on symptom_synonyms.synonym_text
+ *   2. Exact match on symptom_synonyms.synonym_text
+ *   3. Best fuzzy (pg_trgm) match across names AND synonyms together
+ *
+ * Exact synonyms are checked before any fuzzy match so that a lay phrase we
+ * know ("head pain" → headache) is never hijacked by a look-alike name.
  */
-async function resolveSymptom(input: string): Promise<ResolvedSymptom> {
+export async function resolveSymptom(input: string): Promise<ResolvedSymptom> {
   // 1. Exact match on canonical name
   const exact = await query<{ id: number; name: string }>(
     `SELECT id, name FROM symptoms WHERE LOWER(name) = LOWER($1) LIMIT 1`,
@@ -74,25 +85,7 @@ async function resolveSymptom(input: string): Promise<ResolvedSymptom> {
     };
   }
 
-  // 2. Fuzzy match on canonical name via pg_trgm
-  const fuzzy = await query<{ id: number; name: string; sim: number }>(
-    `SELECT id, name, similarity(LOWER(name), LOWER($1)) AS sim
-     FROM symptoms
-     WHERE similarity(LOWER(name), LOWER($1)) > 0.3
-     ORDER BY sim DESC
-     LIMIT 1`,
-    [input]
-  );
-  if (fuzzy.rows.length > 0) {
-    return {
-      input,
-      matched_name: fuzzy.rows[0].name,
-      matched_id: fuzzy.rows[0].id,
-      match_type: "fuzzy",
-    };
-  }
-
-  // 3. Synonym lookup — exact
+  // 2. Exact match on a synonym
   const synExact = await query<{ symptom_id: number; name: string }>(
     `SELECT ss.symptom_id, s.name
      FROM symptom_synonyms ss
@@ -110,48 +103,143 @@ async function resolveSymptom(input: string): Promise<ResolvedSymptom> {
     };
   }
 
-  // 4. Synonym lookup — fuzzy
-  const synFuzzy = await query<{ symptom_id: number; name: string; sim: number }>(
-    `SELECT ss.symptom_id, s.name, similarity(LOWER(ss.synonym_text), LOWER($1)) AS sim
-     FROM symptom_synonyms ss
-     JOIN symptoms s ON s.id = ss.symptom_id
-     WHERE similarity(LOWER(ss.synonym_text), LOWER($1)) > 0.3
-     ORDER BY sim DESC
+  // 3. Best fuzzy match across canonical names and synonyms
+  const fuzzy = await query<{ id: number; name: string; source: "fuzzy" | "synonym"; sim: number }>(
+    `SELECT id, name, source, sim FROM (
+       SELECT s.id, s.name, 'fuzzy'::text AS source,
+              similarity(LOWER(s.name), LOWER($1)) AS sim
+       FROM symptoms s
+       UNION ALL
+       SELECT s.id, s.name, 'synonym'::text AS source,
+              similarity(LOWER(ss.synonym_text), LOWER($1)) AS sim
+       FROM symptom_synonyms ss
+       JOIN symptoms s ON s.id = ss.symptom_id
+     ) candidates
+     WHERE sim > $2
+     ORDER BY sim DESC, source ASC, name ASC
      LIMIT 1`,
-    [input]
+    [input, FUZZY_THRESHOLD]
   );
-  if (synFuzzy.rows.length > 0) {
+  if (fuzzy.rows.length > 0) {
     return {
       input,
-      matched_name: synFuzzy.rows[0].name,
-      matched_id: synFuzzy.rows[0].symptom_id,
-      match_type: "synonym",
+      matched_name: fuzzy.rows[0].name,
+      matched_id: fuzzy.rows[0].id,
+      match_type: fuzzy.rows[0].source,
     };
   }
 
-  // No match found
   return { input, matched_name: null, matched_id: null, match_type: "none" };
+}
+
+// ─── Ranking ─────────────────────────────────────────────────────
+
+/**
+ * Prior applied to each disease's score: how often the condition is seen at all.
+ * This is what stops a rare, frightening disease from outranking a common one
+ * when the symptoms are vague. A season/location factor can multiply in here later.
+ */
+export const PREVALENCE_PRIOR: Record<string, number> = {
+  very_common: 1.0,
+  common: 0.7,
+  uncommon: 0.4,
+  rare: 0.2,
+};
+
+/** Maximum number of "don't rule out" warnings shown for one search. */
+export const DONT_RULE_OUT_LIMIT = 3;
+
+export interface RankedRow {
+  id: number;
+  name: string;
+  description: string | null;
+  urgency_level: string;
+  prevalence: string;
+  /** Symptom evidence only: Σ matched weights × share of the query explained. */
+  evidence: number;
+  /** evidence × prevalence prior — the main-list ranking score. */
+  score: number;
+  match_count: number;
+  has_key: boolean;
+  matched_symptoms: string[];
+  total_symptoms: number;
+}
+
+function toResult(row: RankedRow): DiseaseResult {
+  return {
+    id: row.id,
+    name: row.name,
+    description: row.description,
+    urgency_level: row.urgency_level,
+    prevalence: row.prevalence,
+    score: row.score,
+    matched_symptoms: row.matched_symptoms,
+    total_symptoms: row.total_symptoms,
+  };
+}
+
+/**
+ * Pick the "don't rule out" warnings.
+ *
+ * Candidates are urgent conditions that did NOT make the main page. They are
+ * ranked on symptom evidence alone (no prevalence prior), because the point of
+ * this list is to surface the rare-but-dangerous option the prior pushed down.
+ * To avoid alarming people over one vague symptom, a candidate must match at
+ * least two of the entered symptoms — or, for a single-symptom search, that
+ * symptom must be a distinctive ("key") sign of the condition.
+ */
+export function selectDontRuleOut(
+  rows: RankedRow[],
+  mainIds: Set<number>,
+  querySymptomCount: number
+): RankedRow[] {
+  return rows
+    .filter((r) => !mainIds.has(r.id))
+    .filter((r) => r.urgency_level === "high" || r.urgency_level === "emergency")
+    .filter((r) => (querySymptomCount <= 1 ? r.has_key : r.match_count >= 2))
+    .sort((a, b) => b.evidence - a.evidence || a.name.localeCompare(b.name))
+    .slice(0, DONT_RULE_OUT_LIMIT);
+}
+
+/** Display order of risk tiers: lowest first. */
+export const RISK_ORDER: Record<string, number> = { low: 0, moderate: 1, high: 2, emergency: 3 };
+
+/** Stable sort by risk tier; relevance order is preserved inside each tier. */
+export function groupByRisk<T extends { urgency_level: string }>(rows: T[]): T[] {
+  return rows
+    .map((row, index) => ({ row, index }))
+    .sort(
+      (a, b) =>
+        (RISK_ORDER[a.row.urgency_level] ?? 1) - (RISK_ORDER[b.row.urgency_level] ?? 1) ||
+        a.index - b.index
+    )
+    .map((x) => x.row);
 }
 
 // ─── Search ──────────────────────────────────────────────────────
 
+export interface SearchFilters {
+  sex?: "male" | "female" | "other";
+}
+
 /**
- * Multi-symptom disease search with sf-idf weighted ranking.
+ * Multi-symptom disease search.
  *
- * Resolves each input symptom to a canonical ID, then queries
- * disease_symptoms to aggregate weighted scores per disease.
- * Returns results ranked by total weight, with a separate
- * "don't rule out" section for high-urgency matches.
+ *   score = Σ weight(disease, matched symptom)
+ *           × (idf of matched symptoms ÷ idf of all entered symptoms)
+ *           × prevalence prior
+ *
+ * The middle factor penalises diseases that explain only part of what the
+ * user entered; the prior favours common conditions.
  */
 export async function searchDiseases(
   symptoms: string[],
   limit: number,
-  offset: number
+  offset: number,
+  filters: SearchFilters = {}
 ): Promise<SearchResult> {
-  // Resolve all symptoms
   const resolved = await Promise.all(symptoms.map(resolveSymptom));
 
-  // Collect successfully matched symptom IDs (deduplicated)
   const matchedIds = [...new Set(
     resolved
       .filter((r) => r.matched_id !== null)
@@ -159,99 +247,88 @@ export async function searchDiseases(
   )];
 
   if (matchedIds.length === 0) {
-    return {
-      results: [],
-      dont_rule_out: [],
-      total: 0,
-      resolved_symptoms: resolved,
-    };
+    return { results: [], dont_rule_out: [], total: 0, resolved_symptoms: resolved };
   }
 
-  // Build the ranked disease query
-  // Uses SUM(weight) across matched symptoms, secondary sort by match count
-  const rankingQuery = `
-    WITH matched AS (
-      SELECT
-        ds.disease_id,
-        SUM(ds.weight) AS total_score,
-        COUNT(ds.symptom_id) AS match_count,
-        ARRAY_AGG(s.name ORDER BY ds.weight DESC) AS matched_symptoms
-      FROM disease_symptoms ds
-      JOIN symptoms s ON s.id = ds.symptom_id
-      WHERE ds.symptom_id = ANY($1)
-      GROUP BY ds.disease_id
-    )
-    SELECT
-      d.id,
-      d.name,
-      d.description,
-      d.urgency_level,
-      m.total_score AS score,
-      m.match_count,
-      m.matched_symptoms,
-      (SELECT COUNT(*) FROM disease_symptoms ds2 WHERE ds2.disease_id = d.id) AS total_symptoms
-    FROM matched m
-    JOIN diseases d ON d.id = m.disease_id
-    ORDER BY m.total_score DESC, m.match_count DESC, d.name ASC
-  `;
+  // Sex-specific conditions are hidden only when the caller states the other sex.
+  const sexFilter = filters.sex === "male" || filters.sex === "female" ? filters.sex : null;
 
-  const allResults = await query<{
+  const ranked = await query<{
     id: number;
     name: string;
     description: string | null;
     urgency_level: string;
-    score: number;
-    match_count: number;
+    prevalence: string;
+    evidence: string;
+    match_count: string;
+    has_key: boolean;
     matched_symptoms: string[];
     total_symptoms: string;
-  }>(rankingQuery, [matchedIds]);
+  }>(
+    `WITH q AS (
+       SELECT id, idf FROM symptoms WHERE id = ANY($1)
+     ),
+     q_total AS (
+       SELECT GREATEST(SUM(idf), 0.0001) AS total FROM q
+     ),
+     matched AS (
+       SELECT
+         ds.disease_id,
+         SUM(ds.weight)  AS base,
+         SUM(q.idf)      AS matched_idf,
+         COUNT(*)        AS match_count,
+         BOOL_OR(ds.is_key) AS has_key,
+         ARRAY_AGG(s.name ORDER BY ds.weight DESC) AS matched_symptoms
+       FROM disease_symptoms ds
+       JOIN q ON q.id = ds.symptom_id
+       JOIN symptoms s ON s.id = ds.symptom_id
+       GROUP BY ds.disease_id
+     )
+     SELECT
+       d.id, d.name, d.description, d.urgency_level, d.prevalence,
+       (m.base * (m.matched_idf / q_total.total)) AS evidence,
+       m.match_count, m.has_key, m.matched_symptoms,
+       (SELECT COUNT(*) FROM disease_symptoms ds2 WHERE ds2.disease_id = d.id) AS total_symptoms
+     FROM matched m
+     JOIN diseases d ON d.id = m.disease_id
+     CROSS JOIN q_total
+     WHERE ($2::text IS NULL OR d.sex = 'any' OR d.sex = $2)`,
+    [matchedIds, sexFilter]
+  );
 
-  const total = allResults.rows.length;
+  const rows: RankedRow[] = ranked.rows
+    .map((r) => {
+      const evidence = parseFloat(String(r.evidence));
+      return {
+        id: r.id,
+        name: r.name,
+        description: r.description,
+        urgency_level: r.urgency_level,
+        prevalence: r.prevalence,
+        evidence,
+        score: evidence * (PREVALENCE_PRIOR[r.prevalence] ?? PREVALENCE_PRIOR.uncommon),
+        match_count: parseInt(String(r.match_count), 10),
+        has_key: r.has_key,
+        matched_symptoms: r.matched_symptoms,
+        total_symptoms: parseInt(String(r.total_symptoms), 10),
+      };
+    })
+    .sort((a, b) => b.score - a.score || b.match_count - a.match_count || a.name.localeCompare(b.name));
 
-  // Split into main results and "don't rule out" section
-  const mainResults: DiseaseResult[] = [];
-  const dontRuleOut: DiseaseResult[] = [];
-
-  // Determine a minimum threshold for "don't rule out" — any score above 0
-  const mainResultIds = new Set<number>();
-
-  // Paginate the main results
-  const paginatedRows = allResults.rows.slice(offset, offset + limit);
-  for (const row of paginatedRows) {
-    mainResults.push({
-      id: row.id,
-      name: row.name,
-      description: row.description,
-      urgency_level: row.urgency_level,
-      score: parseFloat(String(row.score)),
-      matched_symptoms: row.matched_symptoms,
-      total_symptoms: parseInt(String(row.total_symptoms), 10),
-    });
-    mainResultIds.add(row.id);
-  }
-
-  // "Don't rule out" — high/emergency urgency diseases that scored but aren't in the paginated results
-  for (const row of allResults.rows) {
-    if (
-      !mainResultIds.has(row.id) &&
-      (row.urgency_level === "high" || row.urgency_level === "emergency")
-    ) {
-      dontRuleOut.push({
-        id: row.id,
-        name: row.name,
-        description: row.description,
-        urgency_level: row.urgency_level,
-        score: parseFloat(String(row.score)),
-        matched_symptoms: row.matched_symptoms,
-        total_symptoms: parseInt(String(row.total_symptoms), 10),
-      });
-    }
-  }
+  // Relevance decides WHICH conditions make the page; within the page they are
+  // shown lowest risk first, so a reader meets the likely-harmless explanations
+  // before the serious ones. Each result keeps its relevance rank for display.
+  const page = groupByRisk(
+    rows.slice(offset, offset + limit).map((r, i) => ({ ...r, relevance_rank: offset + i + 1 }))
+  );
+  // Everything up to the end of this page counts as "already shown"
+  const shownIds = new Set(rows.slice(0, offset + limit).map((r) => r.id));
+  const dontRuleOut = selectDontRuleOut(rows, shownIds, matchedIds.length);
 
   return {
-    results: mainResults,
-    dont_rule_out: dontRuleOut,
-    total,
+    results: page.map((r) => ({ ...toResult(r), relevance_rank: r.relevance_rank })),
+    dont_rule_out: dontRuleOut.map(toResult),
+    total: rows.length,
     resolved_symptoms: resolved,
   };
 }
@@ -268,10 +345,15 @@ export async function getDiseaseById(id: number): Promise<DiseaseDetail> {
     name: string;
     description: string | null;
     urgency_level: string;
+    prevalence: string;
+    aliases: string[];
+    source_url: string | null;
     created_at: string;
-  }>(`SELECT id, icd11_code, name, description, urgency_level, created_at FROM diseases WHERE id = $1`, [
-    id,
-  ]);
+  }>(
+    `SELECT id, icd11_code, name, description, urgency_level, prevalence, aliases, source_url, created_at
+     FROM diseases WHERE id = $1`,
+    [id]
+  );
 
   if (diseaseResult.rows.length === 0) {
     throw notFound(`Disease with ID ${id} not found`);

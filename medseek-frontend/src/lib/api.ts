@@ -19,6 +19,7 @@ export interface DiseaseResult {
   description: string | null;
   urgency_level: "low" | "moderate" | "high" | "emergency";
   score: number;
+  relevance_rank?: number;
   matched_symptoms: string[];
   total_symptoms: number;
 }
@@ -40,6 +41,9 @@ export interface DiseaseDetail {
   name: string;
   description: string | null;
   urgency_level: "low" | "moderate" | "high" | "emergency";
+  prevalence?: "very_common" | "common" | "uncommon" | "rare";
+  aliases?: string[];
+  source_url?: string | null;
   created_at: string;
   symptoms: Array<{
     id: number;

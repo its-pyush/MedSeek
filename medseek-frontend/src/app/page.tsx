@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import SymptomSearch from "@/components/SymptomSearch";
 import DiseaseCard from "@/components/DiseaseCard";
@@ -8,7 +8,6 @@ import { searchDiseases, DiseaseResult, ResolvedSymptom } from "@/lib/api";
 import {
   IconSearch,
   IconWarning,
-  IconCrosshair,
   IconCheck,
   IconClose,
 } from "@/components/icons";
@@ -18,12 +17,30 @@ const HumanBodyModel = dynamic(
   { ssr: false }
 );
 
-import FoldText from "@/components/FoldText";
-
 const Threads = dynamic(
   () => import("@/components/Threads"),
   { ssr: false }
 );
+
+/** True on screens wide enough for the side-by-side hero (Tailwind's lg breakpoint). */
+function useIsDesktop(): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      const mq = window.matchMedia("(min-width: 1024px)");
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia("(min-width: 1024px)").matches,
+    () => false
+  );
+}
+
+const RISK_TIERS = [
+  { level: "low", label: "Lower risk", hint: "Usually manageable with self-care or routine care", color: "text-emerald-700" },
+  { level: "moderate", label: "Moderate risk", hint: "Worth a doctor's appointment", color: "text-amber-700" },
+  { level: "high", label: "Higher risk", hint: "See a doctor soon", color: "text-orange-700" },
+  { level: "emergency", label: "Emergency", hint: "Needs immediate care if it fits", color: "text-red-700" },
+] as const;
 
 export default function Home() {
   const [results, setResults] = useState<DiseaseResult[]>([]);
@@ -34,6 +51,19 @@ export default function Home() {
   const [hasSearched, setHasSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeSymptoms, setActiveSymptoms] = useState<string[]>([]);
+  const [bodySelectMode, setBodySelectMode] = useState(false);
+  const [pickerSlot, setPickerSlot] = useState<HTMLDivElement | null>(null);
+  const isDesktop = useIsDesktop();
+  // On a phone, picking on the body takes over the screen below the search bar.
+  const mobilePicking = bodySelectMode && !isDesktop;
+
+  const handleSelectModeChange = useCallback((active: boolean) => {
+    setBodySelectMode(active);
+    // On a phone the picker uses the whole screen, so start from the top of the page.
+    if (active && !window.matchMedia("(min-width: 1024px)").matches) {
+      window.scrollTo({ top: 0 });
+    }
+  }, []);
 
   const handleSearch = async (symptoms: string[]) => {
     setIsLoading(true);
@@ -56,87 +86,88 @@ export default function Home() {
 
   return (
     <div className="flex flex-col flex-1">
-      {/* Diagnostic Console / Search Section with Ambient Diffusion & 3D Integration */}
-      <section className={`relative overflow-hidden border-b border-[#e2dcd0]/80 bg-gradient-to-b from-[#fff8eb]/50 via-[#fff8eb]/85 to-[#fff8eb] flex flex-col ${!hasSearched ? 'flex-1 justify-center' : ''}`}>
-        {/* Ambient Chromatic Diffusion Orbs (Physically scatter light through frosted glass panels) */}
+      {/* Hero: search on the left, anatomical model in its own column on the right */}
+      <section className={`relative overflow-hidden border-b border-[#e2dcd0]/80 bg-gradient-to-b from-[#fff8eb]/50 via-[#fff8eb]/85 to-[#fff8eb] flex flex-col ${!hasSearched && !mobilePicking ? "flex-1 justify-center" : ""}`}>
+        {/* Soft ambient colour behind the glass panels */}
         <div className="absolute top-[8%] left-[5%] w-96 h-96 rounded-full bg-[#fed7aa]/35 blur-[90px] pointer-events-none -z-10" />
         <div className="absolute top-[20%] right-[8%] w-[500px] h-[500px] rounded-full bg-[#3a5ebb]/14 blur-[110px] pointer-events-none -z-10" />
-        <div className="absolute bottom-[5%] left-[25%] w-80 h-80 rounded-full bg-[#c7d2fe]/20 blur-[80px] pointer-events-none -z-10" />
 
-        {/* Dynamic Waving Ambient Threads behind 3D Model */}
-        <div className="absolute inset-0 pointer-events-none -z-5 overflow-hidden opacity-95">
-          <Threads
-            color={[0.18, 0.42, 0.85]}
-            amplitude={1.2}
-            distance={0.18}
-            speed={0.35}
-            enableMouseInteraction={false}
-          />
-        </div>
+        {/* Animated threads: desktop only, behind everything */}
+        {isDesktop && (
+          <div className="absolute inset-0 pointer-events-none -z-5 overflow-hidden opacity-70">
+            <Threads
+              color={[0.18, 0.42, 0.85]}
+              amplitude={1.2}
+              distance={0.18}
+              speed={0.35}
+              enableMouseInteraction={false}
+            />
+          </div>
+        )}
 
-        {/* Interactive Anatomical Model in Background */}
-        <HumanBodyModel
-          activeSymptoms={activeSymptoms}
-          onSymptomsChange={setActiveSymptoms}
-        />
+        {/* Desktop model: its own right-hand column, never under the text */}
+        {isDesktop && (
+          <div className="absolute inset-y-0 right-0 left-[56%] xl:left-[54%] z-0">
+            <HumanBodyModel
+              activeSymptoms={activeSymptoms}
+              onSymptomsChange={setActiveSymptoms}
+              onSelectModeChange={handleSelectModeChange}
+              panelContainer={pickerSlot}
+              onSearchRequested={() => handleSearch(activeSymptoms)}
+            />
+          </div>
+        )}
 
-        <div className="relative max-w-4xl mx-auto lg:mx-0 lg:ml-[8%] xl:ml-[12%] px-4 sm:px-6 pt-6 pb-7 sm:pt-12 sm:pb-10 z-10">
-          <div className="text-left mb-5 sm:mb-7 animate-fade-in">
-            {/* Clinical Categorization Pill */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-chip text-[#2a4693] text-[11px] font-bold mb-3 shadow-2xs">
-              <IconCrosshair size={13} className="text-[#3a5ebb]" />
-              <span>Differential Diagnostic Engine</span>
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 pt-5 pb-4 sm:pt-10 lg:pb-10 pointer-events-none">
+          <div className={`pointer-events-auto lg:max-w-[52%] ${hasSearched ? "lg:min-h-0" : "lg:min-h-[600px]"} flex flex-col lg:justify-center`}>
+            {/* Intro text steps aside while the picker is open, so the list has room */}
+            {!bodySelectMode && (
+              <div className="text-left mb-4 sm:mb-6 animate-fade-in">
+                <h1 className="font-bold tracking-tight mb-2 sm:mb-4 text-slate-900 text-3xl sm:text-5xl lg:text-6xl leading-[1.05]">
+                  What are your <span className="text-[#3a5ebb]">symptoms?</span>
+                </h1>
+                <p className="text-base text-slate-600 max-w-xl leading-relaxed">
+                  Type what you feel, or tap the body to choose. This is a reference tool, not a diagnosis.
+                </p>
+              </div>
+            )}
+
+            {/* The search bar is always on top; picked symptoms appear in it as tags */}
+            <div className="relative z-20">
+              <SymptomSearch
+                onSearch={handleSearch}
+                selectedSymptoms={activeSymptoms}
+                onSymptomsChange={setActiveSymptoms}
+                isLoading={isLoading}
+              />
             </div>
 
-            <h1 className="font-extrabold tracking-tight mb-3 sm:mb-4">
-              <span className="block text-2xl sm:text-4xl lg:text-5xl text-slate-900 mb-1 sm:mb-2 font-bold">
-                <FoldText
-                  text="What are your"
-                  splitBy="word"
-                  hinge="top"
-                  trigger="mount"
-                  duration={0.65}
-                  stagger={0.06}
-                  ease="power3.out"
-                  perspective={700}
-                  creaseShading={0.35}
-                  fontSize="inherit"
-                  fontWeight="inherit"
-                  color="inherit"
-                />
-              </span>
-              <span className="block text-4xl sm:text-6xl lg:text-7xl xl:text-8xl text-[#3a5ebb] tracking-tight">
-                <FoldText
-                  text="Symptoms?"
-                  splitBy="char"
-                  hinge="top"
-                  trigger="mount"
-                  duration={0.7}
-                  stagger={0.045}
-                  ease="power3.out"
-                  perspective={800}
-                  creaseShading={0.45}
-                  fontSize="inherit"
-                  fontWeight="inherit"
-                  color="#3a5ebb"
-                />
-              </span>
-            </h1>
-            <p className="text-xs sm:text-base text-slate-600 max-w-2xl leading-relaxed">
-              Identify plausible medical conditions corresponding to presenting symptoms.
-              Urgent and high-severity clinical indications are flagged automatically.
-            </p>
-          </div>
-
-          <div className="relative z-20 animate-slide-up">
-            <SymptomSearch 
-              onSearch={handleSearch} 
-              selectedSymptoms={activeSymptoms}
-              onSymptomsChange={setActiveSymptoms}
-              isLoading={isLoading} 
+            {/* Picker list: under the search bar on desktop, a bottom sheet on phones */}
+            <div
+              ref={setPickerSlot}
+              className={
+                bodySelectMode
+                  ? "fixed inset-x-0 bottom-0 z-40 h-[46dvh] lg:static lg:z-auto lg:h-[440px] lg:mt-4 animate-slide-up"
+                  : "hidden"
+              }
             />
           </div>
         </div>
+
+        {/* Phones: the model is the centrepiece, large and directly below the search */}
+        {!isDesktop && (
+          <div
+            className={`relative w-full overflow-hidden ${mobilePicking ? "h-[calc(54dvh-12.5rem)] min-h-[180px]" : "h-[62dvh] min-h-[420px]"}`}
+          >
+            <HumanBodyModel
+              activeSymptoms={activeSymptoms}
+              onSymptomsChange={setActiveSymptoms}
+              onSelectModeChange={handleSelectModeChange}
+              panelContainer={pickerSlot}
+              onSearchRequested={() => handleSearch(activeSymptoms)}
+            />
+          </div>
+        )}
       </section>
 
       {/* Differential Results Section */}
@@ -201,19 +232,33 @@ export default function Home() {
                 Primary Differential Matches ({total})
               </h2>
               <span className="text-xs text-slate-500 font-mono">
-                Ranked by correlation
+                Grouped by risk · lowest first
               </span>
             </div>
           )}
 
-          {/* Primary Results Grid */}
-          <div className="grid gap-3.5 sm:grid-cols-2">
-            {results.map((disease) => (
-              <div key={disease.id}>
-                <DiseaseCard {...disease} />
+          {/* Primary Results — grouped by risk tier, lowest first (order set by the backend) */}
+          {RISK_TIERS.map((tier) => {
+            const tierResults = results.filter((d) => d.urgency_level === tier.level);
+            if (tierResults.length === 0) return null;
+            return (
+              <div key={tier.level} className="mb-6">
+                <div className="flex items-baseline gap-2 mb-2.5">
+                  <h3 className={`text-xs font-bold uppercase tracking-wider ${tier.color}`}>
+                    {tier.label} ({tierResults.length})
+                  </h3>
+                  <span className="text-[11px] text-slate-500">{tier.hint}</span>
+                </div>
+                <div className="grid gap-3.5 sm:grid-cols-2">
+                  {tierResults.map((disease) => (
+                    <div key={disease.id}>
+                      <DiseaseCard {...disease} />
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
 
           {/* Critical Path Differential / Don't Rule Out */}
           {dontRuleOut.length > 0 && (

@@ -15,7 +15,7 @@ cp .env.example .env
 # 3. Run database migrations
 npm run migrate:up
 
-# 4. (Optional) Seed test data
+# 4. Load the knowledge base (REPLACES the search tables in DATABASE_URL)
 npm run seed
 
 # 5. Start development server
@@ -61,7 +61,7 @@ src/
 ├── app.ts          # Express app factory
 └── index.ts        # Server entry point
 migrations/         # SQL migration files
-scripts/            # Utility scripts (seed, weight computation)
+scripts/            # seed.ts, rag-backfill.ts, kb/ (knowledge base build pipeline)
 ```
 
 ## API Routes

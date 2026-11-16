@@ -1,6 +1,6 @@
 # MedSeek
 
-A clinical decision support and patient health platform combining a domain-adapted differential diagnostic search engine, context-aware RAG AI consultation, an AES-256-GCM encrypted personal health vault, and an interactive 3D anatomical raycasting interface.
+A clinical decision support and patient health platform combining a symptom search engine, context-aware RAG AI consultation, an AES-256-GCM encrypted personal health vault, and an interactive 3D anatomical raycasting interface.
 
 ---
 
@@ -67,7 +67,7 @@ cp .env.example .env
 # Run database migrations
 npm run migrate:up
 
-# (Optional) Seed symptoms and Kaggle dataset
+# Seed the knowledge base (data/kb/medseek_kb.json) — replaces the search tables
 npm run seed
 
 # Start API server in development mode (runs on http://localhost:4000)
@@ -122,11 +122,12 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Key Modules & Core Features
 
-### 1. Clinical Diagnostic Search Engine
-- **Custom *sf-idf* (Symptom Frequency – Inverse Disease Frequency)** algorithm weights distinctive clinical symptoms higher than non-specific symptoms.
-- **3-Tier Symptom Matching**: Exact matches, fuzzy trigram similarity (`pg_trgm > 0.3`), and clinical synonym normalizations.
-- **Emergency "Don't Rule Out" Container**: Automatically surfaces critical emergency conditions even if lower in probabilistic ranking.
-- Sub-50ms autocomplete via PostgreSQL CTE queries.
+### 1. Symptom Search Engine
+- **MedSeek Knowledge Base v1**: ~900 conditions with original summaries, structured symptoms (frequency + distinctive "key" flags), urgency and prevalence estimates, built by a reproducible pipeline (`kb:extract` → `kb:build` → `seed`).
+- **Ranking**: `Σ symptom weight × share of the query explained × prevalence prior`, so common conditions outrank rare ones on vague symptoms.
+- **Symptom matching**: exact name → exact synonym → best fuzzy trigram match (`pg_trgm`).
+- **"Don't Rule Out"**: at most three urgent conditions that fit the symptoms but were ranked down by rarity.
+- Urgency and prevalence are language-model estimates, not clinical data.
 
 ### 2. Context-Aware RAG Health AI
 - DeepSeek API integration with dynamic patient context compilation.
@@ -160,7 +161,10 @@ npm test               # Run test suite with Vitest
 npm run lint           # Run ESLint on source files
 npm run typecheck      # Validate TypeScript types without emitting files
 npm run migrate:up     # Run pending database migrations
-npm run seed           # Seed dataset and calculate sf-idf weights
+npm run kb:extract     # Structure the raw disease scrape (cached LLM calls)
+npm run kb:build       # Merge synonyms, compute weights -> data/kb/medseek_kb.json
+npm run seed           # Load the knowledge base into Postgres (replaces search tables)
+npm run kb:check       # 40-case ranking sanity check
 ```
 
 ### Frontend (`medseek-frontend`)
@@ -176,7 +180,7 @@ npm run lint           # Run ESLint validation
 
 ## Verification & Quality Standards
 
-- **Integration Tests**: 6/6 route test suites passing (`npm test` in backend)
+- **Tests**: 57 passing (`npm test` in backend)
 - **TypeScript**: Strict typechecking passes across all modules (`npm run typecheck`)
 - **Linting**: 0 ESLint warnings or errors (`npm run lint` across frontend and backend)
 - **Production Build**: 100% clean Next.js 16 build pass

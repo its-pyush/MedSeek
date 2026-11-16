@@ -31,3 +31,7 @@ data/mayo/
 # Logs
 *.log
 npm-debug.log*
+
+# KB build cache and pre-seed backups
+data/kb/cache/
+data/kb/backup-*.json

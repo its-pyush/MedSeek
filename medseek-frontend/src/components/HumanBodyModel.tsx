@@ -13,13 +13,6 @@ import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import {
   IconCrosshair,
-  IconRefresh,
-  IconCheck,
-  IconClose,
-  IconChevronDown,
-  IconChevronUp,
-  IconArrowLeft,
-  IconSearch,
 } from "./icons";
 import {
   REGION_HIERARCHY,
@@ -32,8 +25,41 @@ import {
   createRegionGroup,
 } from "./regionHierarchy";
 import RegionDebugOverlay from "./RegionDebugOverlay";
+import BodyPickerPanel from "./BodyPickerPanel";
+import { createPortal } from "react-dom";
 
 export type { SubRegion, MajorRegion, RegionSelectionPayload, RegionProxy };
+
+/* ─── Frame pacing ───────────────────────────────────────────── */
+
+/**
+ * Drives the canvas at a fixed frame rate instead of every display refresh.
+ * The idle auto-rotation is slow, so 30 fps is indistinguishable from 60 and
+ * halves GPU load; interaction (select mode) runs at 60. Nothing renders while
+ * the model is off screen or the tab is hidden.
+ */
+function FrameDriver({ active, fps }: { active: boolean; fps: number }) {
+  const invalidate = useThree((state) => state.invalidate);
+
+  useEffect(() => {
+    if (!active) return;
+    const interval = 1000 / fps;
+    let last = -Infinity;
+    let raf = 0;
+
+    const tick = (t: number) => {
+      raf = requestAnimationFrame(tick);
+      if (document.hidden) return;
+      if (t - last < interval - 1) return;
+      last = t;
+      invalidate();
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [active, fps, invalidate]);
+
+  return null;
+}
 
 /* ─── Anatomical Data & Symptom Mapping ──────────────────────── */
 
@@ -43,7 +69,7 @@ export interface BodyPoint {
 }
 
 export interface RankedSymptom {
-  id: string; // Canonical symptom key in Kaggle dataset / backend
+  id: string; // Symptom key; resolved to a canonical symptom by the backend (seeded as a synonym)
   name: string; // User-facing display title
   rank: number; // 1 = highest clinical prevalence
   severity: number; // 1 to 7 severity score
@@ -1452,12 +1478,21 @@ interface HumanBodyModelProps {
   activeSymptoms?: string[];
   onSymptomsChange?: (symptoms: string[]) => void;
   onSelectRegion?: (payload: RegionSelectionPayload) => void;
+  /** Fires when body-selection mode opens or closes, so the page can give the model more room. */
+  onSelectModeChange?: (active: boolean) => void;
+  /** Where to render the picker list. Falls back to a panel over the model. */
+  panelContainer?: HTMLElement | null;
+  /** Called when the user presses Search inside the picker. */
+  onSearchRequested?: () => void;
 }
 
 export default function HumanBodyModel({
   activeSymptoms = [],
   onSymptomsChange,
   onSelectRegion,
+  onSelectModeChange,
+  panelContainer,
+  onSearchRequested,
 }: HumanBodyModelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(true);
@@ -1465,12 +1500,15 @@ export default function HumanBodyModel({
   // Two-Tier Mode & Selection State
   // mode: "full" = full body major category proxies active; "zoom" = framed sub-region proxies active
   const [selectMode, setSelectMode] = useState(false);
+  useEffect(() => {
+    onSelectModeChange?.(selectMode);
+  }, [selectMode, onSelectModeChange]);
   const [mode, setMode] = useState<"full" | "zoom">("full");
   const [activeMajorId, setActiveMajorId] = useState<string | null>(null);
   const [activeSubRegionId, setActiveSubRegionId] = useState<string | null>(null);
   const [hoveredGroupId, setHoveredGroupId] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [, setSearchQuery] = useState("");
+  const [, setIsExpanded] = useState(false);
 
   // Dev-Only Debug Visualizer State (active in dev or via NEXT_PUBLIC_DEBUG_PROXIES)
   const [debugMode, setDebugMode] = useState(
@@ -1535,21 +1573,7 @@ export default function HumanBodyModel({
     snapToFront();
   };
 
-  // Reset & Exit: clears symptoms, collapses zoom, returns to browse mode
-  const handleReset = () => {
-    if (onSymptomsChange) {
-      onSymptomsChange([]);
-    }
-    setMode("full");
-    setActiveMajorId(null);
-    setActiveSubRegionId(null);
-    setHoveredGroupId(null);
-    setSearchQuery("");
-    setIsExpanded(false);
-    snapToFront();
-  };
 
-  // Return from ZOOM MODE to FULL MODE (smoothly zooms out to full body overview)
   const handleBackToFullMode = useCallback(() => {
     setMode("full");
     setActiveMajorId(null);
@@ -1683,53 +1707,53 @@ export default function HumanBodyModel({
   const activeMajor = activeMajorId ? REGION_HIERARCHY.find((m) => m.id === activeMajorId) : null;
 
   // Filter symptoms based on local search query
-  const filteredTopSymptoms = useMemo(() => {
-    if (!subRegionData) return [];
-    if (!searchQuery.trim()) return subRegionData.topSymptoms;
-    const q = searchQuery.toLowerCase().replace(/_/g, " ");
-    return subRegionData.topSymptoms.filter(
-      (s) =>
-        s.name.toLowerCase().includes(q) ||
-        s.id.toLowerCase().includes(q) ||
-        (s.description && s.description.toLowerCase().includes(q))
-    );
-  }, [subRegionData, searchQuery]);
-
-  const filteredSecondarySymptoms = useMemo(() => {
-    if (!subRegionData || !subRegionData.secondarySymptoms) return [];
-    if (!searchQuery.trim()) return subRegionData.secondarySymptoms;
-    const q = searchQuery.toLowerCase().replace(/_/g, " ");
-    return subRegionData.secondarySymptoms.filter(
-      (s) =>
-        s.name.toLowerCase().includes(q) ||
-        s.id.toLowerCase().includes(q) ||
-        (s.description && s.description.toLowerCase().includes(q))
-    );
-  }, [subRegionData, searchQuery]);
-
-  // Count active symptoms in current region
-  const activeSymptomsInRegionCount = useMemo(() => {
-    if (!subRegionData) return 0;
-    const allIds = [
-      ...subRegionData.topSymptoms.map((s) => s.id),
-      ...(subRegionData.secondarySymptoms || []).map((s) => s.id),
-    ];
-    return activeSymptoms.filter((id) => allIds.includes(id)).length;
-  }, [subRegionData, activeSymptoms]);
-
-  // Major categories for bottom dock matching current view
   const visibleMajors = useMemo(() => {
     const view = isBackView ? "back" : "front";
     return REGION_HIERARCHY.filter((m) => m.view === view);
   }, [isBackView]);
+
+  const exitSelectMode = () => {
+    setSelectMode(false);
+    setMode("full");
+    setActiveMajorId(null);
+    setActiveSubRegionId(null);
+    setHoveredGroupId(null);
+  };
+
+  const pickerPanel = (
+    <BodyPickerPanel
+      isBackView={isBackView}
+      onShowFront={snapToFront}
+      onShowBack={snapToBack}
+      areas={visibleMajors}
+      activeArea={activeMajor ?? null}
+      activePartId={activeSubRegionId}
+      region={subRegionData}
+      onSelectArea={handleSelectMajor}
+      onSelectPart={(partId) => {
+        if (activeMajor) onSelectRegion?.({ majorId: activeMajor.id, subRegionId: partId });
+        setActiveSubRegionId(partId);
+      }}
+      onBackToAreas={handleBackToFullMode}
+      onHoverRegion={setHoveredGroupId}
+      selectedSymptoms={activeSymptoms}
+      onToggleSymptom={toggleSymptom}
+      onClear={() => onSymptomsChange?.([])}
+      onClose={exitSelectMode}
+      onSearch={() => {
+        exitSelectMode();
+        onSearchRequested?.();
+      }}
+    />
+  );
 
   return (
     <div
       ref={containerRef}
       className={`human-body-canvas-wrapper absolute inset-0 ${
         selectMode
-          ? `z-30 pointer-events-auto ${hoveredGroupId ? "cursor-pointer" : "cursor-grab active:cursor-grabbing"}`
-          : "z-0 pointer-events-none"
+          ? `z-0 pointer-events-auto ${hoveredGroupId ? "cursor-pointer" : "cursor-grab active:cursor-grabbing"}`
+          : "z-0 pointer-events-auto"
       }`}
       style={{ opacity: 0.85 }}
       onPointerDown={handlePointerDown}
@@ -1740,15 +1764,16 @@ export default function HumanBodyModel({
       {/* ─── Three.js WebGL Canvas ─────────────────────────────── */}
       <Canvas
         camera={{ position: [-1.25, 2.235, 6.38], fov: 45 }}
-        dpr={[1, 2]}
+        dpr={[1, 1.5]}
         gl={{
           antialias: true,
           alpha: true,
           powerPreference: "low-power",
         }}
         style={{ background: "transparent" }}
-        frameloop={inView ? "always" : "never"}
+        frameloop="demand"
       >
+        <FrameDriver active={inView} fps={selectMode ? 60 : 30} />
         <ambientLight intensity={1.8} />
         <directionalLight position={[4, 8, 5]} intensity={1.3} color="#ffffff" />
         <directionalLight position={[-4, 2, 3]} intensity={0.7} color="#e0eeff" />
@@ -1828,394 +1853,34 @@ export default function HumanBodyModel({
         </div>
       )}
 
-      {/* ─── BROWSE MODE: Subtle Toggle Button ──────────────────── */}
+      {/* ─── Idle: the whole model is one big button ─────────────── */}
       {!selectMode && (
-        <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-8 pointer-events-auto z-20">
+        <>
           <button
             type="button"
             onClick={handleEnterSelectMode}
-            className="btn-3d flex items-center gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-full text-xs font-semibold text-[#203a80] shadow-md hover:shadow-lg border border-[#3a5ebb]/30 bg-white/90 backdrop-blur-md transition-all hover:scale-102"
+            className="absolute inset-0 z-10 cursor-pointer"
+            aria-label="Choose symptoms by tapping the body"
             id="enter-select-mode-button"
-          >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#3a5ebb] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#3a5ebb]"></span>
+          />
+          <div className="absolute bottom-4 inset-x-0 flex justify-center pointer-events-none z-20">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/95 border border-[#3a5ebb]/30 shadow-md text-sm font-semibold text-[#203a80]">
+              <IconCrosshair size={16} className="text-[#3a5ebb]" />
+              Tap the body to choose where it hurts
             </span>
-            <IconCrosshair size={15} className="text-[#3a5ebb]" />
-            <span>Pinpoint on Body</span>
-          </button>
-        </div>
+          </div>
+        </>
       )}
 
-      {/* ─── SELECT MODE: Unified Floating Action Dock (Top Right) ─ */}
-      {selectMode && (
-        <div className="absolute top-4 right-4 sm:top-5 sm:right-6 pointer-events-auto flex items-center gap-2 z-30 animate-fade-in">
-          <div className="flex items-center gap-1.5 p-1 sm:p-1.5 bg-white/92 backdrop-blur-xl border border-[#cbd5e1] rounded-2xl shadow-lg">
-            {/* Anterior / Posterior Snap Switch */}
-            <div className="flex items-center bg-slate-100/90 p-0.5 rounded-xl">
-              <button
-                type="button"
-                onClick={snapToFront}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  !isBackView
-                    ? "bg-white text-[#2a4693] shadow-xs border border-slate-200/80 font-bold"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-                title="Front (Anterior) View"
-                id="snap-front-button"
-              >
-                Front
-              </button>
-              <button
-                type="button"
-                onClick={snapToBack}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  isBackView
-                    ? "bg-white text-[#2a4693] shadow-xs border border-slate-200/80 font-bold"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-                title="Back (Posterior) View"
-                id="snap-back-button"
-              >
-                Back
-              </button>
-            </div>
-
-            {/* Divider */}
-            <div className="w-[1px] h-5 bg-slate-200 mx-0.5" />
-
-            {/* Reset / Clear */}
-            <button
-              type="button"
-              onClick={handleReset}
-              className="btn-3d px-3 py-1.5 text-xs font-semibold rounded-xl text-rose-700 hover:text-rose-900 border-rose-200 hover:border-rose-300 bg-rose-50/40 hover:bg-rose-50 flex items-center gap-1.5"
-              title="Reset selections and return to full body view"
-              id="reset-selection-button"
-            >
-              <IconRefresh size={13} />
-              <span className="hidden sm:inline">Reset</span>
-            </button>
-
-            {/* Done / Exit Select Mode */}
-            <button
-              type="button"
-              onClick={() => {
-                setSelectMode(false);
-                setMode("full");
-                setActiveMajorId(null);
-                setActiveSubRegionId(null);
-              }}
-              className="btn-3d-primary px-3.5 py-1.5 text-xs font-semibold rounded-xl flex items-center gap-1.5 shadow-sm"
-              title="Done with 3D selection"
-              id="exit-select-mode-button"
-            >
-              <IconClose size={13} />
-              <span>Done</span>
-            </button>
+      {/* ─── Picking: one panel, rendered where the page wants it ─── */}
+      {selectMode &&
+        (panelContainer ? (
+          createPortal(pickerPanel, panelContainer)
+        ) : (
+          <div className="absolute right-3 top-3 bottom-3 w-[min(24rem,calc(100%-1.5rem))] z-20 pointer-events-auto">
+            {pickerPanel}
           </div>
-        </div>
-      )}
-
-      {/* ─── ZOOM MODE: Visible Floating "Back" Control ──────────── */}
-      {selectMode && mode === "zoom" && (
-        <div
-          className={`absolute ${
-            process.env.NODE_ENV !== "production" ? "top-14" : "top-4"
-          } left-4 sm:left-6 pointer-events-auto z-30 animate-fade-in`}
-        >
-          <button
-            type="button"
-            onClick={handleBackToFullMode}
-            className="btn-3d flex items-center gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl text-xs font-bold text-[#2a4693] bg-white/92 backdrop-blur-xl border border-[#cbd5e1] shadow-lg hover:shadow-xl hover:bg-white transition-all hover:scale-102"
-            id="zoom-back-button"
-          >
-            <IconArrowLeft size={14} className="text-[#3a5ebb]" />
-            <span>Back to Full Body</span>
-            {activeMajor && (
-              <span className="hidden sm:inline-block px-2 py-0.5 rounded-md bg-[#3a5ebb]/10 text-[#3a5ebb] text-[11px] font-semibold">
-                {activeMajor.label}
-              </span>
-            )}
-          </button>
-        </div>
-      )}
-
-      {/* ─── ZOOM MODE: Hover Feedback Badge ─────────────────────── */}
-      {selectMode && mode === "zoom" && (
-        <div className="absolute bottom-5 left-4 sm:left-6 pointer-events-auto z-20 flex items-center gap-2 animate-fade-in">
-          <div className="px-3.5 py-1.5 rounded-full bg-slate-900/85 backdrop-blur-md text-white text-[11px] font-medium shadow-md flex items-center gap-2 transition-all">
-            {hoveredGroupId ? (
-              <span className="flex items-center gap-1.5 text-cyan-300 font-semibold">
-                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-                {activeMajor?.subRegions?.find((s) => s.id === hoveredGroupId)?.label ||
-                  REGION_SYMPTOMS[hoveredGroupId]?.name ||
-                  hoveredGroupId}
-                {" • Click to inspect symptoms"}
-              </span>
-            ) : (
-              <span className="flex items-center gap-1.5 text-slate-200">
-                <IconCrosshair size={12} className="text-cyan-400" />
-                Hover anatomical areas • Click to switch sub-region
-              </span>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* ─── FULL MODE: Bottom Major Category Dock ─────────────── */}
-      {selectMode && mode === "full" && (
-        <div className="absolute bottom-5 inset-x-0 mx-auto max-w-xl px-4 pointer-events-auto z-20 flex flex-col items-center gap-2 animate-fade-in">
-          {/* Hover Feedback Badge */}
-          <div className="px-3.5 py-1.5 rounded-full bg-slate-900/85 backdrop-blur-md text-white text-[11px] font-medium shadow-md flex items-center gap-2 transition-all">
-            {hoveredGroupId ? (
-              <span className="flex items-center gap-1.5 text-cyan-300 font-semibold">
-                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-                {REGION_SYMPTOMS[hoveredGroupId]?.name || hoveredGroupId}
-                {visibleMajors.find((m) => m.id === hoveredGroupId && (!m.subRegions || m.subRegions.length === 0))
-                  ? " • Click to select"
-                  : " • Click to zoom & inspect"}
-              </span>
-            ) : (
-              <span className="flex items-center gap-1.5 text-slate-200">
-                <IconCrosshair size={12} className="text-cyan-400" />
-                Hover to illuminate • Click any major section to zoom in
-              </span>
-            )}
-          </div>
-
-          {/* Major Section Selector Dock */}
-          <div className="flex items-center justify-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 bg-white/92 backdrop-blur-xl rounded-2xl border border-[#cbd5e1] shadow-xl overflow-x-auto max-w-full">
-            {visibleMajors.map((major) => (
-              <button
-                key={major.id}
-                type="button"
-                onClick={() => handleSelectMajor(major)}
-                onPointerEnter={() => setHoveredGroupId(major.id)}
-                onPointerLeave={() => setHoveredGroupId(null)}
-                className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100/90 transition-all whitespace-nowrap flex items-center gap-1"
-              >
-                <span>{major.label}</span>
-                {major.bilateral && (
-                  <span className="text-[10px] text-slate-400 font-mono">2x</span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ─── ZOOM MODE (or Leaf Selected): Clinical Inspector Drawer ── */}
-      {selectMode && (mode === "zoom" || activeSubRegionId) && (
-        <div
-          className="absolute right-3 sm:right-6 top-18 bottom-4 sm:bottom-6 w-full max-w-sm sm:max-w-md bg-white/95 backdrop-blur-2xl border border-[#cbd5e1] rounded-3xl shadow-2xl p-4 sm:p-5 flex flex-col z-20 pointer-events-auto animate-slide-in-right overflow-hidden"
-          onPointerDown={(e) => e.stopPropagation()}
-        >
-          {/* Drawer Header with Back-To-Full-Body Button */}
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
-            <button
-              type="button"
-              onClick={handleBackToFullMode}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#3a5ebb] hover:text-[#1c337a] bg-[#3a5ebb]/10 hover:bg-[#3a5ebb]/18 px-3 py-1.5 rounded-xl transition-all"
-              id="drawer-full-body-button"
-            >
-              <IconArrowLeft size={13} />
-              <span>Full Body</span>
-            </button>
-
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-extrabold text-slate-900">
-                {activeMajor ? activeMajor.label : subRegionData?.name}
-              </span>
-              {activeSymptomsInRegionCount > 0 && (
-                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-red-100 text-red-700 border border-red-200">
-                  {activeSymptomsInRegionCount} active
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Sub-Region Selector Tabs (Zoom Mode) */}
-          {activeMajor && activeMajor.subRegions && activeMajor.subRegions.length > 0 && (
-            <div className="flex items-center gap-1.5 flex-wrap mb-3 max-h-24 overflow-y-auto pr-1">
-              {activeMajor.subRegions.map((sub) => {
-                const isSubActive = activeSubRegionId === sub.id;
-                const isSubHovered = hoveredGroupId === sub.id;
-                return (
-                  <button
-                    key={sub.id}
-                    type="button"
-                    onClick={() => {
-                      onSelectRegion?.({
-                        majorId: activeMajor.id,
-                        subRegionId: sub.id,
-                      });
-                      setActiveSubRegionId(sub.id);
-                      setSearchQuery("");
-                      setIsExpanded(false);
-                    }}
-                    onPointerEnter={() => setHoveredGroupId(sub.id)}
-                    onPointerLeave={() => setHoveredGroupId(null)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                      isSubActive
-                        ? "bg-[#3a5ebb] text-white shadow-sm ring-2 ring-[#3a5ebb]/30"
-                        : isSubHovered
-                        ? "bg-cyan-50 text-cyan-800 ring-2 ring-cyan-400 font-bold shadow-xs scale-102"
-                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                    }`}
-                  >
-                    <span>{sub.label}</span>
-                    {sub.bilateral && (
-                      <span className="text-[10px] opacity-75 font-mono">2x</span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Symptom Search Filter inside Region */}
-          <div className="relative mb-3">
-            <IconSearch
-              size={14}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-            />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={`Search ${subRegionData?.name || "region"} symptoms...`}
-              className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#3a5ebb] transition-colors"
-            />
-          </div>
-
-          {/* Scrollable Symptom Checklist */}
-          <div className="flex-1 overflow-y-auto space-y-1.5 pr-1">
-            {filteredTopSymptoms.map((sym) => {
-              const isSelected = activeSymptoms.includes(sym.id);
-              return (
-                <button
-                  key={sym.id}
-                  type="button"
-                  onClick={() => toggleSymptom(sym.id)}
-                  className={`w-full text-left p-2.5 rounded-xl text-xs transition-all flex items-center justify-between border ${
-                    isSelected
-                      ? "bg-[#3a5ebb]/10 border-[#3a5ebb] text-[#1c337a] shadow-xs"
-                      : "bg-white border-slate-200 hover:bg-slate-50 text-slate-800"
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                    <div
-                      className={`w-4 h-4 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
-                        isSelected
-                          ? "bg-[#3a5ebb] border-[#3a5ebb] text-white"
-                          : "border-slate-300 bg-white"
-                      }`}
-                    >
-                      {isSelected && <IconCheck size={11} />}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="font-semibold truncate">{sym.name}</div>
-                      {sym.description && (
-                        <div className="text-[11px] text-slate-500 truncate font-normal">
-                          {sym.description}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
-                      Rank #{sym.rank}
-                    </span>
-                    <span
-                      className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                        sym.severity >= 6
-                          ? "bg-red-100 text-red-700"
-                          : sym.severity >= 4
-                          ? "bg-amber-100 text-amber-700"
-                          : "bg-emerald-100 text-emerald-700"
-                      }`}
-                    >
-                      Sev {sym.severity}
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
-
-            {/* Expand Secondary Symptoms */}
-            {subRegionData?.secondarySymptoms &&
-              subRegionData.secondarySymptoms.length > 0 &&
-              !searchQuery && (
-                <div className="pt-1">
-                  <button
-                    type="button"
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className="w-full py-2 text-center text-xs font-semibold text-[#3a5ebb] hover:text-[#25428a] flex items-center justify-center gap-1 rounded-xl hover:bg-[#3a5ebb]/05 transition-colors"
-                  >
-                    <span>
-                      {isExpanded
-                        ? "Show fewer symptoms"
-                        : `Show ${subRegionData.secondarySymptoms.length} more symptoms`}
-                    </span>
-                    {isExpanded ? (
-                      <IconChevronUp size={13} />
-                    ) : (
-                      <IconChevronDown size={13} />
-                    )}
-                  </button>
-
-                  {isExpanded && (
-                    <div className="space-y-1.5 pt-1 animate-slide-up">
-                      {filteredSecondarySymptoms.map((sym) => {
-                        const isSelected = activeSymptoms.includes(sym.id);
-                        return (
-                          <button
-                            key={sym.id}
-                            type="button"
-                            onClick={() => toggleSymptom(sym.id)}
-                            className={`w-full text-left p-2.5 rounded-xl text-xs transition-all flex items-center justify-between border ${
-                              isSelected
-                                ? "bg-[#3a5ebb]/10 border-[#3a5ebb] text-[#1c337a] shadow-xs"
-                                : "bg-white border-slate-200 hover:bg-slate-50 text-slate-800"
-                            }`}
-                          >
-                            <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                              <div
-                                className={`w-4 h-4 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
-                                  isSelected
-                                    ? "bg-[#3a5ebb] border-[#3a5ebb] text-white"
-                                    : "border-slate-300 bg-white"
-                                }`}
-                              >
-                                {isSelected && <IconCheck size={11} />}
-                              </div>
-                              <div className="min-w-0">
-                                <div className="font-semibold truncate">{sym.name}</div>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center gap-1.5 shrink-0">
-                              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
-                                Rank #{sym.rank}
-                              </span>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              )}
-
-            {filteredTopSymptoms.length === 0 && (
-              <div className="text-center py-6 text-xs text-slate-500">
-                No matching symptoms found in this region.
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+        ))}
     </div>
   );
 }

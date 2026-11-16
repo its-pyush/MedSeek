@@ -9,6 +9,7 @@ interface DiseaseCardProps {
   description: string | null;
   urgency_level: "low" | "moderate" | "high" | "emergency";
   score?: number;
+  relevance_rank?: number;
   matched_symptoms: string[];
   total_symptoms: number;
   isWarning?: boolean;
@@ -19,6 +20,7 @@ export default function DiseaseCard({
   name,
   description,
   urgency_level,
+  relevance_rank,
   matched_symptoms,
   total_symptoms,
   isWarning = false,
@@ -44,7 +46,15 @@ export default function DiseaseCard({
             {name.replace(/_/g, " ")}
           </h3>
         </div>
-        <div className="shrink-0">
+        <div className="shrink-0 flex items-center gap-1.5">
+          {relevance_rank !== undefined && relevance_rank <= 3 && (
+            <span
+              className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-[#3a5ebb]/10 text-[#2a4693] border border-[#3a5ebb]/25"
+              title="Ranked by how well it matches the symptoms you entered"
+            >
+              #{relevance_rank} match
+            </span>
+          )}
           <UrgencyBadge level={urgency_level} size="sm" />
         </div>
       </div>

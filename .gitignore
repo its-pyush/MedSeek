@@ -50,3 +50,10 @@ claude.md
 # Raw datasets (downloaded separately, not committed)
 medseek-backend/data/kaggle/
 medseek-backend/data/mayo/
+# Raw scraper outputs (copies live in medseek-backend/data/mayo)
+scrapers/mayo/*.csv
+scrapers/mayo/*.json
+
+# KB build cache and pre-seed backups
+medseek-backend/data/kb/cache/
+medseek-backend/data/kb/backup-*.json

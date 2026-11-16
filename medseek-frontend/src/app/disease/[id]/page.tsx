@@ -99,9 +99,30 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
           </p>
         )}
 
+        {disease.aliases && disease.aliases.length > 0 && (
+          <p className="text-xs text-slate-500 mb-3">
+            <span className="font-semibold uppercase tracking-wider text-[10px] text-slate-400">Also known as: </span>
+            {disease.aliases.join(", ")}
+          </p>
+        )}
+
         {disease.description && (
           <p className="text-xs sm:text-sm text-slate-700 leading-relaxed max-w-3xl glass-panel p-4 rounded-xl">
             {disease.description}
+          </p>
+        )}
+
+        {disease.source_url && (
+          <p className="text-[11px] text-slate-500 mt-2">
+            Summary written by MedSeek. Reference:{" "}
+            <a
+              href={disease.source_url}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              className="text-[#3a5ebb] hover:underline font-medium"
+            >
+              Mayo Clinic
+            </a>
           </p>
         )}
       </div>

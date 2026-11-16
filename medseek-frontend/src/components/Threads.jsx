@@ -172,7 +172,9 @@ const Threads = ({
     // its cost scales with the number of rendered pixels. Cap the internal render
     // resolution to keep large / high-DPI screens smooth; the effect is soft
     // enough that the downscale is imperceptible.
-    const MAX_RENDER_DIM = 1920;
+    // 960px on the longest side: the lines are blurred, so the browser's upscale is
+    // invisible, and the shader shades roughly a quarter of the pixels it did at 1920.
+    const MAX_RENDER_DIM = 960;
     function resize() {
       const { clientWidth, clientHeight } = container;
       const baseDpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -216,9 +218,20 @@ const Threads = ({
     );
     intersectionObserver.observe(container);
 
+    // The threads drift slowly, so 30 fps looks identical to 60 at half the GPU work.
+    // Users who ask for reduced motion get a single still frame.
+    const FRAME_INTERVAL_MS = 1000 / 30;
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+    let lastFrameTime = -Infinity;
+    let renderedOnce = false;
+
     function update(t) {
       animationFrameId.current = requestAnimationFrame(update);
       if (!isVisible || document.hidden) return;
+      if (reducedMotion && renderedOnce) return;
+      if (t - lastFrameTime < FRAME_INTERVAL_MS - 1) return;
+      lastFrameTime = t;
+      renderedOnce = true;
 
       const { color, amplitude, distance, enableMouseInteraction, speed: currentSpeed } = propsRef.current;
 

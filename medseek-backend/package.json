@@ -1,7 +1,7 @@
 {
   "name": "medseek-backend",
   "version": "0.1.0",
-  "description": "MedSeek backend — disease search engine, health AI, and encrypted data vault API",
+  "description": "MedSeek backend \u2014 disease search engine, health AI, and encrypted data vault API",
   "private": true,
   "type": "module",
   "engines": {
@@ -22,7 +22,10 @@
     "migrate:down": "node-pg-migrate down",
     "migrate:create": "node-pg-migrate create --migration-file-language sql",
     "seed": "tsx scripts/seed.ts",
-    "rag:backfill": "tsx scripts/rag-backfill.ts"
+    "rag:backfill": "tsx scripts/rag-backfill.ts",
+    "kb:extract": "tsx scripts/kb/extract.ts",
+    "kb:build": "tsx scripts/kb/build.ts",
+    "kb:check": "tsx scripts/kb/check-ranking.ts"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",

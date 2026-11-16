@@ -29,8 +29,8 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
       );
     }
 
-    const { symptoms, limit, offset } = parsed.data;
-    const result = await searchDiseases(symptoms, limit, offset);
+    const { symptoms, limit, offset, sex } = parsed.data;
+    const result = await searchDiseases(symptoms, limit, offset, { sex });
 
     res.json({
       data: result.results,

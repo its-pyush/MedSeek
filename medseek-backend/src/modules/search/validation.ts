@@ -9,7 +9,8 @@ export const searchQuerySchema = z.object({
     .transform((val) =>
       val
         .split(",")
-        .map((s) => s.trim().toLowerCase())
+        // "_" → space so ids such as "chest_pain" resolve like typed text
+        .map((s) => s.replace(/_+/g, " ").replace(/\s+/g, " ").trim().toLowerCase())
         .filter((s) => s.length > 0)
     )
     .pipe(z.array(z.string()).min(1, "At least one symptom is required")),
