@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useState, useSyncExternalStore } from "react";
+import React, { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import SymptomSearch from "@/components/SymptomSearch";
 import DiseaseCard from "@/components/DiseaseCard";
@@ -52,10 +52,23 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [activeSymptoms, setActiveSymptoms] = useState<string[]>([]);
   const [bodySelectMode, setBodySelectMode] = useState(false);
-  const [pickerSlot, setPickerSlot] = useState<HTMLDivElement | null>(null);
+  const [desktopSlot, setDesktopSlot] = useState<HTMLDivElement | null>(null);
+  const [mobileSlot, setMobileSlot] = useState<HTMLDivElement | null>(null);
+  const [pickerLayout, setPickerLayout] = useState<"bar" | "panel">("panel");
   const isDesktop = useIsDesktop();
   // On a phone, picking on the body takes over the screen below the search bar.
   const mobilePicking = bodySelectMode && !isDesktop;
+  const pickerSlot = isDesktop ? desktopSlot : mobileSlot;
+
+  // The phone picker is a full-screen layer; the page behind it must not scroll.
+  useEffect(() => {
+    if (!mobilePicking) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [mobilePicking]);
 
   const handleSelectModeChange = useCallback((active: boolean) => {
     setBodySelectMode(active);
@@ -87,7 +100,13 @@ export default function Home() {
   return (
     <div className="flex flex-col flex-1">
       {/* Hero: search on the left, anatomical model in its own column on the right */}
-      <section className={`relative overflow-hidden border-b border-[#e2dcd0]/80 bg-gradient-to-b from-[#fff8eb]/50 via-[#fff8eb]/85 to-[#fff8eb] flex flex-col ${!hasSearched && !mobilePicking ? "flex-1 justify-center" : ""}`}>
+      <section
+        className={`overflow-hidden border-b border-[#e2dcd0]/80 flex flex-col ${
+          mobilePicking
+            ? "fixed inset-x-0 top-13 bottom-0 z-40 bg-[#fff8eb]"
+            : `relative bg-gradient-to-b from-[#fff8eb]/50 via-[#fff8eb]/85 to-[#fff8eb] ${!hasSearched ? "flex-1 justify-center" : ""}`
+        }`}
+      >
         {/* Soft ambient colour behind the glass panels */}
         <div className="absolute top-[8%] left-[5%] w-96 h-96 rounded-full bg-[#fed7aa]/35 blur-[90px] pointer-events-none -z-10" />
         <div className="absolute top-[20%] right-[8%] w-[500px] h-[500px] rounded-full bg-[#3a5ebb]/14 blur-[110px] pointer-events-none -z-10" />
@@ -142,14 +161,10 @@ export default function Home() {
               />
             </div>
 
-            {/* Picker list: under the search bar on desktop, a bottom sheet on phones */}
+            {/* Desktop: the picker list opens under the search bar */}
             <div
-              ref={setPickerSlot}
-              className={
-                bodySelectMode
-                  ? "fixed inset-x-0 bottom-0 z-40 h-[46dvh] lg:static lg:z-auto lg:h-[440px] lg:mt-4 animate-slide-up"
-                  : "hidden"
-              }
+              ref={setDesktopSlot}
+              className={bodySelectMode && isDesktop ? "h-[440px] mt-4 animate-slide-up" : "hidden"}
             />
           </div>
         </div>
@@ -157,7 +172,7 @@ export default function Home() {
         {/* Phones: the model is the centrepiece, large and directly below the search */}
         {!isDesktop && (
           <div
-            className={`relative w-full overflow-hidden ${mobilePicking ? "h-[calc(54dvh-12.5rem)] min-h-[180px]" : "h-[62dvh] min-h-[420px]"}`}
+            className={`relative w-full overflow-hidden ${mobilePicking ? "flex-1 min-h-0" : "h-[62dvh] min-h-[420px]"}`}
           >
             <HumanBodyModel
               activeSymptoms={activeSymptoms}
@@ -165,9 +180,23 @@ export default function Home() {
               onSelectModeChange={handleSelectModeChange}
               panelContainer={pickerSlot}
               onSearchRequested={() => handleSearch(activeSymptoms)}
+              tapFirst
+              onPickerLayoutChange={setPickerLayout}
             />
           </div>
         )}
+
+        {/* Phones: a slim bar while choosing an area, a half-screen list once one is chosen */}
+        <div
+          ref={setMobileSlot}
+          className={
+            mobilePicking
+              ? pickerLayout === "bar"
+                ? "shrink-0"
+                : "shrink-0 h-[50dvh] animate-slide-up"
+              : "hidden"
+          }
+        />
       </section>
 
       {/* Differential Results Section */}

@@ -50,6 +50,17 @@ interface BodyPickerPanelProps {
   onClear: () => void;
   onClose: () => void;
   onSearch: () => void;
+
+  /**
+   * "bar": a single slim row for phones while the user picks an area by
+   * tapping the body, so the model keeps the whole screen.
+   * "panel" (default): the full two-step list.
+   */
+  layout?: "panel" | "bar";
+  /** Bar → open the area list for people who would rather not tap the model. */
+  onShowList?: () => void;
+  /** Panel on a phone → go back to tapping the model. */
+  onHideList?: () => void;
 }
 
 export default function BodyPickerPanel({
@@ -69,6 +80,9 @@ export default function BodyPickerPanel({
   onClear,
   onClose,
   onSearch,
+  layout = "panel",
+  onShowList,
+  onHideList,
 }: BodyPickerPanelProps) {
   const [filter, setFilter] = useState("");
   const onSymptomStep = Boolean(region && activePartId);
@@ -85,6 +99,69 @@ export default function BodyPickerPanel({
 
   const title = onSymptomStep ? region!.name : "Where is the problem?";
   const count = selectedSymptoms.length;
+
+  const sideSwitch = (
+    <div className="flex items-center bg-slate-100 p-1 rounded-xl" role="tablist" aria-label="Body side">
+      {[
+        { label: "Front", active: !isBackView, onClick: onShowFront },
+        { label: "Back", active: isBackView, onClick: onShowBack },
+      ].map((side) => (
+        <button
+          key={side.label}
+          type="button"
+          role="tab"
+          aria-selected={side.active}
+          onClick={side.onClick}
+          className={`min-h-9 px-4 rounded-lg text-sm font-semibold transition-colors ${
+            side.active ? "bg-white text-[#2a4693] shadow-xs" : "text-slate-600"
+          }`}
+        >
+          {side.label}
+        </button>
+      ))}
+    </div>
+  );
+
+  if (layout === "bar") {
+    return (
+      <div
+        className="bg-white border-t border-[#e2dcd0] shadow-[0_-4px_16px_rgba(15,23,42,0.08)] px-3 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
+        onPointerDown={(e) => e.stopPropagation()}
+        role="toolbar"
+        aria-label="Body picker"
+      >
+        <p className="text-center text-sm font-semibold text-slate-700 mb-2">
+          Tap the part of the body that hurts
+        </p>
+        <div className="flex items-center gap-2">
+          {sideSwitch}
+          <button
+            type="button"
+            onClick={onShowList}
+            className="min-h-11 px-3 rounded-xl border border-slate-300 text-sm font-semibold text-slate-700"
+          >
+            List
+          </button>
+          <button
+            type="button"
+            onClick={onSearch}
+            disabled={count === 0}
+            className="btn-3d-primary ml-auto min-h-11 px-4 rounded-xl text-sm font-bold disabled:opacity-50"
+          >
+            {count === 0 ? "Search" : `Search (${count})`}
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex items-center justify-center w-11 h-11 rounded-xl text-slate-500 hover:bg-slate-100"
+            aria-label="Close body picker"
+          >
+            <IconClose size={18} />
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -108,25 +185,18 @@ export default function BodyPickerPanel({
             <span>All areas</span>
           </button>
         ) : (
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl" role="tablist" aria-label="Body side">
-            {[
-              { label: "Front", active: !isBackView, onClick: onShowFront },
-              { label: "Back", active: isBackView, onClick: onShowBack },
-            ].map((side) => (
+          <>
+            {sideSwitch}
+            {onHideList && (
               <button
-                key={side.label}
                 type="button"
-                role="tab"
-                aria-selected={side.active}
-                onClick={side.onClick}
-                className={`min-h-9 px-4 rounded-lg text-sm font-semibold transition-colors ${
-                  side.active ? "bg-white text-[#2a4693] shadow-xs" : "text-slate-600"
-                }`}
+                onClick={onHideList}
+                className="min-h-9 px-3 rounded-xl text-sm font-semibold text-[#2a4693] hover:bg-[#3a5ebb]/10"
               >
-                {side.label}
+                Tap on body
               </button>
-            ))}
-          </div>
+            )}
+          </>
         )}
 
         <button

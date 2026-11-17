@@ -26,6 +26,7 @@ import {
 } from "./regionHierarchy";
 import RegionDebugOverlay from "./RegionDebugOverlay";
 import BodyPickerPanel from "./BodyPickerPanel";
+import { WireLevel, nextWireLevel, thinToTriangleBudget } from "./meshDensity";
 import { createPortal } from "react-dom";
 
 export type { SubRegion, MajorRegion, RegionSelectionPayload, RegionProxy };
@@ -867,6 +868,18 @@ function RotatingBody({
     return geo;
   }, [scene]);
 
+  // Thinner copies of the mesh for the wireframe when the figure is small on screen.
+  const wireGeometries = useMemo(() => {
+    if (!bakedGeometry) return null;
+    return {
+      full: bakedGeometry,
+      mid: thinToTriangleBudget(bakedGeometry, 9000),
+      low: thinToTriangleBudget(bakedGeometry, 3000),
+    } satisfies Record<WireLevel, THREE.BufferGeometry>;
+  }, [bakedGeometry]);
+  const [wireLevel, setWireLevel] = useState<WireLevel>("mid");
+  const wireLevelRef = useRef<WireLevel>("mid");
+
   useEffect(() => {
     return () => {
       bakedGeometry?.dispose();
@@ -1253,6 +1266,15 @@ function RotatingBody({
       };
     }
 
+    // Wireframe density follows how tall the figure is on screen.
+    const distance = Math.max(0.1, camera.position.z);
+    const figureHeightPx = (modelHeight / (2 * tanHalfFov * distance)) * size.height;
+    const level = nextWireLevel(wireLevelRef.current, figureHeightPx);
+    if (level !== wireLevelRef.current) {
+      wireLevelRef.current = level;
+      setWireLevel(level);
+    }
+
     const t = 1.0 - Math.exp(-6.0 * delta); // Smooth frame-rate independent exponential lerp (~500ms)
 
     camera.position.x = THREE.MathUtils.lerp(camera.position.x, targetCamX, t);
@@ -1451,7 +1473,7 @@ function RotatingBody({
         material={baseMaterial}
       />
       <mesh
-        geometry={bakedGeometry}
+        geometry={wireGeometries ? wireGeometries[wireLevel] : bakedGeometry}
         material={wireMaterial}
       />
       {/* Dev-Only Proxy Wireframe Visualizer */}
@@ -1480,6 +1502,13 @@ interface HumanBodyModelProps {
   panelContainer?: HTMLElement | null;
   /** Called when the user presses Search inside the picker. */
   onSearchRequested?: () => void;
+  /**
+   * Phone behaviour: while choosing an area the picker is only a slim bar and
+   * the model keeps the screen; the list appears after an area is tapped.
+   */
+  tapFirst?: boolean;
+  /** Tells the page how much room the picker needs right now. */
+  onPickerLayoutChange?: (layout: "bar" | "panel") => void;
 }
 
 export default function HumanBodyModel({
@@ -1489,6 +1518,8 @@ export default function HumanBodyModel({
   onSelectModeChange,
   panelContainer,
   onSearchRequested,
+  tapFirst = false,
+  onPickerLayoutChange,
 }: HumanBodyModelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(true);
@@ -1726,7 +1757,16 @@ export default function HumanBodyModel({
     return REGION_HIERARCHY.filter((m) => m.view === view);
   }, [isBackView]);
 
+  // Phone: the area list is opt-in; by default areas are chosen by tapping the model.
+  const [areaListOpen, setAreaListOpen] = useState(false);
+  const onSymptomStep = Boolean(subRegionData && activeSubRegionId);
+  const pickerLayout: "bar" | "panel" = tapFirst && !onSymptomStep && !areaListOpen ? "bar" : "panel";
+  useEffect(() => {
+    onPickerLayoutChange?.(pickerLayout);
+  }, [pickerLayout, onPickerLayoutChange]);
+
   const exitSelectMode = () => {
+    setAreaListOpen(false);
     setSelectMode(false);
     setMode("full");
     setActiveMajorId(null);
@@ -1758,6 +1798,9 @@ export default function HumanBodyModel({
         exitSelectMode();
         onSearchRequested?.();
       }}
+      layout={pickerLayout}
+      onShowList={() => setAreaListOpen(true)}
+      onHideList={tapFirst ? () => setAreaListOpen(false) : undefined}
     />
   );
 
