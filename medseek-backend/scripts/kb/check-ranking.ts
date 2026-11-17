@@ -62,7 +62,13 @@ const CASES: Case[] = [
 /** Single vague symptoms: how alarming is the answer? */
 const ALARM_PROBES = [["vomiting"], ["headache"], ["fever"], ["fatigue"], ["cough"], ["nausea"]];
 
-interface Hit { name: string; urgency_level: string }
+interface Hit { name: string; urgency_level: string; relevance_rank?: number }
+
+/** The service returns a page grouped by risk; the check wants relevance order back. */
+const byRelevance = <T extends Hit>(hits: T[]): T[] =>
+  hits.every((h) => h.relevance_rank !== undefined)
+    ? [...hits].sort((a, b) => a.relevance_rank! - b.relevance_rank!)
+    : hits;
 interface Outcome { results: Hit[]; dontRuleOut: Hit[]; unresolved: number }
 
 type Runner = (symptoms: string[]) => Promise<Outcome>;
@@ -75,7 +81,7 @@ async function apiRunner(base: string): Promise<Runner> {
       data: Hit[]; dont_rule_out: Hit[]; meta: { resolved_symptoms: { match_type: string }[] };
     };
     return {
-      results: body.data,
+      results: byRelevance(body.data),
       dontRuleOut: body.dont_rule_out,
       unresolved: body.meta.resolved_symptoms.filter((r) => r.match_type === "none").length,
     };
@@ -89,7 +95,7 @@ async function dbRunner(): Promise<{ run: Runner; close: () => Promise<void> }> 
     run: async (symptoms) => {
       const r = await searchDiseases(symptoms.map((s) => s.toLowerCase()), 20, 0);
       return {
-        results: r.results,
+        results: byRelevance(r.results),
         dontRuleOut: r.dont_rule_out,
         unresolved: r.resolved_symptoms.filter((x) => x.match_type === "none").length,
       };
@@ -98,7 +104,95 @@ async function dbRunner(): Promise<{ run: Runner; close: () => Promise<void> }> 
   };
 }
 
+/**
+ * In-memory runner over data/kb/medseek_kb.json — same resolution order and
+ * score formula as the search service, so a new knowledge base can be checked
+ * BEFORE it is seeded. Trigram similarity approximates Postgres pg_trgm.
+ */
+async function kbRunner(): Promise<Runner> {
+  const fs = await import("node:fs");
+  const path = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+  const { PREVALENCE_PRIOR, selectDontRuleOut, groupByRisk } = await import("../../src/modules/search/service.js");
+  const here = path.dirname(fileURLToPath(import.meta.url));
+  const kb = JSON.parse(fs.readFileSync(path.join(here, "..", "..", "data", "kb", "medseek_kb.json"), "utf-8"));
+
+  const trigrams = (text: string) => {
+    const out = new Set<string>();
+    for (const word of text.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim().split(" ")) {
+      const padded = `  ${word} `;
+      for (let i = 0; i < padded.length - 2; i++) out.add(padded.slice(i, i + 3));
+    }
+    return out;
+  };
+  const similarity = (a: Set<string>, b: Set<string>) => {
+    let shared = 0;
+    for (const t of a) if (b.has(t)) shared++;
+    return shared / (a.size + b.size - shared || 1);
+  };
+
+  const idfOf = new Map<string, number>(kb.symptoms.map((s: { name: string; idf: number }) => [s.name, s.idf]));
+  const exact = new Map<string, string>();
+  const synonym = new Map<string, string>();
+  const fuzzy: { text: Set<string>; name: string }[] = [];
+  for (const s of kb.symptoms) {
+    exact.set(s.name, s.name);
+    fuzzy.push({ text: trigrams(s.name), name: s.name });
+    for (const syn of s.synonyms) {
+      synonym.set(syn, s.name);
+      fuzzy.push({ text: trigrams(syn), name: s.name });
+    }
+  }
+  const resolve = (input: string): string | null => {
+    const q = input.toLowerCase();
+    if (exact.has(q)) return q;
+    if (synonym.has(q)) return synonym.get(q)!;
+    const grams = trigrams(q);
+    let best: { sim: number; name: string } | null = null;
+    for (const f of fuzzy) {
+      const sim = similarity(grams, f.text);
+      if (sim > 0.3 && (!best || sim > best.sim)) best = { sim, name: f.name };
+    }
+    return best?.name ?? null;
+  };
+
+  return async (symptoms) => {
+    const resolved = symptoms.map(resolve);
+    const query = [...new Set(resolved.filter((r): r is string => r !== null))];
+    const queryIdf = query.reduce((n, s) => n + idfOf.get(s)!, 0) || 1;
+
+    const rows = [];
+    for (const [i, d] of kb.diseases.entries()) {
+      const matched = d.symptoms.filter((l: { name: string }) => query.includes(l.name));
+      if (matched.length === 0) continue;
+      const base = matched.reduce((n: number, l: { weight: number }) => n + l.weight, 0);
+      const matchedIdf = matched.reduce((n: number, l: { name: string }) => n + idfOf.get(l.name)!, 0);
+      const evidence = base * (matchedIdf / queryIdf);
+      rows.push({
+        id: i, name: d.name, description: null, urgency_level: d.urgency, prevalence: d.prevalence,
+        evidence, score: evidence * PREVALENCE_PRIOR[d.prevalence],
+        match_count: matched.length, has_key: matched.some((l: { key: boolean }) => l.key),
+        matched_symptoms: matched.map((l: { name: string }) => l.name), total_symptoms: d.symptoms.length,
+      });
+    }
+    rows.sort((a, b) => b.score - a.score || b.match_count - a.match_count || a.name.localeCompare(b.name));
+    const page = rows.slice(0, 20);
+    return {
+      results: PRESERVE_RELEVANCE ? page : groupByRisk(page),
+      dontRuleOut: selectDontRuleOut(rows, new Set(page.map((r) => r.id)), query.length),
+      unresolved: resolved.filter((r) => r === null).length,
+    };
+  };
+}
+
+/** The check measures relevance, so it looks at the page before risk grouping. */
+const PRESERVE_RELEVANCE = true;
+
 async function main() {
+  if (process.argv.includes("--kb")) {
+    await report(await kbRunner());
+    return;
+  }
   const apiIdx = process.argv.indexOf("--api");
   let run: Runner;
   let close = async () => {};
@@ -110,6 +204,11 @@ async function main() {
     close = db.close;
   }
 
+  await report(run);
+  await close();
+}
+
+async function report(run: Runner) {
   let top1 = 0, top3 = 0, top10 = 0, unresolved = 0, totalSymptoms = 0;
   const misses: string[] = [];
 
@@ -140,8 +239,6 @@ async function main() {
     const urgentTop5 = top5.filter((r) => r.urgency_level === "emergency" || r.urgency_level === "high").length;
     console.log(`  ${probe[0].padEnd(9)} warnings: ${String(out.dontRuleOut.length).padStart(3)} | urgent in top 5: ${urgentTop5} | top 3: ${top5.slice(0, 3).map((r) => r.name).join(" | ")}`);
   }
-
-  await close();
 }
 
 main().catch((err) => {

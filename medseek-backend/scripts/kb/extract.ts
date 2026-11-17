@@ -84,12 +84,14 @@ export interface CachedExtraction {
   aliases: string[];
   model: string;
   promptVersion: string;
+  /** "reference" = structured from scraped notes; "model" = written from model knowledge (no notes captured). */
+  basis?: "reference" | "model";
   result: Extraction;
 }
 
 // ─── Source loading ──────────────────────────────────────────────
 
-/** Dedupe the scrape by URL and keep only diseases that have a symptoms section. */
+/** Dedupe the scrape by URL. Includes diseases whose page text was not captured. */
 export function loadSourceDiseases(): SourceDisease[] {
   const raw: RawEntry[] = JSON.parse(fs.readFileSync(RAW_PATH, "utf-8"));
   const byUrl = new Map<string, SourceDisease>();
@@ -121,9 +123,12 @@ export function loadSourceDiseases(): SourceDisease[] {
     }
   }
 
-  return [...byUrl.values()]
-    .filter((d) => d.symptoms.trim().length > 0)
-    .sort((a, b) => a.url.localeCompare(b.url));
+  return [...byUrl.values()].sort((a, b) => a.url.localeCompare(b.url));
+}
+
+/** True when the scrape captured no symptom text for this disease (page layout the scraper missed). */
+export function lacksReferenceText(d: SourceDisease): boolean {
+  return d.symptoms.trim().length === 0;
 }
 
 export function cachePathFor(url: string): string {
@@ -174,6 +179,19 @@ function clip(text: string, max: number): string {
 }
 
 function buildUserPrompt(d: SourceDisease): string {
+  if (lacksReferenceText(d)) {
+    // No notes were captured for this condition: the record is written from the
+    // model's general medical knowledge and marked basis = "model".
+    return [
+      `Condition: ${d.name}`,
+      d.overview && `Overview notes: ${clip(d.overview, 1500)}`,
+      "No symptom notes are available for this condition. Use well-established, textbook-level medical knowledge only. " +
+        "List the symptoms a patient typically reports. If the name is not a medical condition with symptoms, " +
+        "still return the JSON with your best general description.",
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+  }
   return [
     `Condition: ${d.name}`,
     d.overview && `Overview notes: ${clip(d.overview, 1500)}`,
@@ -275,7 +293,7 @@ async function main() {
   fs.mkdirSync(CACHE_DIR, { recursive: true });
 
   let diseases = loadSourceDiseases();
-  console.log(`Source diseases with a symptoms section: ${diseases.length}`);
+  console.log(`Source diseases: ${diseases.length} (${diseases.filter(lacksReferenceText).length} without captured notes)`);
   if (limit) diseases = diseases.slice(0, limit);
 
   const todo = diseases.filter((d) => !fs.existsSync(cachePathFor(d.url)));
@@ -297,6 +315,7 @@ async function main() {
           aliases: d.aliases,
           model: KB_MODEL,
           promptVersion: PROMPT_VERSION,
+          basis: lacksReferenceText(d) ? "model" : "reference",
           result,
         };
         fs.writeFileSync(cachePathFor(d.url), JSON.stringify(record, null, 2));

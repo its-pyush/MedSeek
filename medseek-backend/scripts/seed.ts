@@ -73,6 +73,12 @@ async function seed() {
     );
     const diseaseId = new Map(diseaseRows.rows.map((r) => [r.source_url, r.id]));
 
+    // Model-written entries were not derived from a page, so they must not cite one.
+    // (The URL is only used above as a unique key while inserting.)
+    await client.query(`UPDATE diseases SET source_url = NULL WHERE source_url = ANY($1::text[])`, [
+      d.filter((x) => x.basis === "model").map((x) => x.source_url),
+    ]);
+
     // 3. Symptoms
     const s = kb.symptoms;
     const symptomRows = await client.query<{ id: number; name: string }>(

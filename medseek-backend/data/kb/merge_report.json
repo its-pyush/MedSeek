@@ -1,0 +1,1331 @@
+{
+ "head_merges": [
+  {
+   "canonical": "shortness of breath",
+   "members": [
+    "difficulty breathing",
+    "trouble breathing"
+   ]
+  },
+  {
+   "canonical": "skin rash",
+   "members": [
+    "rash"
+   ]
+  },
+  {
+   "canonical": "loss of appetite",
+   "members": [
+    "poor appetite"
+   ]
+  },
+  {
+   "canonical": "itching",
+   "members": [
+    "itching skin"
+   ]
+  },
+  {
+   "canonical": "trouble swallowing",
+   "members": [
+    "difficulty swallowing"
+   ]
+  },
+  {
+   "canonical": "fainting",
+   "members": [
+    "loss of consciousness"
+   ]
+  },
+  {
+   "canonical": "memory loss",
+   "members": [
+    "memory problems"
+   ]
+  },
+  {
+   "canonical": "rapid heartbeat",
+   "members": [
+    "fast heartbeat"
+   ]
+  },
+  {
+   "canonical": "palpitations",
+   "members": [
+    "heart palpitations"
+   ]
+  },
+  {
+   "canonical": "irregular periods",
+   "members": [
+    "menstrual changes"
+   ]
+  },
+  {
+   "canonical": "difficulty walking",
+   "members": [
+    "trouble walking"
+   ]
+  },
+  {
+   "canonical": "difficulty concentrating",
+   "members": [
+    "trouble concentrating",
+    "trouble paying attention"
+   ]
+  },
+  {
+   "canonical": "blood in stool",
+   "members": [
+    "bloody stool"
+   ]
+  },
+  {
+   "canonical": "muscle pain",
+   "members": [
+    "muscle aches"
+   ]
+  },
+  {
+   "canonical": "vision problems",
+   "members": [
+    "vision changes"
+   ]
+  },
+  {
+   "canonical": "trouble sleeping",
+   "members": [
+    "sleep problems",
+    "sleep disturbance"
+   ]
+  },
+  {
+   "canonical": "rapid breathing",
+   "members": [
+    "fast breathing"
+   ]
+  },
+  {
+   "canonical": "muscle stiffness",
+   "members": [
+    "stiff muscles"
+   ]
+  },
+  {
+   "canonical": "ringing in the ears",
+   "members": [
+    "tinnitus"
+   ]
+  },
+  {
+   "canonical": "hoarseness",
+   "members": [
+    "hoarse voice"
+   ]
+  },
+  {
+   "canonical": "loss of balance",
+   "members": [
+    "balance problems"
+   ]
+  },
+  {
+   "canonical": "bruising",
+   "members": [
+    "easy bruising"
+   ]
+  },
+  {
+   "canonical": "painful urination",
+   "members": [
+    "pain when urinating"
+   ]
+  },
+  {
+   "canonical": "painful intercourse",
+   "members": [
+    "pain during sex",
+    "painful sex"
+   ]
+  },
+  {
+   "canonical": "feeling full quickly",
+   "members": [
+    "early satiety"
+   ]
+  },
+  {
+   "canonical": "increased thirst",
+   "members": [
+    "excessive thirst",
+    "thirst"
+   ]
+  },
+  {
+   "canonical": "limited range of motion",
+   "members": [
+    "reduced range of motion",
+    "limited movement"
+   ]
+  },
+  {
+   "canonical": "low mood",
+   "members": [
+    "depressed mood",
+    "sadness"
+   ]
+  },
+  {
+   "canonical": "low sex drive",
+   "members": [
+    "low libido"
+   ]
+  },
+  {
+   "canonical": "bedwetting",
+   "members": [
+    "bed wetting"
+   ]
+  },
+  {
+   "canonical": "frequent urination",
+   "members": [
+    "urinary frequency"
+   ]
+  },
+  {
+   "canonical": "coughing",
+   "members": [
+    "cough"
+   ]
+  },
+  {
+   "canonical": "difficulty speaking",
+   "members": [
+    "trouble speaking",
+    "speech difficulty"
+   ]
+  },
+  {
+   "canonical": "abdominal bloating",
+   "members": [
+    "bloating"
+   ]
+  },
+  {
+   "canonical": "heavy periods",
+   "members": [
+    "heavy menstrual bleeding"
+   ]
+  },
+  {
+   "canonical": "limp",
+   "members": [
+    "limping"
+   ]
+  },
+  {
+   "canonical": "drowsiness",
+   "members": [
+    "sleepiness",
+    "daytime drowsiness"
+   ]
+  },
+  {
+   "canonical": "excessive sleepiness",
+   "members": [
+    "daytime sleepiness"
+   ]
+  },
+  {
+   "canonical": "red eyes",
+   "members": [
+    "eye redness"
+   ]
+  },
+  {
+   "canonical": "bluish skin",
+   "members": [
+    "blue skin"
+   ]
+  },
+  {
+   "canonical": "skin color change",
+   "members": [
+    "skin discoloration"
+   ]
+  },
+  {
+   "canonical": "thickened skin",
+   "members": [
+    "skin thickening"
+   ]
+  },
+  {
+   "canonical": "trembling",
+   "members": [
+    "tremor",
+    "shaking"
+   ]
+  },
+  {
+   "canonical": "acid reflux",
+   "members": [
+    "heartburn"
+   ]
+  },
+  {
+   "canonical": "bowel changes",
+   "members": [
+    "change in bowel habits"
+   ]
+  },
+  {
+   "canonical": "dimpled skin",
+   "members": [
+    "skin dimpling"
+   ]
+  },
+  {
+   "canonical": "short stature",
+   "members": [
+    "short height"
+   ]
+  },
+  {
+   "canonical": "stiff neck",
+   "members": [
+    "neck stiffness"
+   ]
+  },
+  {
+   "canonical": "muscle jerks",
+   "members": [
+    "jerking movements"
+   ]
+  },
+  {
+   "canonical": "hot flashes",
+   "members": [
+    "skin flushing"
+   ]
+  },
+  {
+   "canonical": "slow growth",
+   "members": [
+    "poor weight gain"
+   ]
+  },
+  {
+   "canonical": "mood changes",
+   "members": [
+    "mood swings"
+   ]
+  },
+  {
+   "canonical": "behavior changes",
+   "members": [
+    "personality change"
+   ]
+  },
+  {
+   "canonical": "hearing loss",
+   "members": [
+    "hearing problems"
+   ]
+  },
+  {
+   "canonical": "trouble understanding speech",
+   "members": [
+    "difficulty understanding speech"
+   ]
+  },
+  {
+   "canonical": "impulsiveness",
+   "members": [
+    "impulsive behavior"
+   ]
+  },
+  {
+   "canonical": "bowel incontinence",
+   "members": [
+    "fecal incontinence"
+   ]
+  },
+  {
+   "canonical": "lump under skin",
+   "members": [
+    "skin lump"
+   ]
+  },
+  {
+   "canonical": "skin blisters",
+   "members": [
+    "blisters"
+   ]
+  },
+  {
+   "canonical": "unsteady gait",
+   "members": [
+    "poor coordination",
+    "loss of coordination"
+   ]
+  },
+  {
+   "canonical": "eye discomfort",
+   "members": [
+    "eye irritation"
+   ]
+  },
+  {
+   "canonical": "breast enlargement",
+   "members": [
+    "breast size change"
+   ]
+  },
+  {
+   "canonical": "urine leakage",
+   "members": [
+    "urinary incontinence"
+   ]
+  },
+  {
+   "canonical": "broken bone",
+   "members": [
+    "bone fracture"
+   ]
+  }
+ ],
+ "tail_merges": [
+  {
+   "from": "bloody urine",
+   "to": "blood in urine"
+  },
+  {
+   "from": "breast growth",
+   "to": "breast enlargement"
+  },
+  {
+   "from": "bruises",
+   "to": "bruising"
+  },
+  {
+   "from": "burning when urinating",
+   "to": "painful urination"
+  },
+  {
+   "from": "burping",
+   "to": "belching"
+  },
+  {
+   "from": "buzzing in ears",
+   "to": "ringing in the ears"
+  },
+  {
+   "from": "change in eating habits",
+   "to": "appetite changes"
+  },
+  {
+   "from": "chest pressure",
+   "to": "chest tightness"
+  },
+  {
+   "from": "clear nasal drainage",
+   "to": "runny nose"
+  },
+  {
+   "from": "clubbing",
+   "to": "clubbing of fingers"
+  },
+  {
+   "from": "heavy sweating",
+   "to": "excessive sweating"
+  },
+  {
+   "from": "incomplete evacuation",
+   "to": "incomplete bowel emptying"
+  },
+  {
+   "from": "increased appetite",
+   "to": "increased hunger"
+  },
+  {
+   "from": "lack of motivation",
+   "to": "apathy"
+  },
+  {
+   "from": "loss of bladder control",
+   "to": "urine leakage"
+  },
+  {
+   "from": "loss of bowel control",
+   "to": "bowel incontinence"
+  },
+  {
+   "from": "low back pain",
+   "to": "lower back pain"
+  },
+  {
+   "from": "malaise",
+   "to": "feeling unwell"
+  },
+  {
+   "from": "mouth ulcer",
+   "to": "mouth sores"
+  },
+  {
+   "from": "muscle cramping",
+   "to": "muscle cramps"
+  },
+  {
+   "from": "pain when swallowing",
+   "to": "painful swallowing"
+  },
+  {
+   "from": "pelvic heaviness",
+   "to": "pelvic pressure"
+  },
+  {
+   "from": "pimples",
+   "to": "acne"
+  },
+  {
+   "from": "poor growth",
+   "to": "slow growth"
+  },
+  {
+   "from": "abnormal eye movements",
+   "to": "eye movement problems"
+  },
+  {
+   "from": "abnormal vaginal bleeding",
+   "to": "vaginal bleeding"
+  },
+  {
+   "from": "behavioral problems",
+   "to": "behavior problems"
+  },
+  {
+   "from": "belly swelling",
+   "to": "abdominal swelling"
+  },
+  {
+   "from": "bladder dysfunction",
+   "to": "bladder problems"
+  },
+  {
+   "from": "blistering",
+   "to": "skin blisters"
+  },
+  {
+   "from": "bowel dysfunction",
+   "to": "bowel problems"
+  },
+  {
+   "from": "burning urination",
+   "to": "painful urination"
+  },
+  {
+   "from": "dandruff",
+   "to": "scalp scaling"
+  },
+  {
+   "from": "darkened skin",
+   "to": "skin darkening"
+  },
+  {
+   "from": "daytime fatigue",
+   "to": "fatigue"
+  },
+  {
+   "from": "delayed development",
+   "to": "developmental delay"
+  },
+  {
+   "from": "delayed speech",
+   "to": "speech delay"
+  },
+  {
+   "from": "difficulty starting urination",
+   "to": "difficulty urinating"
+  },
+  {
+   "from": "earache",
+   "to": "ear pain"
+  },
+  {
+   "from": "early fullness",
+   "to": "feeling full quickly"
+  },
+  {
+   "from": "excess body hair",
+   "to": "excess hair growth"
+  },
+  {
+   "from": "eye dryness",
+   "to": "dry eyes"
+  },
+  {
+   "from": "eye floaters",
+   "to": "floaters"
+  },
+  {
+   "from": "face pain",
+   "to": "facial pain"
+  },
+  {
+   "from": "facial droop",
+   "to": "facial drooping"
+  },
+  {
+   "from": "falling",
+   "to": "falls"
+  },
+  {
+   "from": "fast heart rate",
+   "to": "rapid heartbeat"
+  },
+  {
+   "from": "urinary problems",
+   "to": "bladder problems"
+  },
+  {
+   "from": "visual disturbance",
+   "to": "vision problems"
+  },
+  {
+   "from": "abdominal cramping",
+   "to": "abdominal cramps"
+  },
+  {
+   "from": "abnormal posturing",
+   "to": "abnormal posture"
+  },
+  {
+   "from": "abnormal vaginal discharge",
+   "to": "vaginal discharge"
+  },
+  {
+   "from": "absent periods",
+   "to": "missed periods"
+  },
+  {
+   "from": "backache",
+   "to": "back pain"
+  },
+  {
+   "from": "belly pain",
+   "to": "abdominal pain"
+  },
+  {
+   "from": "bladder control problems",
+   "to": "bladder problems"
+  },
+  {
+   "from": "bladder incontinence",
+   "to": "urine leakage"
+  },
+  {
+   "from": "reduced grip strength",
+   "to": "weak grip"
+  },
+  {
+   "from": "scrotum swelling",
+   "to": "scrotal swelling"
+  },
+  {
+   "from": "skin dimple",
+   "to": "dimpled skin"
+  },
+  {
+   "from": "skin flakes",
+   "to": "flaking skin"
+  },
+  {
+   "from": "slow healing sores",
+   "to": "slow wound healing"
+  },
+  {
+   "from": "slowed growth",
+   "to": "slow growth"
+  },
+  {
+   "from": "stomach pain",
+   "to": "abdominal pain"
+  },
+  {
+   "from": "stool leakage",
+   "to": "bowel incontinence"
+  },
+  {
+   "from": "stuffy nose",
+   "to": "nasal congestion"
+  },
+  {
+   "from": "thick skin",
+   "to": "thickened skin"
+  },
+  {
+   "from": "trouble getting pregnant",
+   "to": "infertility"
+  },
+  {
+   "from": "urgency to urinate",
+   "to": "urinary urgency"
+  },
+  {
+   "from": "enlarged abdomen",
+   "to": "abdominal swelling"
+  },
+  {
+   "from": "enlarged head size",
+   "to": "enlarged head"
+  },
+  {
+   "from": "excess tearing",
+   "to": "watery eyes"
+  },
+  {
+   "from": "excessive daytime sleepiness",
+   "to": "excessive sleepiness"
+  },
+  {
+   "from": "eye deviation",
+   "to": "eye movement problems"
+  },
+  {
+   "from": "eye movement changes",
+   "to": "eye movement problems"
+  },
+  {
+   "from": "eye tearing",
+   "to": "watery eyes"
+  },
+  {
+   "from": "face numbness",
+   "to": "facial numbness"
+  },
+  {
+   "from": "face swelling",
+   "to": "facial swelling"
+  },
+  {
+   "from": "failure to conceive",
+   "to": "infertility"
+  },
+  {
+   "from": "false beliefs",
+   "to": "delusions"
+  },
+  {
+   "from": "fast pulse",
+   "to": "rapid heartbeat"
+  },
+  {
+   "from": "feeding problems",
+   "to": "feeding difficulty"
+  },
+  {
+   "from": "feeling guilt",
+   "to": "guilt"
+  },
+  {
+   "from": "feeling hopeless",
+   "to": "hopelessness"
+  },
+  {
+   "from": "difficulty hearing",
+   "to": "hearing loss"
+  },
+  {
+   "from": "difficulty staying focused",
+   "to": "difficulty concentrating"
+  },
+  {
+   "from": "discolored skin",
+   "to": "skin color change"
+  },
+  {
+   "from": "dribbling urine",
+   "to": "urine leakage"
+  },
+  {
+   "from": "dripping sweat",
+   "to": "sweating"
+  },
+  {
+   "from": "droopy eyelids",
+   "to": "drooping eyelid"
+  },
+  {
+   "from": "cola colored urine",
+   "to": "dark urine"
+  },
+  {
+   "from": "cold foot",
+   "to": "cold feet"
+  },
+  {
+   "from": "concentration problems",
+   "to": "difficulty concentrating"
+  },
+  {
+   "from": "convulsions",
+   "to": "seizures"
+  },
+  {
+   "from": "crusted skin",
+   "to": "skin crusting"
+  },
+  {
+   "from": "crusty skin",
+   "to": "skin crusting"
+  },
+  {
+   "from": "cyanosis",
+   "to": "bluish skin"
+  },
+  {
+   "from": "decreased sense of smell",
+   "to": "loss of smell"
+  },
+  {
+   "from": "delayed growth",
+   "to": "slow growth"
+  },
+  {
+   "from": "feeling sad",
+   "to": "low mood"
+  },
+  {
+   "from": "feeling unreal",
+   "to": "feeling detached"
+  },
+  {
+   "from": "feeling warm",
+   "to": "warmth"
+  },
+  {
+   "from": "fertility problems",
+   "to": "infertility"
+  },
+  {
+   "from": "flaky skin",
+   "to": "flaking skin"
+  },
+  {
+   "from": "floppy muscles",
+   "to": "poor muscle tone"
+  },
+  {
+   "from": "flushed skin",
+   "to": "skin redness"
+  },
+  {
+   "from": "foot swelling",
+   "to": "swelling feet"
+  },
+  {
+   "from": "fracture",
+   "to": "broken bone"
+  },
+  {
+   "from": "glare sensitivity",
+   "to": "light sensitivity"
+  },
+  {
+   "from": "grip weakness",
+   "to": "weak grip"
+  },
+  {
+   "from": "growth delay",
+   "to": "slow growth"
+  },
+  {
+   "from": "hair thinning",
+   "to": "hair loss"
+  },
+  {
+   "from": "hard skin",
+   "to": "thickened skin"
+  },
+  {
+   "from": "high body temperature",
+   "to": "fever"
+  },
+  {
+   "from": "hissing in ears",
+   "to": "ringing in the ears"
+  },
+  {
+   "from": "impulsivity",
+   "to": "impulsiveness"
+  },
+  {
+   "from": "inability to bear weight",
+   "to": "difficulty bearing weight"
+  },
+  {
+   "from": "increased head size",
+   "to": "enlarged head"
+  },
+  {
+   "from": "infrequent bowel movements",
+   "to": "constipation"
+  },
+  {
+   "from": "inverted nipple",
+   "to": "nipple inversion"
+  },
+  {
+   "from": "lack of emotion",
+   "to": "emotional numbness"
+  },
+  {
+   "from": "lack of energy",
+   "to": "fatigue"
+  },
+  {
+   "from": "lack of interest in sex",
+   "to": "low sex drive"
+  },
+  {
+   "from": "lack of sexual thoughts",
+   "to": "low sex drive"
+  },
+  {
+   "from": "large head",
+   "to": "enlarged head"
+  },
+  {
+   "from": "large head size",
+   "to": "enlarged head"
+  },
+  {
+   "from": "late talking",
+   "to": "speech delay"
+  },
+  {
+   "from": "learning difficulties",
+   "to": "learning difficulty"
+  },
+  {
+   "from": "limited joint movement",
+   "to": "limited range of motion"
+  },
+  {
+   "from": "little enjoyment",
+   "to": "loss of interest"
+  },
+  {
+   "from": "nasal bleeding",
+   "to": "nosebleed"
+  },
+  {
+   "from": "nasal discharge",
+   "to": "runny nose"
+  },
+  {
+   "from": "nervousness",
+   "to": "anxiety"
+  },
+  {
+   "from": "new skin growth",
+   "to": "skin growth"
+  },
+  {
+   "from": "noise sensitivity",
+   "to": "sound sensitivity"
+  },
+  {
+   "from": "pain with sex",
+   "to": "painful intercourse"
+  },
+  {
+   "from": "pain with swallowing",
+   "to": "painful swallowing"
+  },
+  {
+   "from": "pain with urination",
+   "to": "painful urination"
+  },
+  {
+   "from": "pallor",
+   "to": "pale skin"
+  },
+  {
+   "from": "poor balance",
+   "to": "loss of balance"
+  },
+  {
+   "from": "poor concentration",
+   "to": "difficulty concentrating"
+  },
+  {
+   "from": "poor sense of smell",
+   "to": "loss of smell"
+  },
+  {
+   "from": "poor sleep",
+   "to": "trouble sleeping"
+  },
+  {
+   "from": "poor wound healing",
+   "to": "slow wound healing"
+  },
+  {
+   "from": "prickling sensation",
+   "to": "tingling"
+  },
+  {
+   "from": "puffy eyelids",
+   "to": "eyelid swelling"
+  },
+  {
+   "from": "puffy face",
+   "to": "facial swelling"
+  },
+  {
+   "from": "racing heartbeat",
+   "to": "rapid heartbeat"
+  },
+  {
+   "from": "rapid pulse",
+   "to": "rapid heartbeat"
+  },
+  {
+   "from": "raspy voice",
+   "to": "hoarseness"
+  },
+  {
+   "from": "recurrent infections",
+   "to": "frequent infections"
+  },
+  {
+   "from": "loose stools",
+   "to": "diarrhea"
+  },
+  {
+   "from": "loss of erection",
+   "to": "erectile dysfunction"
+  },
+  {
+   "from": "loss of feeling",
+   "to": "numbness"
+  },
+  {
+   "from": "loss of grip strength",
+   "to": "weak grip"
+  },
+  {
+   "from": "loss of libido",
+   "to": "low sex drive"
+  },
+  {
+   "from": "loss of sensation",
+   "to": "numbness"
+  },
+  {
+   "from": "loud snoring",
+   "to": "snoring"
+  },
+  {
+   "from": "muscle soreness",
+   "to": "muscle pain"
+  },
+  {
+   "from": "muscle tightness",
+   "to": "muscle stiffness"
+  },
+  {
+   "from": "reduced appetite",
+   "to": "loss of appetite"
+  },
+  {
+   "from": "reduced grip",
+   "to": "weak grip"
+  },
+  {
+   "from": "reduced interest in sex",
+   "to": "low sex drive"
+  },
+  {
+   "from": "reduced joint motion",
+   "to": "limited range of motion"
+  },
+  {
+   "from": "reduced sensation",
+   "to": "numbness"
+  },
+  {
+   "from": "reduced sense of smell",
+   "to": "loss of smell"
+  },
+  {
+   "from": "reduced sense of taste",
+   "to": "loss of taste"
+  },
+  {
+   "from": "roaring in ears",
+   "to": "ringing in the ears"
+  },
+  {
+   "from": "scratchy throat",
+   "to": "sore throat"
+  },
+  {
+   "from": "seeing things",
+   "to": "hallucinations"
+  },
+  {
+   "from": "self inflicted injury",
+   "to": "self harm"
+  },
+  {
+   "from": "shakiness",
+   "to": "trembling"
+  },
+  {
+   "from": "skin blistering",
+   "to": "skin blisters"
+  },
+  {
+   "from": "skin cracks",
+   "to": "cracked skin"
+  },
+  {
+   "from": "skin scaling",
+   "to": "scaly skin"
+  },
+  {
+   "from": "slowed movement",
+   "to": "slow movement"
+  },
+  {
+   "from": "sluggishness",
+   "to": "lethargy"
+  },
+  {
+   "from": "spitting up",
+   "to": "regurgitation"
+  },
+  {
+   "from": "spitting up food",
+   "to": "regurgitation"
+  },
+  {
+   "from": "sticky mouth",
+   "to": "dry mouth"
+  },
+  {
+   "from": "stiff joints",
+   "to": "joint stiffness"
+  },
+  {
+   "from": "stomach cramps",
+   "to": "abdominal cramps"
+  },
+  {
+   "from": "stomachache",
+   "to": "abdominal pain"
+  },
+  {
+   "from": "word retrieval problems",
+   "to": "word finding difficulty"
+  },
+  {
+   "from": "straining to urinate",
+   "to": "difficulty urinating"
+  },
+  {
+   "from": "swelling around eyes",
+   "to": "eye swelling"
+  },
+  {
+   "from": "swelling in abdomen",
+   "to": "abdominal swelling"
+  },
+  {
+   "from": "swelling lymph glands",
+   "to": "swelling lymph nodes"
+  },
+  {
+   "from": "tearing",
+   "to": "watery eyes"
+  },
+  {
+   "from": "testicle ache",
+   "to": "testicle pain"
+  },
+  {
+   "from": "testicle tenderness",
+   "to": "testicle pain"
+  },
+  {
+   "from": "testicular pain",
+   "to": "testicle pain"
+  },
+  {
+   "from": "testicular swelling",
+   "to": "testicle swelling"
+  },
+  {
+   "from": "thoughts of suicide",
+   "to": "suicidal thoughts"
+  },
+  {
+   "from": "thoughts of wanting to die",
+   "to": "suicidal thoughts"
+  },
+  {
+   "from": "throat pain",
+   "to": "sore throat"
+  },
+  {
+   "from": "toothache",
+   "to": "tooth pain"
+  },
+  {
+   "from": "tripping and falling",
+   "to": "falls"
+  },
+  {
+   "from": "trouble conceiving",
+   "to": "infertility"
+  },
+  {
+   "from": "trouble falling asleep",
+   "to": "trouble sleeping"
+  },
+  {
+   "from": "trouble feeding",
+   "to": "feeding difficulty"
+  },
+  {
+   "from": "trouble focusing",
+   "to": "difficulty concentrating"
+  },
+  {
+   "from": "trouble getting an erection",
+   "to": "erectile dysfunction"
+  },
+  {
+   "from": "trouble keeping an erection",
+   "to": "erectile dysfunction"
+  },
+  {
+   "from": "trouble opening mouth",
+   "to": "difficulty opening mouth"
+  },
+  {
+   "from": "trouble reading",
+   "to": "difficulty reading"
+  },
+  {
+   "from": "trouble understanding words",
+   "to": "trouble understanding speech"
+  },
+  {
+   "from": "trouble with balance",
+   "to": "loss of balance"
+  },
+  {
+   "from": "trouble with speech",
+   "to": "speech problems"
+  },
+  {
+   "from": "tunnel vision",
+   "to": "peripheral vision loss"
+  },
+  {
+   "from": "unconsciousness",
+   "to": "unresponsiveness"
+  },
+  {
+   "from": "uncontrolled eye movements",
+   "to": "eye movement problems"
+  },
+  {
+   "from": "underarm lump",
+   "to": "armpit lump"
+  },
+  {
+   "from": "unintended weight loss",
+   "to": "weight loss"
+  },
+  {
+   "from": "unsteady walk",
+   "to": "unsteady gait"
+  },
+  {
+   "from": "unsteady walking",
+   "to": "unsteady gait"
+  },
+  {
+   "from": "unusual behavior",
+   "to": "behavior changes"
+  },
+  {
+   "from": "unusual eye movements",
+   "to": "eye movement problems"
+  },
+  {
+   "from": "urge to urinate",
+   "to": "urinary urgency"
+  },
+  {
+   "from": "urinary leakage",
+   "to": "urine leakage"
+  },
+  {
+   "from": "visual distortion",
+   "to": "distorted vision"
+  },
+  {
+   "from": "warm skin",
+   "to": "warmth"
+  },
+  {
+   "from": "welt",
+   "to": "skin welts"
+  },
+  {
+   "from": "white patches",
+   "to": "white patch"
+  },
+  {
+   "from": "withdrawal from others",
+   "to": "social withdrawal"
+  },
+  {
+   "from": "withdrawing from others",
+   "to": "social withdrawal"
+  }
+ ],
+ "rejected": [],
+ "extras_attached": 93,
+ "body_model_ids_unmapped": [
+  "blurred and distorted vision",
+  "ulcers on tongue",
+  "phlegm",
+  "painful walking",
+  "altered sensorium",
+  "sinus pressure",
+  "sunken eyes",
+  "red sore around nose",
+  "puffy face and eyes",
+  "drying and tingling lips",
+  "pus filled pimples",
+  "movement stiffness",
+  "enlarged thyroid",
+  "cold hands and feets",
+  "small dents in nails",
+  "inflammatory nails",
+  "bladder discomfort",
+  "foul smell ofurine",
+  "abnormal menstruation",
+  "prominent veins on calf",
+  "swelling blood vessels",
+  "swelling extremeties"
+ ]
+}
