@@ -4,7 +4,7 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signupApi } from "@/lib/auth";
-import { IconProfile, IconWarning, IconArrowLeft } from "@/components/icons";
+import { MedSeekLogo, IconWarning, IconArrowLeft } from "@/components/icons";
 import Threads from "@/components/Threads";
 
 export default function SignupPage() {
@@ -62,9 +62,7 @@ export default function SignupPage() {
         <div className="p-6 sm:p-7 rounded-2xl glass-panel shadow-lg">
           {/* Header */}
           <div className="text-center mb-5">
-            <div className="w-11 h-11 mx-auto mb-3 rounded-xl glass-chip flex items-center justify-center text-brand shadow-xs">
-              <IconProfile size={20} />
-            </div>
+            <MedSeekLogo size={48} className="mx-auto mb-3" />
             <h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900">
               Create Patient Account
             </h1>

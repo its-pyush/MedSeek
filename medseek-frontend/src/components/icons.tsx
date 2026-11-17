@@ -9,28 +9,35 @@ export interface IconProps extends React.SVGProps<SVGSVGElement> {
  * MedSeek Brand Mark: a speech bubble (ask anything) carrying a heartbeat line (health).
  * Mirrors src/app/icon.svg, which is the browser favicon. Keep the two in sync.
  */
-export function MedSeekLogo({ size = 24, className = "text-brand", ...props }: IconProps) {
+export function MedSeekLogo({ size = 24, className = "", ...props }: IconProps) {
+  // Same artwork as src/app/icon.svg (the favicon); keep the two in sync.
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 64 64"
+      viewBox="0 0 512 512"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       aria-hidden="true"
       {...props}
     >
-      <rect width="64" height="64" rx="16" fill="#5798cf" />
+      <g fill="#3B7A9E">
+        <path d="M 138.2 193.3 C 115.5 177.5, 80.5 160.5, 76.4 152.7 C 52.4 135.3, 78.2 99.7, 102.3 117.1 C 102.6 127.9, 131.3 154.2, 148 177.6 Q 157.6 194.5, 138.2 193.3 Z" />
+        <path d="M 353.5 306.1 C 388.7 315.7, 432.5 334.4, 448.2 333.3 C 474.4 347.2, 453.8 386.1, 427.6 372.1 C 413 368.6, 374.7 340.2, 343.7 321.7 Q 334.1 304.8, 353.5 306.1 Z" />
+        <path d="M 158.1 98.5 C 157.1 91.5, 144.8 79.5, 152.4 85.8 C 139.8 58.9, 179.7 40.3, 192.3 67.3 C 179.9 61.7, 182.3 78.8, 174.3 89.5 Q 174.5 108.9, 158.1 98.5 Z" />
+        <path d="M 317.1 347.2 C 341.7 370.3, 369.4 405.3, 382.3 410.1 C 398.5 435, 361.6 458.9, 345.4 434 C 335.7 425.7, 317.6 384.9, 301 356.2 Q 300.8 336.8, 317.1 347.2 Z" />
+        <path d="M 246.8 130.7 C 247.9 100.4, 243.9 58.7, 248.4 49 C 250.5 19.3, 294.4 22.4, 292.3 52 C 283.2 60.3, 276 101.4, 265.2 130.7 Q 256 147.8, 246.8 130.7 Z" />
+        <path d="M 265.2 365.8 C 275.7 400.5, 283.1 447.4, 292.3 460 C 294.4 489.6, 250.5 492.7, 248.4 463 C 243.7 448.9, 247.5 401.6, 246.8 365.8 Q 256 348.7, 265.2 365.8 Z" />
+        <path d="M 337.7 89.5 C 343.1 85, 346.7 68.2, 345.4 78 C 361.6 53.1, 398.5 77, 382.3 101.9 C 380.4 88.6, 367.2 99.6, 353.9 98.5 Q 337.5 108.9, 337.7 89.5 Z" />
+        <path d="M 211 356.2 C 204.5 389.2, 189.5 431.3, 192.3 444.7 C 179.7 471.7, 139.8 453.1, 152.4 426.2 C 154.3 413.5, 179.3 376.5, 194.9 347.2 Q 211.2 336.8, 211 356.2 Z" />
+        <path d="M 364 177.6 C 388.1 164.1, 418.8 140.1, 427.6 139.9 C 453.8 125.9, 474.4 164.8, 448.2 178.7 C 438.3 174.3, 402.1 188.6, 373.8 193.3 Q 354.4 194.5, 364 177.6 Z" />
+        <path d="M 168.3 321.7 C 144.2 349, 108.1 380.3, 102.3 394.9 C 78.2 412.3, 52.4 376.7, 76.4 359.3 C 86 347.7, 128.3 325.7, 158.5 306.1 Q 177.9 304.8, 168.3 321.7 Z" />
+      </g>
       <path
-        d="M23 13H41A12 12 0 0 1 53 25V31A12 12 0 0 1 41 43H23A12 12 0 0 1 11 31V25A12 12 0 0 1 23 13Z"
-        fill="#ffffff"
-      />
-      <path d="M18 38L14.5 51.5L31 42Z" fill="#ffffff" stroke="#ffffff" strokeWidth={3} strokeLinejoin="round" />
-      <path
-        d="M16 29H19L22 21L32 33L42 21L45 29H48"
-        stroke="#10b981"
-        strokeWidth={3.4}
+        d="M 20 256 H 146 L 196 126 L 256 308 L 316 126 L 366 256 H 492"
+        stroke="#00A86B"
+        strokeWidth={36}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
