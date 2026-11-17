@@ -351,8 +351,40 @@ async function main() {
     });
   }
 
-  const df = new Map<string, number>();
-  for (const d of diseases) for (const s of d.symptoms) df.set(s.name, (df.get(s.name) ?? 0) + 1);
+  // Editorial curation (data/kb/curation.json) --------------------------
+  const curation = JSON.parse(fs.readFileSync(path.join(KB_DIR, "curation.json"), "utf-8"));
+  const countDf = () => {
+    const m = new Map<string, number>();
+    for (const d of diseases) for (const s of d.symptoms) m.set(s.name, (m.get(s.name) ?? 0) + 1);
+    return m;
+  };
+
+  // (a) Drop catalogue entries that are a symptom rather than a condition.
+  const dfBefore = countDf();
+  const droppedSymptomEntries: string[] = [];
+  for (let i = diseases.length - 1; i >= 0; i--) {
+    const bare = cleanPhrase(diseases[i].name);
+    const canonical = resolve(repOf.get(lexicalKey(bare)) ?? bare);
+    if ((dfBefore.get(canonical) ?? 0) >= curation.symptom_entry_min_df) {
+      droppedSymptomEntries.push(diseases[i].name);
+      diseases.splice(i, 1);
+    }
+  }
+
+  // (b) Staged / recurrent cancer entries rank as rare; (c) regional prevalence.
+  const rarePattern = new RegExp(curation.force_rare_name_pattern, "i");
+  const regional: Record<string, string> = curation.regional_prevalence;
+  let prevalenceOverrides = 0;
+  for (const d of diseases) {
+    const override = rarePattern.test(d.name) ? "rare" : regional[d.name];
+    if (override && override !== d.prevalence && !d.name.startsWith("_")) {
+      d.prevalence = override as KbDisease["prevalence"];
+      prevalenceOverrides++;
+    }
+  }
+  console.log(`Curation: dropped ${droppedSymptomEntries.length} symptom entries, ${prevalenceOverrides} prevalence overrides`);
+
+  const df = countDf();
 
   const N = diseases.length;
   for (const d of diseases) {
@@ -387,6 +419,11 @@ async function main() {
   for (const [canonical, set] of synonymsOf) {
     if (!symptomNames.has(canonical)) continue;
     for (const s of set) if (!knownSurface.has(s)) knownSurface.set(s, canonical);
+  }
+
+  // Hand-mapped body picker ids take priority over anything the model would guess.
+  for (const [phrase, target] of Object.entries(curation.body_model_aliases as Record<string, string>)) {
+    if (symptomNames.has(target)) knownSurface.set(cleanPhrase(phrase), target);
   }
 
   const unresolvedExtras = [...extraPhrases.keys()].filter((p) => !knownSurface.has(p)).sort();
@@ -444,6 +481,8 @@ async function main() {
         head_merges: headMerges,
         tail_merges: [...tailMap.entries()].map(([from, to]) => ({ from, to })),
         rejected: rejectedMerges,
+        dropped_symptom_entries: droppedSymptomEntries.sort(),
+        prevalence_overrides: prevalenceOverrides,
         extras_attached: extrasAttached,
         body_model_ids_unmapped: unmappedBodyIds,
       },

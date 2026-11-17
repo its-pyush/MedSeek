@@ -123,6 +123,19 @@ export function loadSourceDiseases(): SourceDisease[] {
     }
   }
 
+  // Conditions the source catalogue does not list at all (see data/kb/curation.json).
+  // They have no page, so they get a MedSeek-internal key and are written from model knowledge.
+  const curationPath = path.join(DATA_DIR, "kb", "curation.json");
+  if (fs.existsSync(curationPath)) {
+    const extra: string[] = JSON.parse(fs.readFileSync(curationPath, "utf-8")).extra_conditions ?? [];
+    const known = new Set([...byUrl.values()].map((d) => d.name.toLowerCase()));
+    for (const name of extra) {
+      if (known.has(name.toLowerCase())) continue;
+      const key = `medseek:extra/${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+      byUrl.set(key, { url: key, name, aliases: [], overview: "", symptoms: "", whenToSeeDoctor: "", riskFactors: "" });
+    }
+  }
+
   return [...byUrl.values()].sort((a, b) => a.url.localeCompare(b.url));
 }
 
