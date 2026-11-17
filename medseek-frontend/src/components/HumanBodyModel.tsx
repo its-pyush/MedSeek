@@ -1891,7 +1891,7 @@ export default function HumanBodyModel({
                 onClick={() => setDebugFilter("current")}
                 className={`px-2 py-0.5 rounded-lg transition-colors ${
                   debugFilter === "current"
-                    ? "bg-[#3a5ebb] text-white font-bold"
+                    ? "bg-brand text-white font-bold"
                     : "text-slate-600 hover:bg-slate-100"
                 }`}
                 title="Show only proxies for active mode/view"
@@ -1903,7 +1903,7 @@ export default function HumanBodyModel({
                 onClick={() => setDebugFilter("all")}
                 className={`px-2 py-0.5 rounded-lg transition-colors ${
                   debugFilter === "all"
-                    ? "bg-[#3a5ebb] text-white font-bold"
+                    ? "bg-brand text-white font-bold"
                     : "text-slate-600 hover:bg-slate-100"
                 }`}
                 title="Show all 3D proxies simultaneously"
@@ -1926,8 +1926,8 @@ export default function HumanBodyModel({
             id="enter-select-mode-button"
           />
           <div className="absolute bottom-4 inset-x-0 flex justify-center pointer-events-none z-20">
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/95 border border-[#3a5ebb]/30 shadow-md text-sm font-semibold text-[#203a80]">
-              <IconCrosshair size={16} className="text-[#3a5ebb]" />
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/95 border border-brand/30 shadow-md text-sm font-semibold text-brand-ink">
+              <IconCrosshair size={16} className="text-brand" />
               Tap the body to choose where it hurts
             </span>
           </div>

@@ -42,14 +42,14 @@ export default function DiseaseCard({
           {isWarning && (
             <IconWarning size={16} className="text-red-600 shrink-0 mt-0.5" />
           )}
-          <h3 className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-[#3a5ebb] transition-colors capitalize truncate">
+          <h3 className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-brand transition-colors capitalize truncate">
             {name.replace(/_/g, " ")}
           </h3>
         </div>
         <div className="shrink-0 flex items-center gap-1.5">
           {relevance_rank !== undefined && relevance_rank <= 3 && (
             <span
-              className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-[#3a5ebb]/10 text-[#2a4693] border border-[#3a5ebb]/25"
+              className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-brand/10 text-brand-ink border border-brand/25"
               title="Ranked by how well it matches the symptoms you entered"
             >
               #{relevance_rank} match
@@ -91,7 +91,7 @@ export default function DiseaseCard({
               className={`h-full rounded-full transition-all duration-300 ${
                 isWarning
                   ? "bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.4)]"
-                  : "bg-[#3a5ebb] shadow-[0_0_8px_rgba(58,94,187,0.4)]"
+                  : "bg-brand shadow-[0_0_8px_rgba(58,94,187,0.4)]"
               }`}
               style={{ width: `${Math.min(matchPercentage, 100)}%` }}
             />
@@ -101,8 +101,8 @@ export default function DiseaseCard({
           </span>
         </div>
 
-        <div className="flex items-center gap-1 text-[11px] text-slate-500 font-medium shrink-0 group-hover:text-[#3a5ebb] transition-colors">
-          <span>{matched_symptoms.length}/{total_symptoms} markers</span>
+        <div className="flex items-center gap-1 text-[11px] text-slate-500 font-medium shrink-0 group-hover:text-brand transition-colors">
+          <span>{matched_symptoms.length} of {total_symptoms} symptoms</span>
           <IconChevronRight size={12} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
         </div>
       </div>

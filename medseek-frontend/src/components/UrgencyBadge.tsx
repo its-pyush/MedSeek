@@ -18,25 +18,25 @@ const urgencyConfig: Record<
   }
 > = {
   low: {
-    label: "Low Priority",
+    label: "Lower risk",
     badgeClass: "bg-emerald-50/90 text-emerald-800 border-emerald-300",
     iconClass: "text-emerald-700",
     Icon: IconUrgencyLow,
   },
   moderate: {
-    label: "Moderate",
+    label: "Moderate risk",
     badgeClass: "bg-amber-50/90 text-amber-800 border-amber-300",
     iconClass: "text-amber-700",
     Icon: IconUrgencyModerate,
   },
   high: {
-    label: "Urgent",
+    label: "Higher risk",
     badgeClass: "bg-orange-50/90 text-orange-900 border-orange-300",
     iconClass: "text-orange-700",
     Icon: IconUrgencyHigh,
   },
   emergency: {
-    label: "Critical",
+    label: "Emergency",
     badgeClass: "bg-red-50 text-red-900 border-red-300 font-bold",
     iconClass: "text-red-700",
     Icon: IconUrgencyEmergency,

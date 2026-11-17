@@ -114,10 +114,10 @@ function ChatContent() {
   const activeSession = sessions.find((s) => s.id === activeSessionId);
 
   return (
-    <div className="flex h-[calc(100dvh-4.75rem)] sm:h-[calc(100vh-6.5rem)] max-w-6xl mx-auto my-0 sm:my-3 rounded-none sm:rounded-2xl border-0 sm:border border-[#e2dcd0]/80 glass-panel shadow-sm overflow-hidden relative">
+    <div className="flex h-[calc(100dvh-4.75rem)] sm:h-[calc(100vh-6.5rem)] max-w-6xl mx-auto my-0 sm:my-3 rounded-none sm:rounded-2xl border-0 sm:border border-line/80 glass-panel shadow-sm overflow-hidden relative">
       {/* Clinical Disclaimer Dialog */}
       {showDisclaimer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/25 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/25 backdrop-blur-xs">
           <div className="max-w-md w-full p-5 sm:p-6 rounded-2xl glass-panel shadow-2xl animate-scale-in">
             <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-amber-50/90 border border-amber-200 flex items-center justify-center text-amber-700 shadow-2xs">
               <IconWarning size={20} />
@@ -142,7 +142,7 @@ function ChatContent() {
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div
-          className="sm:hidden fixed inset-0 z-40 bg-slate-950/25 backdrop-blur-xs"
+          className="sm:hidden fixed inset-0 z-40 bg-black/25 backdrop-blur-xs"
           onClick={() => setSidebarOpen(false)}
           aria-hidden="true"
         />
@@ -152,9 +152,9 @@ function ChatContent() {
       <div
         className={`${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } sm:translate-x-0 fixed inset-y-0 left-0 sm:inset-auto sm:relative z-40 sm:z-auto w-64 max-w-[85vw] sm:w-60 shrink-0 border-r border-[#e2dcd0]/80 bg-[#fff8eb]/80 backdrop-blur-md flex flex-col h-full transition-transform duration-150`}
+        } sm:translate-x-0 fixed inset-y-0 left-0 sm:inset-auto sm:relative z-40 sm:z-auto w-64 max-w-[85vw] sm:w-60 shrink-0 border-r border-line/80 bg-canvas/80 backdrop-blur-md flex flex-col h-full transition-transform duration-150`}
       >
-        <div className="p-3 border-b border-[#e2dcd0]/80 flex items-center justify-between sm:block gap-2">
+        <div className="p-3 border-b border-line/80 flex items-center justify-between sm:block gap-2">
           <button
             onClick={handleNewSession}
             className="btn-3d-primary flex-1 sm:w-full py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5"
@@ -178,12 +178,12 @@ function ChatContent() {
               onClick={() => handleSelectSession(s.id)}
               className={`w-full text-left px-2.5 py-2 rounded-lg text-xs transition-colors ${
                 activeSessionId === s.id
-                  ? "bg-white/90 border border-[#3a5ebb]/35 text-[#2a4693] font-semibold shadow-xs"
+                  ? "bg-white/90 border border-brand/35 text-brand-ink font-semibold shadow-xs"
                   : "text-slate-600 hover:bg-white/50 hover:text-slate-900"
               }`}
             >
               <div className="flex items-center gap-2">
-                <IconConsultation size={14} className={activeSessionId === s.id ? "text-[#3a5ebb]" : "text-slate-400"} />
+                <IconConsultation size={14} className={activeSessionId === s.id ? "text-brand" : "text-slate-400"} />
                 <span className="truncate">
                   Session {new Date(s.started_at.replace(' ', 'T')).toLocaleDateString()}
                 </span>
@@ -199,9 +199,9 @@ function ChatContent() {
       </div>
 
       {/* Main Dialogue Console */}
-      <div className="flex-1 flex flex-col min-w-0 bg-[#fff8eb]/40 backdrop-blur-xs">
+      <div className="flex-1 flex flex-col min-w-0 bg-canvas/40 backdrop-blur-xs">
         {/* Top Consultation Context Bar */}
-        <div className="h-12 px-3.5 sm:px-5 border-b border-[#e2dcd0]/80 flex items-center justify-between shrink-0 bg-white/50 backdrop-blur-md">
+        <div className="h-12 px-3.5 sm:px-5 border-b border-line/80 flex items-center justify-between shrink-0 bg-white/50 backdrop-blur-md">
           <div className="flex items-center gap-2 min-w-0">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -227,7 +227,7 @@ function ChatContent() {
         {!activeSessionId ? (
           <div className="flex-1 flex items-center justify-center p-4">
             <div className="text-center px-4 max-w-sm">
-              <div className="w-12 h-12 mx-auto mb-3 rounded-2xl glass-chip flex items-center justify-center text-[#3a5ebb] shadow-xs">
+              <div className="w-12 h-12 mx-auto mb-3 rounded-2xl glass-chip flex items-center justify-center text-brand shadow-xs">
                 <IconConsultation size={24} />
               </div>
               <h2 className="text-base font-bold text-slate-900 mb-1.5">
@@ -256,7 +256,7 @@ function ChatContent() {
                   <div
                     className={`max-w-[85%] sm:max-w-[70%] px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed shadow-xs ${
                       msg.role === "user"
-                        ? "bg-[#3a5ebb] text-white font-normal shadow-[0_2px_8px_rgba(58,94,187,0.3)]"
+                        ? "bg-brand text-white font-normal shadow-[0_2px_8px_rgba(58,94,187,0.3)]"
                         : "glass-panel text-slate-800"
                     }`}
                   >
@@ -290,7 +290,7 @@ function ChatContent() {
             )}
 
             {/* Message Input Bar */}
-            <form onSubmit={handleSend} className="p-2.5 sm:p-3 border-t border-[#e2dcd0]/80 bg-[#fff8eb]/90 backdrop-blur-md">
+            <form onSubmit={handleSend} className="p-2.5 sm:p-3 border-t border-line/80 bg-canvas/90 backdrop-blur-md">
               <div className="flex gap-2 items-end">
                 <textarea
                   ref={textareaRef}
@@ -303,7 +303,7 @@ function ChatContent() {
                     }
                   }}
                   placeholder="Inquire about symptoms, drug interactions, or next steps..."
-                  className="flex-1 px-3 py-2 rounded-xl border border-slate-300/80 bg-white/90 backdrop-blur-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#3a5ebb] focus:ring-2 focus:ring-[#3a5ebb]/15 text-xs resize-none min-h-[38px] max-h-[100px] shadow-2xs"
+                  className="flex-1 px-3 py-2 rounded-xl border border-slate-300/80 bg-white/90 backdrop-blur-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 text-xs resize-none min-h-[38px] max-h-[100px] shadow-2xs"
                   disabled={isSending}
                   rows={1}
                 />

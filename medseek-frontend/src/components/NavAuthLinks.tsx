@@ -15,6 +15,7 @@ import {
   IconMenu,
   IconClose,
 } from "./icons";
+import ThemeToggle from "./ThemeToggle";
 
 interface NavLinkItem {
   href: string;
@@ -73,13 +74,13 @@ export default function NavAuthLinks() {
             <Link
               key={link.href}
               href={link.href}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-all ${
+              className={`flex items-center gap-1.5 px-3 h-9 rounded-xl text-sm font-medium tracking-tight transition-colors ${
                 isActive
-                  ? "text-[#3a5ebb] bg-white/90 border border-[#3a5ebb]/35 font-semibold shadow-xs backdrop-blur-sm"
-                  : "text-slate-700 hover:text-slate-950 hover:bg-white/60 border border-transparent"
+                  ? "text-brand-ink bg-brand/12 font-semibold"
+                  : "text-slate-600 hover:text-slate-950 hover:bg-slate-900/5"
               }`}
             >
-              <Icon size={14} className={isActive ? "text-[#3a5ebb]" : "text-slate-500"} />
+              <Icon size={15} className={isActive ? "text-brand" : "text-slate-500"} />
               {link.label}
             </Link>
           );
@@ -91,14 +92,14 @@ export default function NavAuthLinks() {
         <div className="hidden sm:flex items-center gap-2 ml-1.5">
           <Link
             href="/login"
-            className="btn-3d-secondary px-3 py-1 rounded-lg text-xs font-medium"
+            className="btn-3d-secondary px-3.5 h-9 text-sm"
             id="nav-login"
           >
             Sign In
           </Link>
           <Link
             href="/signup"
-            className="btn-3d-primary px-3.5 py-1 rounded-lg text-xs font-semibold"
+            className="btn-3d-primary px-4 h-9 text-sm"
             id="nav-signup"
           >
             Register
@@ -106,20 +107,24 @@ export default function NavAuthLinks() {
         </div>
       ) : null}
 
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setMobileOpen(!mobileOpen)}
-        className="sm:hidden btn-3d-secondary p-1.5 rounded-lg text-slate-700"
-        aria-label="Toggle navigation menu"
-        aria-expanded={mobileOpen}
-      >
-        {mobileOpen ? <IconClose size={18} /> : <IconMenu size={18} />}
-      </button>
+      <ThemeToggle />
+
+      {/* Mobile Menu Button (wrapper carries the breakpoint: the button class sets its own display) */}
+      <div className="sm:hidden">
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="btn-3d-secondary w-9 h-9 rounded-xl"
+          aria-label="Toggle navigation menu"
+          aria-expanded={mobileOpen}
+        >
+          {mobileOpen ? <IconClose size={18} /> : <IconMenu size={18} />}
+        </button>
+      </div>
 
       {/* Mobile Backdrop */}
       {mobileOpen && (
         <div
-          className="sm:hidden fixed inset-0 z-40 bg-slate-950/20 backdrop-blur-xs"
+          className="sm:hidden fixed inset-0 z-40 bg-black/20 backdrop-blur-xs"
           onClick={() => setMobileOpen(false)}
           aria-hidden="true"
         />
@@ -127,7 +132,7 @@ export default function NavAuthLinks() {
 
       {/* Mobile Dropdown Menu */}
       {mobileOpen && (
-        <div className="absolute top-[calc(100%+0.5rem)] left-3 right-3 sm:hidden glass-dropdown rounded-2xl p-3 animate-slide-up z-50">
+        <div className="absolute top-[calc(100%+0.5rem)] left-0 right-0 sm:hidden glass-dropdown rounded-2xl p-3 animate-slide-up z-50">
           <nav className="flex flex-col gap-1.5">
             {linksToShow.map((link) => {
               const isActive = pathname === link.href;
@@ -137,13 +142,11 @@ export default function NavAuthLinks() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                    isActive
-                      ? "text-[#3a5ebb] bg-white/90 border border-[#3a5ebb]/35 font-semibold shadow-xs"
-                      : "text-slate-700 hover:bg-white/60 border border-transparent"
+                  className={`flex items-center gap-3 px-3 min-h-11 rounded-xl text-base font-medium transition-colors ${
+                    isActive ? "text-brand-ink bg-brand/12 font-semibold" : "text-slate-700 hover:bg-slate-900/5"
                   }`}
                 >
-                  <Icon size={16} className={isActive ? "text-[#3a5ebb]" : "text-slate-500"} />
+                  <Icon size={16} className={isActive ? "text-brand" : "text-slate-500"} />
                   {link.label}
                 </Link>
               );
@@ -154,7 +157,7 @@ export default function NavAuthLinks() {
                 <Link
                   href="/login"
                   onClick={() => setMobileOpen(false)}
-                  className="btn-3d-secondary w-full py-2 text-xs font-medium"
+                  className="btn-3d-secondary w-full min-h-11 text-base"
                 >
                   <IconLogin size={15} className="mr-1.5 text-slate-500" />
                   Sign In
@@ -162,7 +165,7 @@ export default function NavAuthLinks() {
                 <Link
                   href="/signup"
                   onClick={() => setMobileOpen(false)}
-                  className="btn-3d-primary w-full py-2 text-xs font-semibold"
+                  className="btn-3d-primary w-full min-h-11 text-base"
                 >
                   Register Account
                 </Link>
@@ -176,7 +179,7 @@ export default function NavAuthLinks() {
                     logout();
                     window.location.href = "/";
                   }}
-                  className="btn-3d-danger w-full py-2 text-xs font-medium flex items-center justify-center gap-2"
+                  className="btn-3d-danger w-full min-h-11 text-base flex items-center justify-center gap-2"
                 >
                   <IconLogout size={15} />
                   <span>Sign Out</span>

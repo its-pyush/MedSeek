@@ -113,7 +113,7 @@ export default function BodyPickerPanel({
           aria-selected={side.active}
           onClick={side.onClick}
           className={`min-h-9 px-4 rounded-lg text-sm font-semibold transition-colors ${
-            side.active ? "bg-white text-[#2a4693] shadow-xs" : "text-slate-600"
+            side.active ? "bg-white text-brand-ink shadow-xs" : "text-slate-600"
           }`}
         >
           {side.label}
@@ -125,7 +125,7 @@ export default function BodyPickerPanel({
   if (layout === "bar") {
     return (
       <div
-        className="bg-white border-t border-[#e2dcd0] shadow-[0_-4px_16px_rgba(15,23,42,0.08)] px-3 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
+        className="bg-white border-t border-line shadow-[0_-4px_16px_rgba(15,23,42,0.08)] px-3 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
         onPointerDown={(e) => e.stopPropagation()}
         role="toolbar"
         aria-label="Body picker"
@@ -165,7 +165,7 @@ export default function BodyPickerPanel({
 
   return (
     <div
-      className="flex flex-col h-full bg-white border border-[#e2dcd0] rounded-t-2xl lg:rounded-2xl shadow-xl overflow-hidden"
+      className="flex flex-col h-full bg-white border border-line rounded-t-2xl lg:rounded-2xl shadow-xl overflow-hidden"
       onPointerDown={(e) => e.stopPropagation()}
       role="dialog"
       aria-label="Choose symptoms by body area"
@@ -179,7 +179,7 @@ export default function BodyPickerPanel({
               setFilter("");
               onBackToAreas();
             }}
-            className="inline-flex items-center gap-1.5 min-h-11 px-3 rounded-xl text-sm font-semibold text-[#2a4693] hover:bg-[#3a5ebb]/10"
+            className="inline-flex items-center gap-1.5 min-h-11 px-3 rounded-xl text-sm font-semibold text-brand-ink hover:bg-brand/10"
           >
             <IconArrowLeft size={16} />
             <span>All areas</span>
@@ -191,7 +191,7 @@ export default function BodyPickerPanel({
               <button
                 type="button"
                 onClick={onHideList}
-                className="min-h-9 px-3 rounded-xl text-sm font-semibold text-[#2a4693] hover:bg-[#3a5ebb]/10"
+                className="min-h-9 px-3 rounded-xl text-sm font-semibold text-brand-ink hover:bg-brand/10"
               >
                 Tap on body
               </button>
@@ -233,8 +233,8 @@ export default function BodyPickerPanel({
                 onPointerLeave={() => onHoverRegion(null)}
                 className={`shrink-0 min-h-10 px-3.5 rounded-full text-sm font-semibold border transition-colors ${
                   active
-                    ? "bg-[#3a5ebb] border-[#3a5ebb] text-white"
-                    : "bg-white border-slate-300 text-slate-700 hover:border-[#3a5ebb]/60"
+                    ? "bg-brand border-brand text-white"
+                    : "bg-white border-slate-300 text-slate-700 hover:border-brand/60"
                 }`}
               >
                 {part.label}
@@ -252,7 +252,7 @@ export default function BodyPickerPanel({
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             placeholder="Filter this list"
-            className="w-full min-h-11 pl-10 pr-3 bg-slate-50 border border-slate-200 rounded-xl text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#3a5ebb]"
+            className="w-full min-h-11 pl-10 pr-3 bg-slate-50 border border-slate-200 rounded-xl text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand"
           />
         </div>
       )}
@@ -268,7 +268,7 @@ export default function BodyPickerPanel({
                   onClick={() => onSelectArea(area)}
                   onPointerEnter={() => onHoverRegion(area.id)}
                   onPointerLeave={() => onHoverRegion(null)}
-                  className="w-full min-h-12 px-4 flex items-center justify-between rounded-xl border border-slate-200 bg-white text-left text-base font-semibold text-slate-800 hover:border-[#3a5ebb]/60 hover:bg-[#3a5ebb]/5"
+                  className="w-full min-h-12 px-4 flex items-center justify-between rounded-xl border border-slate-200 bg-white text-left text-base font-semibold text-slate-800 hover:border-brand/60 hover:bg-brand/5"
                 >
                   <span>{area.label}</span>
                   <IconChevronRight size={16} className="text-slate-400" />
@@ -291,13 +291,13 @@ export default function BodyPickerPanel({
                     onClick={() => onToggleSymptom(symptom.id)}
                     className={`w-full min-h-12 px-3 py-2 flex items-center gap-3 rounded-xl border text-left transition-colors ${
                       checked
-                        ? "bg-[#3a5ebb]/10 border-[#3a5ebb]"
-                        : "bg-white border-slate-200 hover:border-[#3a5ebb]/60"
+                        ? "bg-brand/10 border-brand"
+                        : "bg-white border-slate-200 hover:border-brand/60"
                     }`}
                   >
                     <span
                       className={`w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 ${
-                        checked ? "bg-[#3a5ebb] border-[#3a5ebb] text-white" : "border-slate-400 bg-white"
+                        checked ? "bg-brand border-brand text-white" : "border-slate-400 bg-white"
                       }`}
                     >
                       {checked && <IconCheck size={14} />}

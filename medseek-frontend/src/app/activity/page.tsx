@@ -553,10 +553,10 @@ function ActivityContent() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-5 sm:py-8 animate-fade-in">
       {/* ─── 1. Header Bar with Security Shield & Actions ─── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-[#e2dcd0]/80">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-line/80">
         <div>
           <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <div className="w-8 h-8 rounded-xl glass-chip flex items-center justify-center text-[#3a5ebb] shrink-0 shadow-2xs">
+            <div className="w-8 h-8 rounded-xl glass-chip flex items-center justify-center text-brand shrink-0 shadow-2xs">
               <IconActivity size={18} />
             </div>
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
@@ -579,7 +579,7 @@ function ActivityContent() {
             className="btn-3d-secondary px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5"
             title="Refresh Ledger"
           >
-            <IconRefresh size={14} className={isLoading ? "animate-spin text-[#3a5ebb]" : "text-slate-600"} />
+            <IconRefresh size={14} className={isLoading ? "animate-spin text-brand" : "text-slate-600"} />
             <span className="hidden xs:inline">Refresh</span>
           </button>
 
@@ -612,12 +612,12 @@ function ActivityContent() {
                       setIsTabExpanded(false);
                       e.currentTarget.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
                     }}
-                    className="relative flex flex-col justify-between p-4 sm:p-4.5 rounded-2xl border-2 border-[#2e4d9c] bg-[#3a5ebb] text-white shadow-[0_4px_20px_rgba(58,94,187,0.32)] transition-all duration-300 text-left shrink-0 min-w-[280px] sm:min-w-[320px] ring-2 ring-[#3a5ebb]/20 cursor-pointer select-none animate-scale-in"
+                    className="relative flex flex-col justify-between p-4 sm:p-4.5 rounded-2xl border-2 border-brand-edge bg-brand text-white shadow-[0_4px_20px_rgba(58,94,187,0.32)] transition-all duration-300 text-left shrink-0 min-w-[280px] sm:min-w-[320px] ring-2 ring-brand/20 cursor-pointer select-none animate-scale-in"
                     title="Click to collapse into compact tab"
                   >
                     <div className="flex items-center justify-between gap-2 mb-1.5">
                       <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-7 h-7 rounded-lg bg-[#2a4693] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                        <div className="w-7 h-7 rounded-lg bg-brand-ink text-white flex items-center justify-center shrink-0 shadow-2xs">
                           <Icon size={15} />
                         </div>
                         <span className="text-xs sm:text-sm font-bold text-white tracking-tight truncate">
@@ -625,11 +625,11 @@ function ActivityContent() {
                         </span>
                       </div>
                       <div className="flex items-center gap-1.5 shrink-0">
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-[#2a4693] text-blue-100 px-2.5 py-0.5 rounded-full">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-brand-ink text-blue-100 px-2.5 py-0.5 rounded-full">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                           Active
                         </span>
-                        <span className="w-5 h-5 rounded-full bg-[#2a4693]/80 hover:bg-[#1e336d] text-blue-200 hover:text-white flex items-center justify-center transition-colors">
+                        <span className="w-5 h-5 rounded-full bg-brand-ink/80 hover:bg-brand-ink text-blue-200 hover:text-white flex items-center justify-center transition-colors">
                           <IconChevronUp size={13} />
                         </span>
                       </div>
@@ -657,7 +657,7 @@ function ActivityContent() {
                       setIsTabExpanded(true);
                       e.currentTarget.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
                     }}
-                    className="group inline-flex items-center justify-between gap-3 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full border-2 border-[#2e4d9c] bg-[#3a5ebb] text-white shadow-[0_2px_10px_rgba(58,94,187,0.35)] transition-all duration-200 shrink-0 min-w-[170px] sm:min-w-[200px] h-10 sm:h-11 cursor-pointer select-none hover:bg-[#3253a6]"
+                    className="group inline-flex items-center justify-between gap-3 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full border-2 border-brand-edge bg-brand text-white shadow-[0_2px_10px_rgba(58,94,187,0.35)] transition-all duration-200 shrink-0 min-w-[170px] sm:min-w-[200px] h-10 sm:h-11 cursor-pointer select-none hover:bg-brand-edge"
                     title="Click to expand metric card"
                   >
                     <div className="flex items-center gap-2 min-w-0">
@@ -667,7 +667,7 @@ function ActivityContent() {
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#2a4693] text-white border border-[#4d6ec5] tabular-nums">
+                      <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-full bg-brand-ink text-white border border-brand-light tabular-nums">
                         {tab.count}
                       </span>
                       <IconChevronDown size={13} className="text-blue-200 group-hover:text-white transition-colors" />
@@ -687,13 +687,13 @@ function ActivityContent() {
                     setPage(0);
                     e.currentTarget.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
                   }}
-                  className="group inline-flex items-center justify-between gap-3 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full border border-[#e2dcd0]/80 bg-white/70 backdrop-blur-xs text-slate-700 shadow-2xs hover:border-[#3a5ebb]/40 hover:bg-white/95 hover:text-slate-900 hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 shrink-0 min-w-[170px] sm:min-w-[200px] h-10 sm:h-11 cursor-pointer select-none"
+                  className="group inline-flex items-center justify-between gap-3 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full border border-line/80 bg-white/70 backdrop-blur-xs text-slate-700 shadow-2xs hover:border-brand/40 hover:bg-white/95 hover:text-slate-900 hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 shrink-0 min-w-[170px] sm:min-w-[200px] h-10 sm:h-11 cursor-pointer select-none"
                   title={`Filter by ${tab.label} and expand`}
                 >
                   <span className="text-xs sm:text-[13px] font-semibold text-slate-700 group-hover:text-slate-900 tracking-tight whitespace-nowrap">
                     {tab.label}
                   </span>
-                  <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-full bg-white/80 text-slate-600 border border-slate-200/80 group-hover:bg-blue-50 group-hover:text-[#3a5ebb] group-hover:border-[#3a5ebb]/30 transition-colors tabular-nums shrink-0">
+                  <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-full bg-white/80 text-slate-600 border border-slate-200/80 group-hover:bg-blue-50 group-hover:text-brand group-hover:border-brand/30 transition-colors tabular-nums shrink-0">
                     {tab.count}
                   </span>
                 </button>
@@ -716,7 +716,7 @@ function ActivityContent() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by action, keyword, ID..."
-              className="w-full pl-9 pr-8 py-1.5 rounded-lg border border-slate-300/80 bg-white/80 backdrop-blur-xs text-slate-900 text-xs focus:outline-none focus:border-[#3a5ebb] focus:ring-2 focus:ring-[#3a5ebb]/15 placeholder:text-slate-400 transition-all"
+              className="w-full pl-9 pr-8 py-1.5 rounded-lg border border-slate-300/80 bg-white/80 backdrop-blur-xs text-slate-900 text-xs focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 placeholder:text-slate-400 transition-all"
             />
             {searchQuery && (
               <button
@@ -923,7 +923,7 @@ function ActivityContent() {
                       <div
                         key={entry.id}
                         onClick={() => setSelectedEntry(entry)}
-                        className="group relative glass-card rounded-2xl p-3.5 sm:p-4 hover:border-[#3a5ebb]/40 transition-all cursor-pointer select-none"
+                        className="group relative glass-card rounded-2xl p-3.5 sm:p-4 hover:border-brand/40 transition-all cursor-pointer select-none"
                       >
                         <div className="flex items-start justify-between gap-3">
                           {/* Left: Action Icon + Details */}

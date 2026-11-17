@@ -171,10 +171,10 @@ function VaultContent() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-5 sm:py-8">
       {/* Vault Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-3.5 border-b border-[#e2dcd0]/80 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-3.5 border-b border-line/80 animate-fade-in">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <div className="w-8 h-8 rounded-xl glass-chip flex items-center justify-center text-[#3a5ebb] shrink-0 shadow-2xs">
+            <div className="w-8 h-8 rounded-xl glass-chip flex items-center justify-center text-brand shrink-0 shadow-2xs">
               <IconVault size={18} />
             </div>
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
@@ -219,13 +219,13 @@ function VaultContent() {
           onClick={() => setActiveType(undefined)}
           className={`p-3 rounded-xl border text-left transition-all ${
             !activeType
-              ? "bg-[#3a5ebb] text-white border-[#2e4d9c] shadow-[0_4px_16px_rgba(58,94,187,0.3)] ring-2 ring-[#3a5ebb]/20"
-              : "glass-card text-slate-700 hover:border-[#3a5ebb]/35"
+              ? "bg-brand text-white border-brand-edge shadow-[0_4px_16px_rgba(58,94,187,0.3)] ring-2 ring-brand/20"
+              : "glass-card text-slate-700 hover:border-brand/35"
           }`}
         >
           <div className="flex items-center justify-between mb-1">
             <IconVault size={16} className={!activeType ? "text-white" : "text-slate-500"} />
-            <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${!activeType ? "bg-[#2a4693] text-blue-100" : "bg-white/80 text-slate-600 border border-slate-200/60"}`}>
+            <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${!activeType ? "bg-brand-ink text-blue-100" : "bg-white/80 text-slate-600 border border-slate-200/60"}`}>
               {total}
             </span>
           </div>
@@ -244,13 +244,13 @@ function VaultContent() {
               onClick={() => setActiveType(t.value)}
               className={`p-3 rounded-xl border text-left transition-all ${
                 isSelected
-                  ? "bg-[#3a5ebb] text-white border-[#2e4d9c] shadow-[0_4px_16px_rgba(58,94,187,0.3)] ring-2 ring-[#3a5ebb]/20"
-                  : "glass-card text-slate-700 hover:border-[#3a5ebb]/35"
+                  ? "bg-brand text-white border-brand-edge shadow-[0_4px_16px_rgba(58,94,187,0.3)] ring-2 ring-brand/20"
+                  : "glass-card text-slate-700 hover:border-brand/35"
               }`}
             >
               <div className="flex items-center justify-between mb-1">
                 <Icon size={16} className={isSelected ? "text-white" : t.accentColor.split(" ")[0]} />
-                <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${isSelected ? "bg-[#2a4693] text-blue-100" : "bg-white/80 text-slate-600 border border-slate-200/60"}`}>
+                <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${isSelected ? "bg-brand-ink text-blue-100" : "bg-white/80 text-slate-600 border border-slate-200/60"}`}>
                   {records.filter(r => r.record_type === t.value).length}
                 </span>
               </div>
@@ -409,7 +409,7 @@ function VaultContent() {
 
       {/* Add Record Modal with Custom Category Tiles */}
       {showAddForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/35 animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/35 animate-fade-in">
           <div className="max-w-lg w-full p-4 sm:p-5 rounded-xl bg-white border border-slate-200 shadow-xl animate-scale-in max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-3.5 pb-2.5 border-b border-slate-100">
               <div className="flex items-center gap-2">

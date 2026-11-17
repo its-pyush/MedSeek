@@ -54,15 +54,15 @@ export default function SignupPage() {
       </div>
 
       {/* Ambient optical diffusion orbs */}
-      <div className="absolute top-[20%] left-[30%] w-72 h-72 rounded-full bg-[#fed7aa]/25 blur-[80px] pointer-events-none z-0" />
-      <div className="absolute bottom-[20%] right-[30%] w-80 h-80 rounded-full bg-[#3a5ebb]/10 blur-[90px] pointer-events-none z-0" />
+      <div className="absolute top-[20%] left-[30%] w-72 h-72 rounded-full bg-glow/25 blur-[80px] pointer-events-none z-0" />
+      <div className="absolute bottom-[20%] right-[30%] w-80 h-80 rounded-full bg-brand/10 blur-[90px] pointer-events-none z-0" />
 
       <div className="w-full max-w-sm relative z-10">
         {/* Optical Glass Card */}
         <div className="p-6 sm:p-7 rounded-2xl glass-panel shadow-lg">
           {/* Header */}
           <div className="text-center mb-5">
-            <div className="w-11 h-11 mx-auto mb-3 rounded-xl glass-chip flex items-center justify-center text-[#3a5ebb] shadow-xs">
+            <div className="w-11 h-11 mx-auto mb-3 rounded-xl glass-chip flex items-center justify-center text-brand shadow-xs">
               <IconProfile size={20} />
             </div>
             <h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900">
@@ -96,7 +96,7 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@institution.com"
-                className="w-full px-3 py-2 rounded-lg border border-slate-300/80 bg-white/80 backdrop-blur-xs text-slate-800 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#3a5ebb] focus:ring-2 focus:ring-[#3a5ebb]/15 transition-all"
+                className="w-full px-3 py-2 rounded-lg border border-slate-300/80 bg-white/80 backdrop-blur-xs text-slate-800 placeholder:text-slate-400 text-xs focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 transition-all"
                 autoComplete="email"
               />
             </div>
@@ -115,7 +115,7 @@ export default function SignupPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Minimum 8 characters"
-                className="w-full px-3 py-2 rounded-lg border border-slate-300/80 bg-white/80 backdrop-blur-xs text-slate-800 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#3a5ebb] focus:ring-2 focus:ring-[#3a5ebb]/15 transition-all"
+                className="w-full px-3 py-2 rounded-lg border border-slate-300/80 bg-white/80 backdrop-blur-xs text-slate-800 placeholder:text-slate-400 text-xs focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 transition-all"
                 autoComplete="new-password"
                 minLength={8}
               />
@@ -135,7 +135,7 @@ export default function SignupPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Repeat password"
-                className="w-full px-3 py-2 rounded-lg border border-slate-300/80 bg-white/80 backdrop-blur-xs text-slate-800 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#3a5ebb] focus:ring-2 focus:ring-[#3a5ebb]/15 transition-all"
+                className="w-full px-3 py-2 rounded-lg border border-slate-300/80 bg-white/80 backdrop-blur-xs text-slate-800 placeholder:text-slate-400 text-xs focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 transition-all"
                 autoComplete="new-password"
                 minLength={8}
               />
@@ -157,7 +157,7 @@ export default function SignupPage() {
             Already have an active account?{" "}
             <Link
               href="/login"
-              className="font-semibold text-[#3a5ebb] hover:text-[#2a4693] hover:underline"
+              className="font-semibold text-brand hover:text-brand-ink hover:underline"
             >
               Sign In
             </Link>

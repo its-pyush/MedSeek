@@ -105,6 +105,12 @@ export default function SymptomSearch({
       e.preventDefault();
       if (highlightedIndex >= 0 && suggestions[highlightedIndex]) {
         addSymptom(suggestions[highlightedIndex].name);
+      } else if (inputValue.trim() && suggestions[0]) {
+        // Typed text + Enter picks the closest match instead of doing nothing
+        addSymptom(suggestions[0].name);
+      } else if (inputValue.trim()) {
+        // No suggestion yet: send the text as typed; the backend resolves it
+        addSymptom(inputValue.trim().toLowerCase());
       } else if (selectedSymptoms.length > 0) {
         handleSearch();
       }
@@ -155,21 +161,21 @@ export default function SymptomSearch({
     <div className="w-full max-w-2xl mx-auto">
       {/* Search Input Container - Tightened & Clinical */}
       <div className="relative">
-        <div className="glass-search-console flex items-center flex-wrap gap-1.5 sm:gap-2 rounded-xl px-3 py-2 sm:px-4 sm:py-2.5">
+        <div className="glass-search-console flex items-center flex-wrap gap-2 rounded-2xl px-3.5 py-2.5 sm:px-4 sm:py-3">
           {/* Diagnostic Crosshair Search Icon */}
-          <IconSearch size={18} className="text-[#3a5ebb] shrink-0" />
+          <IconSearch size={20} className="text-brand shrink-0" />
 
           {/* Selected Symptom Chips */}
           {selectedSymptoms.map((symptom) => (
             <span
               key={symptom}
-              className="glass-chip inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[#2a4693] text-xs font-semibold capitalize"
+              className="glass-chip inline-flex items-center gap-1.5 pl-3 pr-1.5 h-8 rounded-full text-brand-ink text-sm font-semibold capitalize"
             >
               {symptom.replace(/_/g, " ")}
               <button
                 type="button"
                 onClick={() => removeSymptom(symptom)}
-                className="p-0.5 text-[#3a5ebb] hover:text-[#1c337a] transition-colors"
+                className="p-0.5 text-brand hover:text-brand-ink transition-colors"
                 aria-label={`Remove ${symptom}`}
               >
                 <IconClose size={12} />
@@ -189,10 +195,10 @@ export default function SymptomSearch({
             }}
             placeholder={
               selectedSymptoms.length > 0
-                ? "Add more symptoms..."
-                : "Type clinical signs or symptoms (e.g. fever, headache, chest pain)..."
+                ? "Add another symptom"
+                : "Type a symptom, e.g. fever or headache"
             }
-            className="flex-1 min-w-[140px] sm:min-w-[180px] bg-transparent text-slate-900 placeholder:text-slate-400 outline-none text-xs sm:text-sm font-normal py-0.5"
+            className="flex-1 min-w-[140px] sm:min-w-[180px] h-10 bg-transparent text-slate-900 placeholder:text-slate-400 outline-none text-base font-normal"
             autoComplete="off"
             id="symptom-search-input"
           />
@@ -202,7 +208,7 @@ export default function SymptomSearch({
             type="button"
             onClick={handleSearch}
             disabled={selectedSymptoms.length === 0 || isLoading}
-            className="btn-3d-primary w-full sm:w-auto shrink-0 px-4 py-1.5 rounded-lg text-xs tracking-tight transition-all flex items-center justify-center gap-1.5"
+            className="btn-3d-primary w-full sm:w-auto shrink-0 px-5 h-10 text-sm flex items-center justify-center gap-1.5"
             id="search-button"
           >
             {isLoading ? (
@@ -211,10 +217,10 @@ export default function SymptomSearch({
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                Evaluating...
+                Searching…
               </span>
             ) : (
-              "Differential Search"
+              "Search"
             )}
           </button>
         </div>
@@ -228,7 +234,7 @@ export default function SymptomSearch({
             id="symptom-suggestions"
           >
             <div className="px-3.5 py-1.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/60 bg-white/50">
-              Diagnostic Index Matches
+              Matching symptoms
             </div>
             {suggestions.map((item, index) => (
               <button
@@ -239,18 +245,18 @@ export default function SymptomSearch({
                 onClick={() => addSymptom(item.name)}
                 className={`w-full text-left px-3.5 py-2.5 flex items-center justify-between text-xs border-b border-slate-100/80 last:border-0 transition-colors ${
                   index === highlightedIndex
-                    ? "bg-[#3a5ebb]/10 text-[#203a80] border-l-3 border-l-[#3a5ebb] font-semibold"
+                    ? "bg-brand/10 text-brand-ink border-l-3 border-l-brand font-semibold"
                     : "hover:bg-white/70 text-slate-800 border-l-3 border-l-transparent"
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <IconCrosshair size={14} className={index === highlightedIndex ? "text-[#3a5ebb]" : "text-slate-400"} />
+                  <IconCrosshair size={14} className={index === highlightedIndex ? "text-brand" : "text-slate-400"} />
                   <span className="capitalize">
                     {item.name.replace(/_/g, " ")}
                   </span>
                   {item.match_source === "synonym" && (
                     <span className="text-[11px] text-slate-500 font-normal">
-                      (synonym: <span className="text-[#3a5ebb] font-medium">{item.matched_text}</span>)
+                      (synonym: <span className="text-brand font-medium">{item.matched_text}</span>)
                     </span>
                   )}
                 </div>

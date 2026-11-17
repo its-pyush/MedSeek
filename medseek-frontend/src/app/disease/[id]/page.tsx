@@ -65,10 +65,10 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-5 sm:py-8">
       {/* Breadcrumb Navigation */}
-      <nav className="flex items-center gap-1.5 text-xs text-slate-500 mb-4 pb-3 border-b border-[#e2dcd0]/80">
+      <nav className="flex items-center gap-1.5 text-xs text-slate-500 mb-4 pb-3 border-b border-line/80">
         <Link
           href="/"
-          className="hover:text-[#3a5ebb] transition-colors flex items-center gap-1"
+          className="hover:text-brand transition-colors flex items-center gap-1"
         >
           <IconArrowLeft size={12} />
           <span>Diagnostic Search</span>
@@ -93,7 +93,7 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
         {disease.icd11_code && (
           <p className="text-xs text-slate-500 mb-3 flex items-center gap-1.5">
             <span className="font-semibold uppercase tracking-wider text-[10px] text-slate-400">Classification:</span>
-            <code className="px-2 py-0.5 rounded-md glass-chip text-[#2a4693] font-mono text-xs font-semibold">
+            <code className="px-2 py-0.5 rounded-md glass-chip text-brand-ink font-mono text-xs font-semibold">
               ICD-11 {disease.icd11_code}
             </code>
           </p>
@@ -119,7 +119,7 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
               href={disease.source_url}
               target="_blank"
               rel="noopener noreferrer nofollow"
-              className="text-[#3a5ebb] hover:underline font-medium"
+              className="text-brand hover:underline font-medium"
             >
               Mayo Clinic
             </a>
@@ -154,9 +154,9 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
 
       {/* Associated Diagnostic Indicators (Symptoms) */}
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-2.5 pb-1.5 border-b border-[#e2dcd0]/80">
+        <div className="flex items-center justify-between mb-2.5 pb-1.5 border-b border-line/80">
           <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-            <IconCrosshair size={14} className="text-[#3a5ebb]" />
+            <IconCrosshair size={14} className="text-brand" />
             <span>Associated Symptom Prevalence ({disease.symptoms.length})</span>
           </h2>
           <span className="text-[11px] text-slate-500 font-mono">
@@ -179,7 +179,7 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
                 </span>
                 <div className="w-24 sm:w-44 h-1.5 bg-slate-200/70 rounded-full overflow-hidden shrink-0">
                   <div
-                    className="h-full rounded-full bg-[#3a5ebb] shadow-[0_0_6px_rgba(58,94,187,0.35)]"
+                    className="h-full rounded-full bg-brand shadow-[0_0_6px_rgba(58,94,187,0.35)]"
                     style={{ width: `${percentage}%` }}
                   />
                 </div>
@@ -193,7 +193,7 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
       </div>
 
       {/* Back to Diagnostic Search */}
-      <div className="pt-2 border-t border-[#e2dcd0]/80 flex items-center justify-between">
+      <div className="pt-2 border-t border-line/80 flex items-center justify-between">
         <Link
           href="/"
           className="btn-3d-secondary inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs"

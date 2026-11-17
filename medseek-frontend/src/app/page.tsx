@@ -35,6 +35,8 @@ function useIsDesktop(): boolean {
   );
 }
 
+const QUICK_SYMPTOMS = ["fever", "headache", "cough", "stomach pain", "fatigue"];
+
 const RISK_TIERS = [
   { level: "low", label: "Lower risk", hint: "Usually manageable with self-care or routine care", color: "text-emerald-700" },
   { level: "moderate", label: "Moderate risk", hint: "Worth a doctor's appointment", color: "text-amber-700" },
@@ -101,15 +103,15 @@ export default function Home() {
     <div className="flex flex-col flex-1">
       {/* Hero: search on the left, anatomical model in its own column on the right */}
       <section
-        className={`overflow-hidden border-b border-[#e2dcd0]/80 flex flex-col ${
+        className={`overflow-hidden border-b border-line/80 flex flex-col ${
           mobilePicking
-            ? "fixed inset-x-0 top-13 bottom-0 z-40 bg-[#fff8eb]"
-            : `relative bg-gradient-to-b from-[#fff8eb]/50 via-[#fff8eb]/85 to-[#fff8eb] ${!hasSearched ? "flex-1 justify-center" : ""}`
+            ? "fixed inset-x-0 top-14 bottom-0 z-40 bg-canvas"
+            : `relative bg-gradient-to-b from-canvas/50 via-canvas/85 to-canvas ${!hasSearched ? "flex-1 justify-center" : ""}`
         }`}
       >
         {/* Soft ambient colour behind the glass panels */}
-        <div className="absolute top-[8%] left-[5%] w-96 h-96 rounded-full bg-[#fed7aa]/35 blur-[90px] pointer-events-none -z-10" />
-        <div className="absolute top-[20%] right-[8%] w-[500px] h-[500px] rounded-full bg-[#3a5ebb]/14 blur-[110px] pointer-events-none -z-10" />
+        <div className="absolute top-[8%] left-[5%] w-96 h-96 rounded-full bg-glow/35 blur-[90px] pointer-events-none -z-10" />
+        <div className="absolute top-[20%] right-[8%] w-[500px] h-[500px] rounded-full bg-brand/14 blur-[110px] pointer-events-none -z-10" />
 
         {/* Animated threads: desktop only, behind everything */}
         {isDesktop && (
@@ -141,12 +143,21 @@ export default function Home() {
           <div className={`pointer-events-auto lg:max-w-[52%] ${hasSearched ? "lg:min-h-0" : "lg:min-h-[600px]"} flex flex-col lg:justify-center`}>
             {/* Intro text steps aside while the picker is open, so the list has room */}
             {!bodySelectMode && (
-              <div className="text-left mb-4 sm:mb-6 animate-fade-in">
-                <h1 className="font-bold tracking-tight mb-2 sm:mb-4 text-slate-900 text-3xl sm:text-5xl lg:text-6xl leading-[1.05]">
-                  What are your <span className="text-[#3a5ebb]">symptoms?</span>
+              <div className="text-left mb-5 sm:mb-7 animate-fade-in">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-chip text-brand-ink text-xs font-semibold mb-4">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-60 animate-ping" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                  </span>
+                  Symptom search · 1,200+ conditions
+                </div>
+                <h1 className="font-bold tracking-[-0.03em] mb-3 sm:mb-4 text-slate-900 text-4xl sm:text-6xl lg:text-7xl leading-[1.02]">
+                  What are your
+                  <br />
+                  <span className="text-brand">symptoms?</span>
                 </h1>
-                <p className="text-base text-slate-600 max-w-xl leading-relaxed">
-                  Type what you feel, or tap the body to choose. This is a reference tool, not a diagnosis.
+                <p className="text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed">
+                  Type what you feel, or tap the body to point to it. See matching conditions, from lower to higher risk.
                 </p>
               </div>
             )}
@@ -160,6 +171,31 @@ export default function Home() {
                 isLoading={isLoading}
               />
             </div>
+
+            {/* Quick starts: one tap adds a common symptom */}
+            {!bodySelectMode && (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <span className="text-sm text-slate-500">Try:</span>
+                {QUICK_SYMPTOMS.filter((q) => !activeSymptoms.includes(q)).map((q) => (
+                  <button
+                    key={q}
+                    type="button"
+                    onClick={() => setActiveSymptoms([...activeSymptoms, q])}
+                    className="btn-3d-secondary h-9 px-3.5 rounded-full text-sm capitalize"
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {!bodySelectMode && !hasSearched && (
+              <ul className="hidden sm:flex mt-6 items-center gap-5 text-sm text-slate-500">
+                <li className="flex items-center gap-1.5"><IconCheck size={15} className="text-emerald-600" />Results grouped by risk</li>
+                <li className="flex items-center gap-1.5"><IconCheck size={15} className="text-emerald-600" />Plain-language summaries</li>
+                <li className="flex items-center gap-1.5"><IconWarning size={15} className="text-amber-600" />Not a diagnosis</li>
+              </ul>
+            )}
 
             {/* Desktop: the picker list opens under the search bar */}
             <div
@@ -203,13 +239,13 @@ export default function Home() {
       {hasSearched && (
         <section className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 w-full animate-fade-in relative">
           {/* Subtle Results Ambient Aura */}
-          <div className="absolute top-[10%] right-[15%] w-72 h-72 rounded-full bg-[#3a5ebb]/08 blur-[90px] pointer-events-none -z-10" />
+          <div className="absolute top-[10%] right-[15%] w-72 h-72 rounded-full bg-brand/08 blur-[90px] pointer-events-none -z-10" />
 
           {/* Resolved Symptoms Telemetry */}
           {resolvedSymptoms.length > 0 && (
             <div className="mb-5 p-3.5 sm:p-4.5 rounded-2xl glass-panel shadow-xs animate-slide-up">
               <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2.5">
-                Evaluated Symptom Index
+                Symptoms we understood
               </h2>
               <div className="flex flex-wrap gap-1.5">
                 {resolvedSymptoms.map((rs) => (
@@ -219,7 +255,7 @@ export default function Home() {
                       rs.match_type === "none"
                         ? "bg-red-50/85 text-red-800 border-red-200/90 shadow-2xs"
                         : rs.match_type === "exact"
-                          ? "glass-chip text-[#2a4693] font-semibold"
+                          ? "glass-chip text-brand-ink font-semibold"
                           : "bg-white/80 text-slate-800 border-slate-200/90 shadow-2xs"
                     }`}
                   >
@@ -229,7 +265,7 @@ export default function Home() {
                     {rs.match_type === "none" ? (
                       <span className="flex items-center gap-0.5 text-red-700">
                         <IconClose size={12} />
-                        <span>unindexed</span>
+                        <span>not recognised</span>
                       </span>
                     ) : (
                       <span className="flex items-center gap-1 text-slate-600">
@@ -256,9 +292,9 @@ export default function Home() {
 
           {/* Primary Differential Header */}
           {results.length > 0 && (
-            <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#e2dcd0]/80">
+            <div className="flex items-center justify-between mb-4 pb-2 border-b border-line/80">
               <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">
-                Primary Differential Matches ({total})
+                Matching conditions ({total})
               </h2>
               <span className="text-xs text-slate-500 font-mono">
                 Grouped by risk · lowest first
@@ -298,10 +334,10 @@ export default function Home() {
                 </div>
                 <div>
                   <h2 className="text-sm font-bold uppercase tracking-wider text-red-900">
-                    Critical Path Differential (Don&apos;t Rule Out)
+                    Don&apos;t rule out
                   </h2>
                   <p className="text-xs text-red-700/90">
-                    Significant clinical overlap detected with high-acuity conditions.
+                    Serious conditions that also fit these symptoms. Rare, but worth knowing.
                   </p>
                 </div>
               </div>
@@ -322,10 +358,10 @@ export default function Home() {
                 <IconSearch size={22} />
               </div>
               <h3 className="text-sm font-bold text-slate-800 mb-1">
-                No Diagnostic Correlations Found
+                No matching conditions found
               </h3>
               <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                No indexed disease matched the provided symptom profile. Verify clinical terms or expand the symptom set.
+                Try different words, or add another symptom.
               </p>
             </div>
           )}
@@ -334,8 +370,8 @@ export default function Home() {
           <div className="mt-8 p-4 rounded-2xl glass-panel text-xs text-slate-600 flex gap-3">
             <IconWarning size={18} className="text-amber-600 shrink-0 mt-0.5" />
             <div>
-              <span className="font-semibold text-slate-800">Clinical Protocol Notice: </span>
-              MedSeek algorithmic evaluations provide preliminary differential screening. They do not constitute definitive clinical diagnoses or triage mandates. For acute symptoms, consult emergency services immediately.
+              <span className="font-semibold text-slate-800">Please note: </span>
+              These results are for reference and are not a diagnosis. If symptoms are severe or sudden, contact emergency services.
             </div>
           </div>
         </section>

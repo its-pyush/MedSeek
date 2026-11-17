@@ -89,7 +89,7 @@ function DashboardContent() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-5 sm:py-8">
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-3 border-b border-[#e2dcd0]/80 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-3 border-b border-line/80 animate-fade-in">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
             {getGreeting()}, {profile?.email?.split("@")[0] ?? "Patient"}
@@ -151,9 +151,9 @@ function DashboardContent() {
 
       {/* Profile Card */}
       <div className="p-5 sm:p-6 rounded-2xl glass-panel shadow-sm">
-        <div className="flex items-center justify-between mb-4 pb-2.5 border-b border-[#e2dcd0]/80">
+        <div className="flex items-center justify-between mb-4 pb-2.5 border-b border-line/80">
           <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-            <IconProfile size={16} className="text-[#3a5ebb]" />
+            <IconProfile size={16} className="text-brand" />
             Clinical Baseline Profile
           </h2>
           {!isEditing && profile && (
@@ -333,18 +333,18 @@ function QuickAction({
   return (
     <Link
       href={href}
-      className="group glass-card flex items-center gap-2.5 p-3 rounded-xl text-left hover:border-[#3a5ebb]/35"
+      className="group glass-card flex items-center gap-2.5 p-3 rounded-xl text-left hover:border-brand/35"
     >
-      <div className="w-8 h-8 rounded-lg glass-chip text-[#3a5ebb] flex items-center justify-center shrink-0">
+      <div className="w-8 h-8 rounded-lg glass-chip text-brand flex items-center justify-center shrink-0">
         <Icon size={16} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-bold text-slate-900 group-hover:text-[#3a5ebb] transition-colors truncate">
+        <p className="text-xs font-bold text-slate-900 group-hover:text-brand transition-colors truncate">
           {label}
         </p>
         <p className="text-[10px] text-slate-500 truncate">{sublabel}</p>
       </div>
-      <IconChevronRight size={12} className="text-slate-400 group-hover:text-[#3a5ebb] group-hover:translate-x-0.5 transition-all shrink-0" />
+      <IconChevronRight size={12} className="text-slate-400 group-hover:text-brand group-hover:translate-x-0.5 transition-all shrink-0" />
     </Link>
   );
 }
