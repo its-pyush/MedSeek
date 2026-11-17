@@ -6,27 +6,34 @@ export interface IconProps extends React.SVGProps<SVGSVGElement> {
 }
 
 /**
- * MedSeek Brand Emblem: Interlocking Surgical Cross & Diagnostic Aperture
+ * MedSeek Brand Mark: a speech bubble (ask anything) carrying a heartbeat line (health).
+ * Mirrors src/app/icon.svg, which is the browser favicon. Keep the two in sync.
  */
-export function MedSeekLogo({ size = 24, className = "text-blue-600", ...props }: IconProps) {
+export function MedSeekLogo({ size = 24, className = "text-brand", ...props }: IconProps) {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 32 32"
+      viewBox="0 0 64 64"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
+      aria-hidden="true"
       {...props}
     >
-      <rect x="2" y="2" width="28" height="28" rx="7" className="fill-blue-600" />
-      {/* Surgical Cross with subtle precision center */}
+      <rect width="64" height="64" rx="16" fill="#5798cf" />
       <path
-        d="M13 8.5C13 7.67 13.67 7 14.5 7H17.5C18.33 7 19 7.67 19 8.5V13H23.5C24.33 13 25 13.67 25 14.5V17.5C25 18.33 24.33 19 23.5 19H19V23.5C19 24.33 18.33 25 17.5 25H14.5C13.67 25 13 24.33 13 23.5V19H8.5C7.67 19 7 18.33 7 17.5V14.5C7 13.67 7.67 13 8.5 13H13V8.5Z"
-        fill="white"
+        d="M23 13H41A12 12 0 0 1 53 25V31A12 12 0 0 1 41 43H23A12 12 0 0 1 11 31V25A12 12 0 0 1 23 13Z"
+        fill="#ffffff"
       />
-      {/* Center diagnostic aperture dot */}
-      <circle cx="16" cy="16" r="2" className="fill-blue-700" />
+      <path d="M18 38L14.5 51.5L31 42Z" fill="#ffffff" stroke="#ffffff" strokeWidth={3} strokeLinejoin="round" />
+      <path
+        d="M16 29H19L22 21L32 33L42 21L45 29H48"
+        stroke="#10b981"
+        strokeWidth={3.4}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

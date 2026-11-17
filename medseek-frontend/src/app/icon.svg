@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Rounded tile in MedSeek blue -->
+  <rect width="64" height="64" rx="16" fill="#5798cf"/>
+  <!-- Speech bubble: "ask us anything" -->
+  <path d="M23 13H41A12 12 0 0 1 53 25V31A12 12 0 0 1 41 43H23A12 12 0 0 1 11 31V25A12 12 0 0 1 23 13Z" fill="#ffffff"/>
+  <!-- Bubble tail, rounded so it reads as one shape with the bubble -->
+  <path d="M18 38L14.5 51.5L31 42Z" fill="#ffffff" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Heartbeat line: health, read as a pulse -->
+  <path d="M16 29H19L22 21L32 33L42 21L45 29H48" fill="none" stroke="#10b981" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
