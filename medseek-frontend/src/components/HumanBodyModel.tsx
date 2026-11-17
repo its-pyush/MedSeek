@@ -26,7 +26,6 @@ import {
 } from "./regionHierarchy";
 import RegionDebugOverlay from "./RegionDebugOverlay";
 import BodyPickerPanel from "./BodyPickerPanel";
-import { WireLevel, nextWireLevel, thinToTriangleBudget } from "./meshDensity";
 import { createPortal } from "react-dom";
 
 export type { SubRegion, MajorRegion, RegionSelectionPayload, RegionProxy };
@@ -868,18 +867,6 @@ function RotatingBody({
     return geo;
   }, [scene]);
 
-  // Thinner copies of the mesh for the wireframe when the figure is small on screen.
-  const wireGeometries = useMemo(() => {
-    if (!bakedGeometry) return null;
-    return {
-      full: bakedGeometry,
-      mid: thinToTriangleBudget(bakedGeometry, 9000),
-      low: thinToTriangleBudget(bakedGeometry, 3000),
-    } satisfies Record<WireLevel, THREE.BufferGeometry>;
-  }, [bakedGeometry]);
-  const [wireLevel, setWireLevel] = useState<WireLevel>("mid");
-  const wireLevelRef = useRef<WireLevel>("mid");
-
   useEffect(() => {
     return () => {
       bakedGeometry?.dispose();
@@ -905,14 +892,11 @@ function RotatingBody({
   // Solid opaque alabaster base material with illuminated surface highlights (100% opaque)
   const baseMaterial = useMemo(() => {
     const mat = new THREE.MeshStandardMaterial({
-      color: 0xf7f5ee, // Bright luminous warm alabaster / ivory base
-      roughness: 0.32, // Satin porcelain sheen
+      color: 0x8ab6dc, // Tint of the brand blue (#5798cf); the solid body replaces the wireframe
+      roughness: 0.45,
       metalness: 0.04, // Low metalness keeps it clinical
       depthWrite: true,
       depthTest: true,
-      polygonOffset: true,
-      polygonOffsetFactor: 1, // Pushes base slightly back so wireframe lines never z-fight
-      polygonOffsetUnits: 1,
     });
 
     mat.onBeforeCompile = (shader) => {
@@ -959,6 +943,14 @@ function RotatingBody({
         varying vec3 vBakedPosition;
         ${shader.fragmentShader}
       `.replace(
+        `#include <opaque_fragment>`,
+        `
+        // Soft edge glow so the outline reads on light and dark backgrounds.
+        float rim = 1.0 - abs(dot(normalize(normal), normalize(vViewPosition)));
+        outgoingLight += vec3(0.62, 0.82, 0.98) * pow(rim, 2.0) * 0.8;
+        #include <opaque_fragment>
+        `
+      ).replace(
         `vec4 diffuseColor = vec4( diffuse, opacity );`,
         `
         vec4 diffuseColor = vec4( diffuse, opacity );
@@ -1004,117 +996,12 @@ function RotatingBody({
     };
   }, [baseMaterial]);
 
-  // Glowing wireframe material with custom shader supporting bilateral hover highlights
-  const wireMaterial = useMemo(() => {
-    const mat = new THREE.MeshBasicMaterial({
-      color: 0x5a7ecb, // Refined slate cobalt wireframe lines
-      wireframe: true,
-      transparent: true,
-      opacity: 0.65,
-      depthTest: true,
-    });
-
-    mat.onBeforeCompile = (shader) => {
-      shader.uniforms.uActivePoints = {
-        value: Array.from({ length: 10 }, () => new THREE.Vector3(0, -999, 0)),
-      };
-      shader.uniforms.uActiveRadii = {
-        value: new Float32Array(10),
-      };
-      shader.uniforms.uNumActivePoints = { value: 0 };
-
-      // Dedicated bilateral-ready hover uniforms
-      shader.uniforms.uHoverPoints = {
-        value: [new THREE.Vector3(0, -999, 0), new THREE.Vector3(0, -999, 0)],
-      };
-      shader.uniforms.uNumHoverPoints = { value: 0 };
-      shader.uniforms.uHoverRadius = { value: 0.0 };
-      shader.uniforms.uHoverIntensity = { value: 0.0 };
-
-      mat.userData.shader = shader;
-      syncUniforms(shader, activePointsRef.current);
-
-      shader.vertexShader = `
-        varying vec3 vBakedPosition;
-        ${shader.vertexShader}
-      `.replace(
-        `#include <project_vertex>`,
-        `
-        vBakedPosition = position;
-        #include <project_vertex>
-        `
-      );
-
-      shader.fragmentShader = `
-        uniform vec3 uActivePoints[10];
-        uniform float uActiveRadii[10];
-        uniform int uNumActivePoints;
-
-        uniform vec3 uHoverPoints[2];
-        uniform int uNumHoverPoints;
-        uniform float uHoverRadius;
-        uniform float uHoverIntensity;
-
-        varying vec3 vBakedPosition;
-        ${shader.fragmentShader}
-      `.replace(
-        `vec4 diffuseColor = vec4( diffuse, opacity );`,
-        `
-        vec3 baseColor = diffuse;
-
-        // 1. Selected symptom glow (Neon Crimson Red)
-        float glow = 0.0;
-        for (int i = 0; i < 10; i++) {
-          if (i >= uNumActivePoints) break;
-          float dist = distance(vBakedPosition, uActivePoints[i]);
-          float radius = uActiveRadii[i];
-          float intensity = smoothstep(radius, radius * 0.25, dist);
-          glow = max(glow, intensity);
-        }
-        glow = clamp(glow, 0.0, 1.0);
-
-        // 2. Real-time hover glow (Ultra-bright Electric Cyan, illuminates both sides if bilateral)
-        float hoverGlow = 0.0;
-        if (uHoverRadius > 0.0 && uHoverIntensity > 0.001) {
-          for (int i = 0; i < 2; i++) {
-            if (i >= uNumHoverPoints) break;
-            float hoverDist = distance(vBakedPosition, uHoverPoints[i]);
-            float intensity = smoothstep(uHoverRadius, uHoverRadius * 0.2, hoverDist) * uHoverIntensity;
-            hoverGlow = max(hoverGlow, intensity);
-          }
-          hoverGlow = clamp(hoverGlow, 0.0, 1.0);
-        }
-
-        vec3 highlightColor = vec3(1.0, 0.12, 0.25); // Intense Neon Crimson Red
-        vec3 hoverColor = vec3(0.0, 0.90, 1.0);       // Ultra-bright Electric Cyan
-
-        vec3 colorWithHover = mix(baseColor, hoverColor, hoverGlow * 0.95);
-        vec3 finalColor = mix(colorWithHover, highlightColor, glow);
-        float finalOpacity = mix(opacity, 1.0, max(hoverGlow * 0.9, glow));
-
-        vec4 diffuseColor = vec4( finalColor, finalOpacity );
-        `
-      );
-    };
-
-    return mat;
-  }, [syncUniforms]);
-
-  useEffect(() => {
-    return () => {
-      wireMaterial.dispose();
-    };
-  }, [wireMaterial]);
-
   // Update uniforms strictly when activePoints changes
   useEffect(() => {
-    if (wireMaterial.userData.shader) {
-      syncUniforms(wireMaterial.userData.shader, activePoints);
-    }
     if (baseMaterial.userData.shader) {
       syncUniforms(baseMaterial.userData.shader, activePoints);
     }
-  }, [activePoints, wireMaterial, baseMaterial, syncUniforms]);
+  }, [activePoints, baseMaterial, syncUniforms]);
 
   // Per-frame update: rotation, camera dolly framing transition, and bilateral highlight shader sync
   useFrame(({ camera, size }, delta) => {
@@ -1266,15 +1153,6 @@ function RotatingBody({
       };
     }
 
-    // Wireframe density follows how tall the figure is on screen.
-    const distance = Math.max(0.1, camera.position.z);
-    const figureHeightPx = (modelHeight / (2 * tanHalfFov * distance)) * size.height;
-    const level = nextWireLevel(wireLevelRef.current, figureHeightPx);
-    if (level !== wireLevelRef.current) {
-      wireLevelRef.current = level;
-      setWireLevel(level);
-    }
-
     const t = 1.0 - Math.exp(-6.0 * delta); // Smooth frame-rate independent exponential lerp (~500ms)
 
     camera.position.x = THREE.MathUtils.lerp(camera.position.x, targetCamX, t);
@@ -1300,23 +1178,6 @@ function RotatingBody({
       0.18
     );
 
-    // Sync to wireframe shader
-    if (wireMaterial.userData.shader) {
-      const s = wireMaterial.userData.shader;
-      s.uniforms.uHoverIntensity.value = hoverIntensityRef.current;
-      if (hasHighlight && highlightData) {
-        s.uniforms.uNumHoverPoints.value = highlightData.points.length;
-        for (let i = 0; i < 2; i++) {
-          if (i < highlightData.points.length) {
-            s.uniforms.uHoverPoints.value[i].set(...highlightData.points[i]);
-          } else {
-            s.uniforms.uHoverPoints.value[i].set(0, -999, 0);
-          }
-        }
-        s.uniforms.uHoverRadius.value = highlightData.radius * 1.15;
-      }
-    }
-
     // Sync to base alabaster material shader
     if (baseMaterial.userData.shader) {
       const s = baseMaterial.userData.shader;
@@ -1338,11 +1199,8 @@ function RotatingBody({
   // 1. Invisible hit-testing material for Three.js geometry raycasting
   const invisibleHitMaterial = useMemo(
     () =>
-      new THREE.MeshBasicMaterial({
-        transparent: true,
-        opacity: 0,
-        depthWrite: false,
-      }),
+      // Hidden: the renderer skips these shapes entirely, but taps still hit-test them.
+      new THREE.MeshBasicMaterial({ visible: false }),
     []
   );
 
@@ -1471,10 +1329,6 @@ function RotatingBody({
       <mesh
         geometry={bakedGeometry}
         material={baseMaterial}
-      />
-      <mesh
-        geometry={wireGeometries ? wireGeometries[wireLevel] : bakedGeometry}
-        material={wireMaterial}
       />
       {/* Dev-Only Proxy Wireframe Visualizer */}
       <RegionDebugOverlay

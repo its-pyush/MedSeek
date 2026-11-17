@@ -117,7 +117,7 @@ export default function Home() {
         {isDesktop && (
           <div className="absolute inset-0 pointer-events-none -z-5 overflow-hidden opacity-70">
             <Threads
-              color={[0.18, 0.42, 0.85]}
+              color={[0.34, 0.6, 0.81]}
               amplitude={1.2}
               distance={0.18}
               speed={0.35}

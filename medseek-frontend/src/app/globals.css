@@ -5,10 +5,10 @@
    second set of values rather than a second set of class names.     */
 
 @theme {
-  --color-brand: #3a5ebb;        /* primary blue */
-  --color-brand-light: #5a7ed6;
-  --color-brand-ink: #2a4693;    /* blue text on light tints */
-  --color-brand-edge: #2e4d9c;   /* borders of solid blue surfaces */
+  --color-brand: #5798cf;        /* primary blue */
+  --color-brand-light: #7db2e0;
+  --color-brand-ink: #2f6aa0;    /* blue text on light tints */
+  --color-brand-edge: #3a77ad;   /* borders of solid blue surfaces */
   --color-canvas: #fff8eb;       /* page background (warm ivory) */
   --color-line: #e2dcd0;         /* warm hairlines */
   --color-glow: #fed7aa;         /* ambient warm light */
@@ -29,7 +29,7 @@
   --glass-bg-strong: rgba(255, 255, 255, 0.9);
   --glass-border: rgba(255, 255, 255, 0.9);
   --glass-highlight: rgba(255, 255, 255, 0.95);
-  --glass-shadow: 0 6px 24px -6px rgba(58, 94, 187, 0.12), 0 2px 6px -2px rgba(15, 23, 42, 0.06);
+  --glass-shadow: 0 6px 24px -6px rgba(87, 152, 207, 0.12), 0 2px 6px -2px rgba(15, 23, 42, 0.06);
   --header-bg: rgba(255, 252, 245, 0.72);
   --hairline: rgba(226, 218, 202, 0.8);
 
@@ -39,10 +39,10 @@
   --btn-glass-border: rgba(255, 255, 255, 0.85);
   --btn-glass-edge: rgba(148, 163, 184, 0.55);
   --btn-glass-text: #0f172a;
-  --btn-primary-top: #4a6fd0;
-  --btn-primary-bottom: #3558b5;
-  --btn-primary-edge: #2a4693;
-  --btn-primary-glow: rgba(58, 94, 187, 0.38);
+  --btn-primary-top: #4f8fc8;
+  --btn-primary-bottom: #3a77ad;
+  --btn-primary-edge: #2f6aa0;
+  --btn-primary-glow: rgba(87, 152, 207, 0.38);
   --btn-danger-text: #b91c1c;
   --btn-danger-border: rgba(248, 113, 113, 0.55);
   --btn-danger-bg: rgba(254, 242, 242, 0.75);
@@ -55,10 +55,10 @@
   color-scheme: dark;
   --foreground: #e8ecf3;
 
-  --color-brand: #6688ea;
-  --color-brand-light: #86a2f2;
-  --color-brand-ink: #bccbfb;
-  --color-brand-edge: #5273d6;
+  --color-brand: #5798cf;
+  --color-brand-light: #7db2e0;
+  --color-brand-ink: #b9d6f0;
+  --color-brand-edge: #4a89c2;
   --color-canvas: #0d1118;
   --color-line: #262d3b;
   --color-glow: #3a2a1c;
@@ -77,10 +77,10 @@
   --btn-glass-border: rgba(255, 255, 255, 0.14);
   --btn-glass-edge: rgba(0, 0, 0, 0.5);
   --btn-glass-text: #e8ecf3;
-  --btn-primary-top: #6f90ee;
-  --btn-primary-bottom: #4f72dc;
-  --btn-primary-edge: #3f60c4;
-  --btn-primary-glow: rgba(88, 124, 232, 0.45);
+  --btn-primary-top: #5a9bd2;
+  --btn-primary-bottom: #3f7db5;
+  --btn-primary-edge: #3a77ad;
+  --btn-primary-glow: rgba(87, 152, 207, 0.45);
   --btn-danger-text: #fca5a5;
   --btn-danger-border: rgba(248, 113, 113, 0.4);
   --btn-danger-bg: rgba(127, 29, 29, 0.28);
@@ -277,7 +277,7 @@ html {
   box-shadow:
     inset 0 1px 0 0 var(--glass-highlight),
     0 2px 0 0 var(--btn-glass-edge),
-    0 8px 18px -6px rgba(58, 94, 187, 0.22);
+    0 8px 18px -6px rgba(87, 152, 207, 0.22);
 }
 
 .btn-modern:active:not(:disabled),
@@ -388,7 +388,7 @@ html {
   transform: translateY(-2px);
   box-shadow:
     inset 0 1px 0 0 var(--glass-highlight),
-    0 14px 30px -10px rgba(58, 94, 187, 0.28);
+    0 14px 30px -10px rgba(87, 152, 207, 0.28);
 }
 
 .glass-card-warning {
@@ -428,7 +428,7 @@ html {
   box-shadow:
     inset 0 1px 0 0 var(--glass-highlight),
     0 0 0 4px color-mix(in oklab, var(--color-brand) 22%, transparent),
-    0 12px 32px -8px rgba(58, 94, 187, 0.22);
+    0 12px 32px -8px rgba(87, 152, 207, 0.22);
 }
 
 .glass-chip {

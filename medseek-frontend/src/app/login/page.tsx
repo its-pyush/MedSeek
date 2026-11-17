@@ -34,7 +34,7 @@ export default function LoginPage() {
       {/* Background Animated Threads Canvas */}
       <div className="absolute inset-0 z-0 pointer-events-auto">
         <Threads
-          color={[0.23, 0.37, 0.73]}
+          color={[0.34, 0.6, 0.81]}
           amplitude={1.1}
           distance={0.15}
           enableMouseInteraction={false}
