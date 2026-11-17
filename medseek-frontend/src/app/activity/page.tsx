@@ -57,7 +57,7 @@ const ACTION_METAS: Record<string, ActionMeta> = {
     label: "Account Registered",
     category: "auth",
     categoryLabel: "Security & Access",
-    explanation: "New patient credentials verified and cryptographic profile initialized.",
+    explanation: "New account created.",
     Icon: IconProfile,
     iconBg: "bg-blue-50 border-blue-200",
     iconText: "text-blue-600",
@@ -66,7 +66,7 @@ const ACTION_METAS: Record<string, ActionMeta> = {
     label: "Session Refreshed",
     category: "auth",
     categoryLabel: "Security & Access",
-    explanation: "Cryptographic dual-token rotation completed for active patient session.",
+    explanation: "Sign-in session renewed.",
     Icon: IconRefresh,
     iconBg: "bg-slate-100 border-slate-200",
     iconText: "text-slate-700",
@@ -102,7 +102,7 @@ const ACTION_METAS: Record<string, ActionMeta> = {
     label: "Record Accessed",
     category: "vault",
     categoryLabel: "Health Vault",
-    explanation: "Encrypted health record accessed and decrypted in-memory using envelope IV.",
+    explanation: "A health record was opened and decrypted for viewing.",
     Icon: IconEye,
     iconBg: "bg-emerald-50 border-emerald-200",
     iconText: "text-emerald-700",
@@ -192,7 +192,7 @@ function getActionMeta(action: string): ActionMeta {
       label: action,
       category: "vault",
       categoryLabel: "Health Vault",
-      explanation: "Data vault event recorded with AES-256 cryptographic logging.",
+      explanation: "Health vault activity.",
       Icon: IconVault,
       iconBg: "bg-emerald-50 border-emerald-200",
       iconText: "text-emerald-700",
@@ -469,7 +469,7 @@ function ActivityContent() {
       label: "All Activity",
       Icon: IconActivity,
       count: metrics.totalEvents,
-      additionalInfo: "Complete immutable audit trail",
+      additionalInfo: "Everything recorded for your account",
     },
     {
       id: "auth" as ActivityCategory,
@@ -564,11 +564,11 @@ function ActivityContent() {
             </h1>
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 ml-1">
               <IconShieldCheck size={12} className="text-emerald-600" />
-              <span>Cryptographically Logged</span>
+              <span>Recorded automatically</span>
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500">
-            Immutable patient access log documenting authentications, encrypted vault changes, and AI diagnostic interactions.
+            A record of activity on your account while signed in: vault changes, chats and searches.
           </p>
         </div>
 
@@ -1172,8 +1172,7 @@ function ActivityContent() {
               <div className="p-3 rounded-lg bg-blue-50/70 border border-blue-200 text-blue-900 text-xs flex items-start gap-2.5">
                 <IconLockShield size={16} className="text-blue-600 shrink-0 mt-0.5" />
                 <div className="text-[11px] leading-relaxed">
-                  <strong>Patient Audit Guarantee:</strong> This entry is stored in an append-only audit trail. In accordance with personal health data standards, MedSeek automatically logs every access attempt to ensure full transparency of your medical data.
-                </div>
+                  <strong>About this log:</strong> MedSeek records each request you make while signed in, so you can see how your account and health data were used.</div>
               </div>
             </div>
 

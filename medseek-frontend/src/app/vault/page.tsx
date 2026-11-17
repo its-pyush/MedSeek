@@ -301,7 +301,7 @@ function VaultContent() {
                       </span>
                       <span className="flex items-center gap-1 text-slate-400 font-mono text-[10px]">
                         <IconLockShield size={10} className="text-emerald-600" />
-                        <span>Encrypted Hash #{r.id}</span>
+                        <span>Record #{r.id}</span>
                       </span>
                     </div>
                   </div>
@@ -505,7 +505,7 @@ function VaultContent() {
               {/* Cryptographic Assurance Badge */}
               <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center gap-2 text-[11px] text-slate-600">
                 <IconLockShield size={14} className="text-emerald-600 shrink-0" />
-                <span>Records are protected with client-side symmetric AES-256 encryption.</span>
+                <span>Records are encrypted on our server with AES-256 before they are stored.</span>
               </div>
 
               {/* Actions */}

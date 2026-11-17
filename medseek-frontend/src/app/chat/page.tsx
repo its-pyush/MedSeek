@@ -317,7 +317,7 @@ function ChatContent() {
                 </button>
               </div>
               <p className="mt-1 text-[10px] text-slate-400 text-center">
-                Press Enter to send · Shift+Enter for new line · Grounded in encrypted profile
+                Press Enter to send · Shift+Enter for new line · Answers use your saved health records
               </p>
             </form>
           </>

@@ -69,7 +69,7 @@ export default function SignupPage() {
               Create Patient Account
             </h1>
             <p className="mt-1 text-xs text-slate-500">
-              Initialize client-side encrypted vault and profile
+              Create your account and personal health vault
             </p>
           </div>
 

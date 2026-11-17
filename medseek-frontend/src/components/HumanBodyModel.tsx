@@ -38,8 +38,14 @@ export type { SubRegion, MajorRegion, RegionSelectionPayload, RegionProxy };
  * halves GPU load; interaction (select mode) runs at 60. Nothing renders while
  * the model is off screen or the tab is hidden.
  */
-function FrameDriver({ active, fps }: { active: boolean; fps: number }) {
+function FrameDriver({ active, fps, redrawKey }: { active: boolean; fps: number; redrawKey: unknown }) {
   const invalidate = useThree((state) => state.invalidate);
+
+  // Even while idle, draw one fresh frame when what is shown changes
+  // (for example a symptom typed in the search bar lights up a body area).
+  useEffect(() => {
+    invalidate();
+  }, [redrawKey, invalidate]);
 
   useEffect(() => {
     if (!active) return;
@@ -1497,6 +1503,24 @@ export default function HumanBodyModel({
   const containerRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(true);
 
+  // The idle rotation is decoration. It runs for a few seconds after the page
+  // loads or the pointer touches the model, then the canvas stops drawing
+  // entirely until there is something new to show.
+  const IDLE_SPIN_MS = 8000;
+  const [awake, setAwake] = useState(true);
+  const sleepTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wake = useCallback(() => {
+    setAwake(true);
+    if (sleepTimerRef.current) clearTimeout(sleepTimerRef.current);
+    sleepTimerRef.current = setTimeout(() => setAwake(false), IDLE_SPIN_MS);
+  }, []);
+  useEffect(() => {
+    sleepTimerRef.current = setTimeout(() => setAwake(false), IDLE_SPIN_MS);
+    return () => {
+      if (sleepTimerRef.current) clearTimeout(sleepTimerRef.current);
+    };
+  }, []);
+
   // Two-Tier Mode & Selection State
   // mode: "full" = full body major category proxies active; "zoom" = framed sub-region proxies active
   const [selectMode, setSelectMode] = useState(false);
@@ -1756,6 +1780,7 @@ export default function HumanBodyModel({
           : "z-0 pointer-events-auto"
       }`}
       style={{ opacity: 0.85 }}
+      onPointerEnter={wake}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -1773,7 +1798,11 @@ export default function HumanBodyModel({
         style={{ background: "transparent" }}
         frameloop="demand"
       >
-        <FrameDriver active={inView} fps={selectMode ? 60 : 30} />
+        <FrameDriver
+          active={inView && (selectMode || awake)}
+          fps={selectMode ? 60 : 30}
+          redrawKey={activePoints}
+        />
         <ambientLight intensity={1.8} />
         <directionalLight position={[4, 8, 5]} intensity={1.3} color="#ffffff" />
         <directionalLight position={[-4, 2, 3]} intensity={0.7} color="#e0eeff" />
