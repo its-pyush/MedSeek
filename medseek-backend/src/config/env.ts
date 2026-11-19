@@ -27,6 +27,9 @@ const envSchema = z.object({
   DEEPSEEK_BASE_URL: z.string().optional(),
   DEEPSEEK_MODEL: z.string().optional(),
 
+  // Local signal: count labelled sample cases as well as real reports (demo only)
+  LOCAL_SIGNAL_INCLUDE_SAMPLE: z.enum(["true", "false"]).default("false"),
+
   // Vault encryption
   ENCRYPTION_KEY: z.string().optional(), // 32-byte hex string for AES-256
 });

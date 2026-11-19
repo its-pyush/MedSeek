@@ -1,0 +1,6002 @@
+{
+ "_about": "Where on the body each knowledge-base symptom is felt or seen. Editorial, made from the word rules in scripts/kb/areas.ts (`npm run kb:areas:build`), not measured data. Ids are areas/parts from body_regions.json, or the groups general / skin / mind.",
+ "areas": {
+  "abdominal cramps": [
+   "abdomen"
+  ],
+  "abdominal fullness": [
+   "abdomen"
+  ],
+  "abdominal mass": [
+   "abdomen"
+  ],
+  "abdominal obesity": [
+   "abdomen"
+  ],
+  "abdominal pain": [
+   "abdomen"
+  ],
+  "abdominal pulsation": [
+   "abdomen"
+  ],
+  "abdominal stiffness": [
+   "abdomen"
+  ],
+  "abdominal swelling": [
+   "abdomen"
+  ],
+  "abdominal tenderness": [
+   "abdomen"
+  ],
+  "abdominal wall defect": [
+   "abdomen"
+  ],
+  "abnormal discharge": [
+   "genital"
+  ],
+  "abnormal fetal position": [
+   "pelvic_core"
+  ],
+  "abnormal genitals": [
+   "genital"
+  ],
+  "abnormal head shape": [
+   "head"
+  ],
+  "abnormal movements": [
+   "general"
+  ],
+  "abnormal posture": [
+   "back"
+  ],
+  "abnormal urethral opening": [
+   "genital"
+  ],
+  "abnormal urine stream": [
+   "above_pubic_bone"
+  ],
+  "abnormal uterine bleeding": [
+   "pelvic_core"
+  ],
+  "absence of orgasm": [
+   "genital"
+  ],
+  "absent periods": [
+   "pelvic_core"
+  ],
+  "absent testicle": [
+   "genital"
+  ],
+  "accumulating items": [
+   "mind"
+  ],
+  "achilles pain": [
+   "ankle"
+  ],
+  "aching": [
+   "general"
+  ],
+  "aching pain": [
+   "general"
+  ],
+  "acne": [
+   "skin"
+  ],
+  "acne like facial bumps": [
+   "face"
+  ],
+  "acting out dreams": [
+   "mind"
+  ],
+  "activity avoidance": [
+   "mind"
+  ],
+  "adrenal crisis": [
+   "general"
+  ],
+  "aggression": [
+   "mind"
+  ],
+  "aggressive thoughts": [
+   "mind"
+  ],
+  "agitation": [
+   "mind"
+  ],
+  "altered taste": [
+   "mouth"
+  ],
+  "ambiguous external genitalia": [
+   "genital"
+  ],
+  "anal abscess": [
+   "rectum"
+  ],
+  "anal bleeding": [
+   "rectum"
+  ],
+  "anal growth": [
+   "rectum"
+  ],
+  "anal irritation": [
+   "rectum"
+  ],
+  "anal itching": [
+   "rectum"
+  ],
+  "anal lump": [
+   "rectum"
+  ],
+  "anal pain": [
+   "rectum"
+  ],
+  "anal sore": [
+   "rectum"
+  ],
+  "anal spasm": [
+   "rectum"
+  ],
+  "anal swelling": [
+   "rectum"
+  ],
+  "anemia": [
+   "general"
+  ],
+  "anger": [
+   "mind"
+  ],
+  "anger outbursts": [
+   "mind"
+  ],
+  "angry outbursts": [
+   "mind"
+  ],
+  "ankle bruising": [
+   "ankle"
+  ],
+  "ankle deformity": [
+   "ankle"
+  ],
+  "ankle instability": [
+   "ankle"
+  ],
+  "ankle pain": [
+   "ankle"
+  ],
+  "ankle stiffness": [
+   "ankle"
+  ],
+  "ankle swelling": [
+   "ankle"
+  ],
+  "ankle tenderness": [
+   "ankle"
+  ],
+  "anxiety": [
+   "mind"
+  ],
+  "anxiety about speaking": [
+   "mind"
+  ],
+  "apathy": [
+   "mind"
+  ],
+  "appetite changes": [
+   "abdomen"
+  ],
+  "arch pain": [
+   "foot"
+  ],
+  "arguing with adults": [
+   "mind"
+  ],
+  "arm discomfort": [
+   "arms"
+  ],
+  "arm movements": [
+   "arms"
+  ],
+  "arm numbness": [
+   "arms"
+  ],
+  "arm pain": [
+   "arms"
+  ],
+  "arm swelling": [
+   "arms"
+  ],
+  "arm waving": [
+   "arms"
+  ],
+  "arm weakness": [
+   "arms"
+  ],
+  "armpit lump": [
+   "armpit"
+  ],
+  "armpit swelling": [
+   "armpit"
+  ],
+  "arrogant behavior": [
+   "mind"
+  ],
+  "asymmetric face": [
+   "face"
+  ],
+  "asymmetry": [
+   "general"
+  ],
+  "automatic behavior": [
+   "mind"
+  ],
+  "avoidance": [
+   "mind"
+  ],
+  "avoidance behavior": [
+   "mind"
+  ],
+  "avoidance of situations": [
+   "mind"
+  ],
+  "avoiding crowds": [
+   "mind"
+  ],
+  "avoiding reading": [
+   "mind"
+  ],
+  "avoiding sex": [
+   "mind"
+  ],
+  "back dimple": [
+   "back"
+  ],
+  "back pain": [
+   "back"
+  ],
+  "back prominence when bending forward": [
+   "back"
+  ],
+  "back stiffness": [
+   "back"
+  ],
+  "bad breath": [
+   "mouth"
+  ],
+  "bad taste": [
+   "mouth"
+  ],
+  "bad taste in mouth": [
+   "mouth"
+  ],
+  "balance problems": [
+   "head"
+  ],
+  "bald patches": [
+   "scalp"
+  ],
+  "barking cough": [
+   "chest"
+  ],
+  "bedtime anxiety": [
+   "mind"
+  ],
+  "bedwetting": [
+   "above_pubic_bone"
+  ],
+  "behavior changes": [
+   "mind"
+  ],
+  "behavior problems": [
+   "mind"
+  ],
+  "being easily startled": [
+   "mind"
+  ],
+  "belching": [
+   "epigastric"
+  ],
+  "belly pain": [
+   "abdomen"
+  ],
+  "big toe pain": [
+   "toes"
+  ],
+  "big toe stiffness": [
+   "toes"
+  ],
+  "binge eating": [
+   "abdomen"
+  ],
+  "birthmark": [
+   "skin"
+  ],
+  "bite marks": [
+   "skin"
+  ],
+  "bitter taste": [
+   "mouth"
+  ],
+  "bitter taste in mouth": [
+   "mouth"
+  ],
+  "bitterness": [
+   "mouth"
+  ],
+  "bizarre behavior": [
+   "mind"
+  ],
+  "black dots": [
+   "eyes"
+  ],
+  "black eye": [
+   "eyes"
+  ],
+  "black stools": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "blackheads": [
+   "skin"
+  ],
+  "bladder changes": [
+   "above_pubic_bone"
+  ],
+  "bladder control problems": [
+   "above_pubic_bone"
+  ],
+  "bladder dysfunction": [
+   "above_pubic_bone"
+  ],
+  "bladder pain": [
+   "above_pubic_bone"
+  ],
+  "blaming others": [
+   "mind"
+  ],
+  "bleeding": [
+   "general"
+  ],
+  "bleeding after dental work": [
+   "mouth"
+  ],
+  "bleeding after menopause": [
+   "pelvic_core"
+  ],
+  "bleeding after sex": [
+   "genital"
+  ],
+  "bleeding after surgery": [
+   "general"
+  ],
+  "bleeding between periods": [
+   "pelvic_core"
+  ],
+  "bleeding gums": [
+   "mouth"
+  ],
+  "bleeding in the eyes": [
+   "eyes"
+  ],
+  "bleeding skin": [
+   "skin"
+  ],
+  "bleeding with sex": [
+   "genital"
+  ],
+  "blind spot": [
+   "eyes"
+  ],
+  "blinking": [
+   "eyes"
+  ],
+  "bloating": [
+   "abdomen"
+  ],
+  "blocked walkways": [
+   "mind"
+  ],
+  "blood clots": [
+   "general"
+  ],
+  "blood in mucus": [
+   "chest"
+  ],
+  "blood in semen": [
+   "genital"
+  ],
+  "blood in stool": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "blood in urine": [
+   "above_pubic_bone",
+   "flank"
+  ],
+  "blood on toilet paper": [
+   "rectum"
+  ],
+  "blood pressure changes": [
+   "general"
+  ],
+  "blood sugar changes": [
+   "general"
+  ],
+  "bloody diarrhea": [
+   "lower_abdomen"
+  ],
+  "bloody discharge": [
+   "genital"
+  ],
+  "bloody saliva": [
+   "mouth"
+  ],
+  "blue lips": [
+   "mouth"
+  ],
+  "blue nails": [
+   "fingers",
+   "toes"
+  ],
+  "blue spots on skin": [
+   "skin"
+  ],
+  "bluish skin": [
+   "skin"
+  ],
+  "blurred vision": [
+   "eyes"
+  ],
+  "body aches": [
+   "general"
+  ],
+  "body dissatisfaction": [
+   "mind"
+  ],
+  "body feels distorted": [
+   "mind"
+  ],
+  "body hair loss": [
+   "skin"
+  ],
+  "body image concerns": [
+   "mind"
+  ],
+  "body odor": [
+   "general"
+  ],
+  "boil": [
+   "skin"
+  ],
+  "bone deformity": [
+   "general"
+  ],
+  "bone pain": [
+   "general"
+  ],
+  "bone spurs": [
+   "general"
+  ],
+  "bone through skin": [
+   "skin"
+  ],
+  "bony bump": [
+   "skin"
+  ],
+  "bowed legs": [
+   "legs"
+  ],
+  "bowel changes": [
+   "lower_abdomen"
+  ],
+  "bowel dysfunction": [
+   "lower_abdomen"
+  ],
+  "bowel urgency": [
+   "lower_abdomen"
+  ],
+  "bragging": [
+   "mind"
+  ],
+  "brain bleeding": [
+   "head"
+  ],
+  "breast enlargement": [
+   "breast"
+  ],
+  "breast heaviness": [
+   "breast"
+  ],
+  "breast lump": [
+   "breast"
+  ],
+  "breast pain": [
+   "breast"
+  ],
+  "breast shape change": [
+   "breast"
+  ],
+  "breast size change": [
+   "breast"
+  ],
+  "breast skin changes": [
+   "breast"
+  ],
+  "breast skin color change": [
+   "breast"
+  ],
+  "breast skin peeling": [
+   "breast"
+  ],
+  "breast skin redness": [
+   "breast"
+  ],
+  "breast swelling": [
+   "breast"
+  ],
+  "breast tenderness": [
+   "breast"
+  ],
+  "breast thickening": [
+   "breast"
+  ],
+  "breast warmth": [
+   "breast"
+  ],
+  "breathing pauses": [
+   "chest"
+  ],
+  "breathing problems": [
+   "chest"
+  ],
+  "breathy voice": [
+   "neck",
+   "chest"
+  ],
+  "brittle hair": [
+   "scalp"
+  ],
+  "brittle nails": [
+   "fingers",
+   "toes"
+  ],
+  "broken bone": [
+   "general"
+  ],
+  "broken hair": [
+   "scalp"
+  ],
+  "brown spot": [
+   "skin"
+  ],
+  "bruising": [
+   "skin"
+  ],
+  "bulging eye": [
+   "eyes"
+  ],
+  "bulging soft spot": [
+   "head"
+  ],
+  "bump": [
+   "skin"
+  ],
+  "bump on big toe": [
+   "toes"
+  ],
+  "bumps on tongue": [
+   "mouth"
+  ],
+  "burning eyes": [
+   "eyes"
+  ],
+  "burning feet": [
+   "foot"
+  ],
+  "burning pain": [
+   "general"
+  ],
+  "burning sensation": [
+   "general"
+  ],
+  "burning skin": [
+   "skin"
+  ],
+  "burning tongue": [
+   "mouth"
+  ],
+  "burns": [
+   "skin"
+  ],
+  "burrow tracks": [
+   "skin"
+  ],
+  "buttock pain": [
+   "buttocks_core"
+  ],
+  "buzzing sensation": [
+   "general"
+  ],
+  "calf cramping": [
+   "calf"
+  ],
+  "calf pain": [
+   "calf"
+  ],
+  "calluses": [
+   "skin"
+  ],
+  "carbohydrate cravings": [
+   "mind"
+  ],
+  "cardiac arrest": [
+   "chest"
+  ],
+  "careless mistakes": [
+   "mind"
+  ],
+  "cataracts": [
+   "eyes"
+  ],
+  "catching sensation": [
+   "general"
+  ],
+  "cauliflower like growths": [
+   "skin"
+  ],
+  "central vision loss": [
+   "eyes"
+  ],
+  "change in pitch": [
+   "neck"
+  ],
+  "change in stool shape": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "change in urine output": [
+   "above_pubic_bone"
+  ],
+  "changes in hair growth": [
+   "skin"
+  ],
+  "changes in urination": [
+   "above_pubic_bone"
+  ],
+  "changing mole": [
+   "skin"
+  ],
+  "chasing losses": [
+   "mind"
+  ],
+  "checking": [
+   "mind"
+  ],
+  "cheek twitching": [
+   "face"
+  ],
+  "cheesy discharge": [
+   "genital"
+  ],
+  "chest deformity": [
+   "chest"
+  ],
+  "chest discomfort": [
+   "chest"
+  ],
+  "chest infections": [
+   "chest"
+  ],
+  "chest lump": [
+   "chest"
+  ],
+  "chest pain": [
+   "chest"
+  ],
+  "chest swelling": [
+   "chest"
+  ],
+  "chest tightness": [
+   "chest"
+  ],
+  "chest wall depression": [
+   "chest"
+  ],
+  "chest wall lump": [
+   "chest"
+  ],
+  "chest wall tenderness": [
+   "chest"
+  ],
+  "chewing motion": [
+   "mouth"
+  ],
+  "chewing movements": [
+   "mouth"
+  ],
+  "chills": [
+   "general"
+  ],
+  "chipped teeth": [
+   "mouth"
+  ],
+  "choking": [
+   "neck"
+  ],
+  "cigarette cravings": [
+   "mind"
+  ],
+  "clammy skin": [
+   "skin"
+  ],
+  "claw hand": [
+   "hand"
+  ],
+  "clay colored stools": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "cleft lip": [
+   "mouth"
+  ],
+  "cleft palate": [
+   "mouth"
+  ],
+  "clenched fists": [
+   "hand"
+  ],
+  "clicking": [
+   "general"
+  ],
+  "clicking in ears": [
+   "ears"
+  ],
+  "clinginess": [
+   "mind"
+  ],
+  "clothing soaked with sweat": [
+   "general",
+   "skin"
+  ],
+  "cloudy dialysis fluid": [
+   "above_pubic_bone"
+  ],
+  "cloudy urine": [
+   "above_pubic_bone"
+  ],
+  "clubbing of fingers": [
+   "fingers"
+  ],
+  "clumsiness": [
+   "general"
+  ],
+  "clumsy hands": [
+   "hand"
+  ],
+  "clustered growths": [
+   "skin"
+  ],
+  "cluttered living space": [
+   "mind"
+  ],
+  "coarse hair growth": [
+   "skin"
+  ],
+  "coated tongue": [
+   "mouth"
+  ],
+  "cognitive difficulty": [
+   "mind"
+  ],
+  "cold clammy skin": [
+   "skin"
+  ],
+  "cold feet": [
+   "foot"
+  ],
+  "cold fingers": [
+   "fingers"
+  ],
+  "cold hands": [
+   "hand"
+  ],
+  "cold hands and feet": [
+   "hand",
+   "foot"
+  ],
+  "cold intolerance": [
+   "general"
+  ],
+  "cold skin": [
+   "skin"
+  ],
+  "cold sweat": [
+   "general",
+   "skin"
+  ],
+  "coldness toward others": [
+   "mind"
+  ],
+  "color changes": [
+   "skin"
+  ],
+  "color vision changes": [
+   "eyes"
+  ],
+  "color vision loss": [
+   "eyes"
+  ],
+  "coma": [
+   "head"
+  ],
+  "compulsive behavior": [
+   "mind"
+  ],
+  "compulsive sexual thoughts": [
+   "mind"
+  ],
+  "confusing blue and yellow": [
+   "eyes"
+  ],
+  "confusing red and green": [
+   "eyes"
+  ],
+  "confusion": [
+   "mind",
+   "head"
+  ],
+  "confusion after waking": [
+   "mind"
+  ],
+  "congestion": [
+   "nose"
+  ],
+  "constipation": [
+   "lower_abdomen"
+  ],
+  "contractions": [
+   "pelvic_core"
+  ],
+  "corns": [
+   "skin"
+  ],
+  "cough": [
+   "chest",
+   "neck"
+  ],
+  "cough with phlegm": [
+   "chest"
+  ],
+  "coughing fits": [
+   "chest"
+  ],
+  "coughing up blood": [
+   "chest"
+  ],
+  "coughing when eating": [
+   "chest",
+   "abdomen"
+  ],
+  "coughing when swallowing": [
+   "neck",
+   "chest"
+  ],
+  "counting": [
+   "mind"
+  ],
+  "cracked lips": [
+   "mouth"
+  ],
+  "cracked mouth corners": [
+   "mouth"
+  ],
+  "cracked skin": [
+   "skin"
+  ],
+  "cramping": [
+   "general"
+  ],
+  "cramps": [
+   "general"
+  ],
+  "craving": [
+   "mind"
+  ],
+  "craving alcohol": [
+   "mind"
+  ],
+  "crossed eyes": [
+   "eyes"
+  ],
+  "crowded teeth": [
+   "mouth"
+  ],
+  "crusted sore": [
+   "skin"
+  ],
+  "crusting": [
+   "skin"
+  ],
+  "crusty eyelashes": [
+   "eyes"
+  ],
+  "crusty scalp": [
+   "scalp"
+  ],
+  "crying": [
+   "mind"
+  ],
+  "cursing in sleep": [
+   "mind"
+  ],
+  "curved spine": [
+   "back"
+  ],
+  "cuts": [
+   "skin"
+  ],
+  "damp skin": [
+   "skin"
+  ],
+  "dark circles": [
+   "eyes"
+  ],
+  "dark circles under eyes": [
+   "eyes"
+  ],
+  "dark patches around eyes": [
+   "eyes"
+  ],
+  "dark skin patches": [
+   "skin"
+  ],
+  "dark spot in vision": [
+   "eyes"
+  ],
+  "dark spots": [
+   "skin"
+  ],
+  "dark tongue color": [
+   "mouth"
+  ],
+  "dark urine": [
+   "above_pubic_bone"
+  ],
+  "darkened skin around eyes": [
+   "eyes"
+  ],
+  "daydreaming": [
+   "mind"
+  ],
+  "daytime napping": [
+   "mind"
+  ],
+  "decline in learning": [
+   "mind"
+  ],
+  "declining school performance": [
+   "mind"
+  ],
+  "decreased fetal movement": [
+   "pelvic_core"
+  ],
+  "decreased need for sleep": [
+   "mind"
+  ],
+  "decreased sense of smell": [
+   "nose"
+  ],
+  "decreased sweating": [
+   "general",
+   "skin"
+  ],
+  "decreased urination": [
+   "above_pubic_bone"
+  ],
+  "deep voice": [
+   "neck"
+  ],
+  "deep wrinkles": [
+   "skin"
+  ],
+  "deepened voice": [
+   "neck"
+  ],
+  "deformity": [
+   "general"
+  ],
+  "dehydration": [
+   "general"
+  ],
+  "deja vu": [
+   "mind"
+  ],
+  "delayed motor milestones": [
+   "mind"
+  ],
+  "delayed orgasm": [
+   "genital"
+  ],
+  "delayed puberty": [
+   "general"
+  ],
+  "delayed speech": [
+   "mind"
+  ],
+  "delayed tooth eruption": [
+   "mouth"
+  ],
+  "delayed walking": [
+   "legs"
+  ],
+  "deliberately annoying others": [
+   "mind"
+  ],
+  "delusions": [
+   "mind"
+  ],
+  "dementia": [
+   "mind"
+  ],
+  "dental problems": [
+   "mouth"
+  ],
+  "denture discomfort": [
+   "mouth"
+  ],
+  "depression": [
+   "mind"
+  ],
+  "developmental delay": [
+   "mind"
+  ],
+  "diabetes": [
+   "general"
+  ],
+  "diarrhea": [
+   "lower_abdomen"
+  ],
+  "difficulty accepting the death": [
+   "mind"
+  ],
+  "difficulty bearing weight": [
+   "general"
+  ],
+  "difficulty becoming aroused": [
+   "genital"
+  ],
+  "difficulty bonding with baby": [
+   "mind"
+  ],
+  "difficulty breathing through nose": [
+   "nose"
+  ],
+  "difficulty chewing": [
+   "mouth"
+  ],
+  "difficulty clearing mucus": [
+   "chest"
+  ],
+  "difficulty climbing stairs": [
+   "legs"
+  ],
+  "difficulty closing eye": [
+   "eyes"
+  ],
+  "difficulty combing hair": [
+   "shoulder"
+  ],
+  "difficulty controlling urges": [
+   "mind"
+  ],
+  "difficulty discarding items": [
+   "mind"
+  ],
+  "difficulty driving": [
+   "mind"
+  ],
+  "difficulty eating": [
+   "abdomen"
+  ],
+  "difficulty ejaculating": [
+   "genital"
+  ],
+  "difficulty expressing emotions": [
+   "mind"
+  ],
+  "difficulty falling asleep": [
+   "mind"
+  ],
+  "difficulty falling back asleep": [
+   "mind"
+  ],
+  "difficulty following directions": [
+   "mind"
+  ],
+  "difficulty forming words": [
+   "mind"
+  ],
+  "difficulty gripping": [
+   "hand"
+  ],
+  "difficulty gripping objects": [
+   "hand"
+  ],
+  "difficulty handling stress": [
+   "mind"
+  ],
+  "difficulty holding stool": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "difficulty judging distance": [
+   "eyes"
+  ],
+  "difficulty learning new words": [
+   "mind"
+  ],
+  "difficulty lifting foot": [
+   "foot"
+  ],
+  "difficulty lifting objects": [
+   "hand"
+  ],
+  "difficulty lifting tongue": [
+   "mouth"
+  ],
+  "difficulty locating sound": [
+   "ears"
+  ],
+  "difficulty looking upward": [
+   "eyes"
+  ],
+  "difficulty making decisions": [
+   "mind"
+  ],
+  "difficulty moving toe": [
+   "toes"
+  ],
+  "difficulty moving tongue": [
+   "mouth"
+  ],
+  "difficulty moving tongue side to side": [
+   "mouth"
+  ],
+  "difficulty multitasking": [
+   "mind"
+  ],
+  "difficulty opening mouth": [
+   "mouth"
+  ],
+  "difficulty passing stool": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "difficulty planning": [
+   "mind"
+  ],
+  "difficulty raising arms": [
+   "shoulder"
+  ],
+  "difficulty reaching behind back": [
+   "shoulder"
+  ],
+  "difficulty reaching orgasm": [
+   "genital"
+  ],
+  "difficulty reaching overhead": [
+   "shoulder"
+  ],
+  "difficulty reading": [
+   "mind"
+  ],
+  "difficulty reading emotions": [
+   "mind"
+  ],
+  "difficulty recognizing music patterns": [
+   "mind"
+  ],
+  "difficulty rhyming": [
+   "mind"
+  ],
+  "difficulty rising from chair": [
+   "legs",
+   "hips"
+  ],
+  "difficulty rotating forearm": [
+   "forearm"
+  ],
+  "difficulty seeing at night": [
+   "eyes"
+  ],
+  "difficulty seeing distant objects": [
+   "eyes"
+  ],
+  "difficulty singing in tune": [
+   "mind"
+  ],
+  "difficulty speaking loudly": [
+   "mind"
+  ],
+  "difficulty standing up": [
+   "legs"
+  ],
+  "difficulty starting words": [
+   "mind"
+  ],
+  "difficulty staying alert": [
+   "mind"
+  ],
+  "difficulty turning head": [
+   "head"
+  ],
+  "difficulty understanding speech": [
+   "mind"
+  ],
+  "difficulty urinating": [
+   "above_pubic_bone"
+  ],
+  "difficulty using objects": [
+   "hand"
+  ],
+  "difficulty waiting turn": [
+   "mind"
+  ],
+  "difficulty waking": [
+   "mind"
+  ],
+  "difficulty waking up": [
+   "mind"
+  ],
+  "difficulty walking flat footed": [
+   "foot"
+  ],
+  "difficulty wearing shoes": [
+   "foot"
+  ],
+  "difficulty with complex tasks": [
+   "mind"
+  ],
+  "difficulty with daily routines": [
+   "mind"
+  ],
+  "difficulty with daily tasks": [
+   "mind"
+  ],
+  "difficulty with math": [
+   "mind"
+  ],
+  "digestive problems": [
+   "abdomen"
+  ],
+  "dilated pupil": [
+   "eyes"
+  ],
+  "dim vision": [
+   "eyes"
+  ],
+  "dimpled skin": [
+   "skin"
+  ],
+  "discomfort with body changes": [
+   "mind"
+  ],
+  "disorganization": [
+   "mind"
+  ],
+  "disorganized piles": [
+   "mind"
+  ],
+  "disorganized speech": [
+   "mind"
+  ],
+  "disorganized thinking": [
+   "mind"
+  ],
+  "disorientation": [
+   "mind"
+  ],
+  "distinctive facial features": [
+   "face"
+  ],
+  "distorted sense of time": [
+   "mind"
+  ],
+  "distorted vision": [
+   "eyes"
+  ],
+  "distress": [
+   "mind"
+  ],
+  "distress about parting with items": [
+   "mind"
+  ],
+  "dizziness": [
+   "head"
+  ],
+  "double vision": [
+   "eyes"
+  ],
+  "drainage": [
+   "skin"
+  ],
+  "draining sores": [
+   "skin"
+  ],
+  "drawing up of legs": [
+   "abdomen"
+  ],
+  "dream recall": [
+   "mind"
+  ],
+  "dribbling after urination": [
+   "above_pubic_bone"
+  ],
+  "dribbling urine": [
+   "above_pubic_bone"
+  ],
+  "dripping sweat": [
+   "general",
+   "skin"
+  ],
+  "drooling": [
+   "mouth"
+  ],
+  "drooping eyelid": [
+   "eyes"
+  ],
+  "dropping objects": [
+   "hand"
+  ],
+  "dropping things": [
+   "hand"
+  ],
+  "dry cough": [
+   "chest"
+  ],
+  "dry eyes": [
+   "eyes"
+  ],
+  "dry mouth": [
+   "mouth"
+  ],
+  "dry orgasm": [
+   "genital"
+  ],
+  "dry skin": [
+   "skin"
+  ],
+  "dull ache": [
+   "general"
+  ],
+  "ear bleeding": [
+   "ears"
+  ],
+  "ear discharge": [
+   "ears"
+  ],
+  "ear fullness": [
+   "ears"
+  ],
+  "ear infection": [
+   "ears"
+  ],
+  "ear popping": [
+   "ears"
+  ],
+  "ear scaling": [
+   "ears"
+  ],
+  "ear swelling": [
+   "ears"
+  ],
+  "earache": [
+   "ears"
+  ],
+  "early ejaculation": [
+   "genital"
+  ],
+  "early morning waking": [
+   "mind"
+  ],
+  "early puberty": [
+   "general"
+  ],
+  "easily startled": [
+   "mind"
+  ],
+  "easy bleeding": [
+   "general"
+  ],
+  "eating alone": [
+   "abdomen"
+  ],
+  "eating in secret": [
+   "abdomen"
+  ],
+  "eating large amounts": [
+   "abdomen"
+  ],
+  "eating pulled hair": [
+   "mind",
+   "scalp"
+  ],
+  "eating quickly": [
+   "abdomen"
+  ],
+  "eating when not hungry": [
+   "abdomen"
+  ],
+  "ejaculation during masturbation": [
+   "genital"
+  ],
+  "elbow pain": [
+   "elbow"
+  ],
+  "elbow stiffness": [
+   "elbow"
+  ],
+  "elbow tenderness": [
+   "elbow"
+  ],
+  "electric shock sensation": [
+   "general"
+  ],
+  "embarrassment": [
+   "mind"
+  ],
+  "emotional distress": [
+   "mind"
+  ],
+  "emotional flatness": [
+   "mind"
+  ],
+  "emotional instability": [
+   "mind"
+  ],
+  "emotional lability": [
+   "mind"
+  ],
+  "emotional numbness": [
+   "mind"
+  ],
+  "emotional outbursts": [
+   "mind"
+  ],
+  "emptiness": [
+   "mind"
+  ],
+  "empty scrotum": [
+   "genital"
+  ],
+  "empty socket": [
+   "mouth"
+  ],
+  "enlarged abdomen": [
+   "abdomen"
+  ],
+  "enlarged clitoris": [
+   "genital"
+  ],
+  "enlarged feet": [
+   "foot"
+  ],
+  "enlarged hands": [
+   "hand"
+  ],
+  "enlarged head": [
+   "head"
+  ],
+  "enlarged jaw": [
+   "jaw"
+  ],
+  "enlarged liver": [
+   "abdomen"
+  ],
+  "enlarged spleen": [
+   "abdomen"
+  ],
+  "enlarged tongue": [
+   "mouth"
+  ],
+  "enlarged veins": [
+   "skin"
+  ],
+  "enlarged wrists": [
+   "wrist"
+  ],
+  "envy of others": [
+   "mind"
+  ],
+  "erectile dysfunction": [
+   "genital"
+  ],
+  "erection without arousal": [
+   "genital"
+  ],
+  "euphoria": [
+   "mind"
+  ],
+  "exaggerated emotional reactions": [
+   "mind"
+  ],
+  "exaggerated reflexes": [
+   "general"
+  ],
+  "excess hair growth": [
+   "skin"
+  ],
+  "excessive bleeding after childbirth": [
+   "general"
+  ],
+  "excessive exercise": [
+   "general"
+  ],
+  "excessive hand washing": [
+   "mind"
+  ],
+  "excessive need for admiration": [
+   "mind"
+  ],
+  "excessive sleep": [
+   "mind"
+  ],
+  "excessive suspicion": [
+   "mind"
+  ],
+  "excessive urination": [
+   "above_pubic_bone"
+  ],
+  "excessive worry": [
+   "mind"
+  ],
+  "exercise intolerance": [
+   "general"
+  ],
+  "exhaustion after exertion": [
+   "general"
+  ],
+  "exposed bladder": [
+   "above_pubic_bone"
+  ],
+  "extra fingers": [
+   "fingers"
+  ],
+  "eye blinking": [
+   "eyes"
+  ],
+  "eye bruising": [
+   "eyes"
+  ],
+  "eye darting": [
+   "eyes"
+  ],
+  "eye deviation": [
+   "eyes"
+  ],
+  "eye discharge": [
+   "eyes"
+  ],
+  "eye discomfort": [
+   "eyes"
+  ],
+  "eye grittiness": [
+   "eyes"
+  ],
+  "eye heaviness": [
+   "eyes"
+  ],
+  "eye irritation": [
+   "eyes"
+  ],
+  "eye misalignment": [
+   "eyes"
+  ],
+  "eye movement changes": [
+   "eyes"
+  ],
+  "eye movement problems": [
+   "eyes"
+  ],
+  "eye pain": [
+   "eyes"
+  ],
+  "eye rolling": [
+   "eyes"
+  ],
+  "eye rubbing": [
+   "eyes"
+  ],
+  "eye sores": [
+   "eyes"
+  ],
+  "eye strain": [
+   "eyes"
+  ],
+  "eye swelling": [
+   "eyes"
+  ],
+  "eye turning": [
+   "eyes"
+  ],
+  "eyebrow flaking": [
+   "eyes"
+  ],
+  "eyelash crusting": [
+   "eyes"
+  ],
+  "eyelash loss": [
+   "eyes"
+  ],
+  "eyelid bumps": [
+   "eyes"
+  ],
+  "eyelid flutter": [
+   "eyes"
+  ],
+  "eyelid lump": [
+   "eyes"
+  ],
+  "eyelid pain": [
+   "eyes"
+  ],
+  "eyelid redness": [
+   "eyes"
+  ],
+  "eyelid scaling": [
+   "eyes"
+  ],
+  "eyelid sores": [
+   "eyes"
+  ],
+  "eyelid spasm": [
+   "eyes"
+  ],
+  "eyelid swelling": [
+   "eyes"
+  ],
+  "eyelid turning inward": [
+   "eyes"
+  ],
+  "eyelid twitching": [
+   "eyes"
+  ],
+  "eyes staying closed": [
+   "eyes"
+  ],
+  "facial asymmetry": [
+   "face"
+  ],
+  "facial bruising": [
+   "face"
+  ],
+  "facial drooping": [
+   "face"
+  ],
+  "facial flushing": [
+   "face"
+  ],
+  "facial hair": [
+   "skin"
+  ],
+  "facial hair growth": [
+   "skin"
+  ],
+  "facial numbness": [
+   "face"
+  ],
+  "facial pain": [
+   "face"
+  ],
+  "facial pimples": [
+   "face"
+  ],
+  "facial pressure": [
+   "face"
+  ],
+  "facial rash": [
+   "face"
+  ],
+  "facial redness": [
+   "face"
+  ],
+  "facial spasm": [
+   "face"
+  ],
+  "facial sweating": [
+   "general",
+   "skin"
+  ],
+  "facial swelling": [
+   "face"
+  ],
+  "facial tension": [
+   "face"
+  ],
+  "facial twitching": [
+   "face"
+  ],
+  "facial weakness": [
+   "face"
+  ],
+  "faded colors": [
+   "eyes"
+  ],
+  "failure to grow": [
+   "general"
+  ],
+  "failure to pass stool": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "failure to thrive": [
+   "general"
+  ],
+  "fainting": [
+   "head"
+  ],
+  "faintness": [
+   "head"
+  ],
+  "falling asleep suddenly": [
+   "mind"
+  ],
+  "falling out of bed": [
+   "mind"
+  ],
+  "falling sensation": [
+   "general"
+  ],
+  "falls": [
+   "general"
+  ],
+  "false memories": [
+   "mind"
+  ],
+  "fast breathing": [
+   "chest"
+  ],
+  "fast heartbeat": [
+   "chest"
+  ],
+  "fasting": [
+   "mind"
+  ],
+  "fat hump between shoulders": [
+   "upper_back"
+  ],
+  "fatigue": [
+   "general"
+  ],
+  "fatigue during sex": [
+   "general"
+  ],
+  "fear": [
+   "mind"
+  ],
+  "fear of abandonment": [
+   "mind"
+  ],
+  "fear of arrest": [
+   "mind"
+  ],
+  "fear of being alone": [
+   "mind"
+  ],
+  "fear of dying": [
+   "mind"
+  ],
+  "fear of going crazy": [
+   "mind"
+  ],
+  "fear of leaving home": [
+   "mind"
+  ],
+  "fear of losing control": [
+   "mind"
+  ],
+  "fear of weight gain": [
+   "mind"
+  ],
+  "fecal incontinence": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "fecal urgency": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "feeding difficulty": [
+   "abdomen"
+  ],
+  "feeling cold": [
+   "general"
+  ],
+  "feeling detached": [
+   "mind"
+  ],
+  "feeling empty": [
+   "mind"
+  ],
+  "feeling faint": [
+   "head"
+  ],
+  "feeling full": [
+   "epigastric"
+  ],
+  "feeling full quickly": [
+   "epigastric"
+  ],
+  "feeling high": [
+   "mind"
+  ],
+  "feeling like a robot": [
+   "mind"
+  ],
+  "feeling of fullness": [
+   "abdomen"
+  ],
+  "feeling of losing control": [
+   "mind"
+  ],
+  "feeling of unreality": [
+   "mind"
+  ],
+  "feeling unreal": [
+   "mind"
+  ],
+  "feeling unwell": [
+   "general"
+  ],
+  "feelings of worthlessness": [
+   "mind"
+  ],
+  "fever": [
+   "general"
+  ],
+  "fewer orgasms": [
+   "genital"
+  ],
+  "fidgeting": [
+   "mind"
+  ],
+  "filler words": [
+   "mind"
+  ],
+  "financial problems": [
+   "mind"
+  ],
+  "fine body hair": [
+   "skin"
+  ],
+  "fine lines": [
+   "skin"
+  ],
+  "fine motor difficulty": [
+   "hand"
+  ],
+  "finger bending": [
+   "fingers"
+  ],
+  "finger color change": [
+   "fingers"
+  ],
+  "finger deformity": [
+   "fingers"
+  ],
+  "finger fusion": [
+   "fingers"
+  ],
+  "finger locking": [
+   "fingers"
+  ],
+  "finger pain": [
+   "fingers"
+  ],
+  "finger rash": [
+   "fingers"
+  ],
+  "finger rubbing": [
+   "fingers"
+  ],
+  "finger stiffness": [
+   "fingers"
+  ],
+  "fingertip sores": [
+   "fingers"
+  ],
+  "firm mass": [
+   "skin"
+  ],
+  "firm penis": [
+   "genital"
+  ],
+  "firm skin patch": [
+   "skin"
+  ],
+  "first period": [
+   "pelvic_core"
+  ],
+  "fishy odor": [
+   "genital"
+  ],
+  "fixed grin": [
+   "face"
+  ],
+  "flakes on shoulders": [
+   "scalp"
+  ],
+  "flaky eyebrows": [
+   "eyes"
+  ],
+  "flaky skin": [
+   "skin"
+  ],
+  "flank pain": [
+   "flank"
+  ],
+  "flashbacks": [
+   "mind"
+  ],
+  "flat affect": [
+   "mind"
+  ],
+  "flat feet": [
+   "foot"
+  ],
+  "flat nose bridge": [
+   "nose"
+  ],
+  "flattened face": [
+   "face"
+  ],
+  "flattened forehead": [
+   "forehead"
+  ],
+  "floaters": [
+   "eyes"
+  ],
+  "fluctuating vision": [
+   "eyes"
+  ],
+  "fluid discharge": [
+   "genital"
+  ],
+  "fluid retention": [
+   "general"
+  ],
+  "flushed face": [
+   "face"
+  ],
+  "foamy urine": [
+   "above_pubic_bone"
+  ],
+  "food cravings": [
+   "abdomen"
+  ],
+  "food impaction": [
+   "abdomen"
+  ],
+  "food stuck": [
+   "neck",
+   "abdomen"
+  ],
+  "food stuck in throat": [
+   "neck",
+   "abdomen"
+  ],
+  "foot deformity": [
+   "foot"
+  ],
+  "foot drag": [
+   "foot",
+   "ankle"
+  ],
+  "foot drop": [
+   "foot",
+   "ankle"
+  ],
+  "foot pain": [
+   "foot"
+  ],
+  "foot slapping": [
+   "foot",
+   "ankle"
+  ],
+  "foot tingling": [
+   "foot"
+  ],
+  "foot ulcer": [
+   "foot"
+  ],
+  "foot weakness": [
+   "foot"
+  ],
+  "forearm pain": [
+   "forearm"
+  ],
+  "forefoot pain": [
+   "foot"
+  ],
+  "forehead pain": [
+   "forehead"
+  ],
+  "foreign body sensation": [
+   "general"
+  ],
+  "forgetfulness": [
+   "mind"
+  ],
+  "foul odor": [
+   "general"
+  ],
+  "foul smelling urine": [
+   "above_pubic_bone"
+  ],
+  "fragile skin": [
+   "skin"
+  ],
+  "freckles": [
+   "skin"
+  ],
+  "frequent bowel movements": [
+   "lower_abdomen"
+  ],
+  "frequent doctor visits": [
+   "mind"
+  ],
+  "frequent hospital visits": [
+   "mind"
+  ],
+  "frequent infections": [
+   "general"
+  ],
+  "frequent lung infections": [
+   "chest"
+  ],
+  "frequent prescription changes": [
+   "mind"
+  ],
+  "frequent respiratory infections": [
+   "chest"
+  ],
+  "frothy discharge": [
+   "genital"
+  ],
+  "fruity breath": [
+   "mouth"
+  ],
+  "fruity breath odor": [
+   "mouth"
+  ],
+  "frustration": [
+   "mind"
+  ],
+  "fullness after eating": [
+   "epigastric"
+  ],
+  "furry tongue": [
+   "mouth"
+  ],
+  "fused labia": [
+   "genital"
+  ],
+  "fussiness": [
+   "mind"
+  ],
+  "gagging": [
+   "neck"
+  ],
+  "gait disturbance": [
+   "legs"
+  ],
+  "gangrene": [
+   "skin"
+  ],
+  "gaps between teeth": [
+   "mouth"
+  ],
+  "gas": [
+   "lower_abdomen"
+  ],
+  "gas leakage": [
+   "lower_abdomen"
+  ],
+  "gasping": [
+   "chest"
+  ],
+  "gasping during sleep": [
+   "chest"
+  ],
+  "gasping for air": [
+   "chest"
+  ],
+  "gastrointestinal bleeding": [
+   "abdomen"
+  ],
+  "gender discomfort": [
+   "mind"
+  ],
+  "genital abnormality": [
+   "genital"
+  ],
+  "genital bleeding": [
+   "genital"
+  ],
+  "genital bumps": [
+   "genital"
+  ],
+  "genital burning": [
+   "genital"
+  ],
+  "genital discomfort": [
+   "genital"
+  ],
+  "genital irritation": [
+   "genital"
+  ],
+  "genital itching": [
+   "genital"
+  ],
+  "genital pain": [
+   "genital"
+  ],
+  "genital rash": [
+   "genital"
+  ],
+  "genital redness": [
+   "genital"
+  ],
+  "genital sores": [
+   "genital"
+  ],
+  "genital warts": [
+   "genital"
+  ],
+  "getting lost": [
+   "mind"
+  ],
+  "giving away belongings": [
+   "mind"
+  ],
+  "giving way": [
+   "general"
+  ],
+  "glare": [
+   "eyes"
+  ],
+  "glassy eyed expression": [
+   "eyes"
+  ],
+  "glaucoma": [
+   "eyes"
+  ],
+  "goiter": [
+   "neck"
+  ],
+  "grating sensation": [
+   "general"
+  ],
+  "gray skin": [
+   "skin"
+  ],
+  "gray throat patch": [
+   "neck"
+  ],
+  "greasy skin": [
+   "skin"
+  ],
+  "greasy stools": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "grinding sensation": [
+   "general"
+  ],
+  "grip pain": [
+   "hand"
+  ],
+  "gritty eyes": [
+   "eyes"
+  ],
+  "groaning": [
+   "mind"
+  ],
+  "groin bulge": [
+   "groin"
+  ],
+  "groin pain": [
+   "groin"
+  ],
+  "groin rash": [
+   "groin"
+  ],
+  "groin swelling": [
+   "groin"
+  ],
+  "grooved tongue": [
+   "mouth"
+  ],
+  "groping jaw movements": [
+   "jaw"
+  ],
+  "growing scar": [
+   "skin"
+  ],
+  "grunting": [
+   "chest"
+  ],
+  "guilt": [
+   "mind"
+  ],
+  "gum growths": [
+   "mouth"
+  ],
+  "gum inflammation": [
+   "mouth"
+  ],
+  "gum redness": [
+   "mouth"
+  ],
+  "gum tenderness": [
+   "mouth"
+  ],
+  "gurgling sound": [
+   "abdomen"
+  ],
+  "gynecomastia": [
+   "breast"
+  ],
+  "hair loss": [
+   "scalp"
+  ],
+  "hair loss when combing": [
+   "scalp"
+  ],
+  "hair pulling": [
+   "mind",
+   "scalp"
+  ],
+  "hair thinning": [
+   "scalp"
+  ],
+  "hair tuft": [
+   "skin"
+  ],
+  "hairline recession": [
+   "scalp"
+  ],
+  "hallucinations": [
+   "mind"
+  ],
+  "halos around lights": [
+   "eyes"
+  ],
+  "hammer toes": [
+   "toes"
+  ],
+  "hand bruising": [
+   "hand"
+  ],
+  "hand cramps": [
+   "hand"
+  ],
+  "hand deformity": [
+   "hand"
+  ],
+  "hand flapping": [
+   "mind"
+  ],
+  "hand movements": [
+   "hand"
+  ],
+  "hand pain": [
+   "hand"
+  ],
+  "hand swelling": [
+   "hand"
+  ],
+  "hand tenderness": [
+   "hand"
+  ],
+  "hand tremor": [
+   "hand"
+  ],
+  "hand weakness": [
+   "hand"
+  ],
+  "hand wringing": [
+   "mind"
+  ],
+  "handwriting changes": [
+   "hand"
+  ],
+  "hard skin": [
+   "skin"
+  ],
+  "hard stools": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "hardened bump": [
+   "skin"
+  ],
+  "head jerking": [
+   "head"
+  ],
+  "head nodding": [
+   "head"
+  ],
+  "head pressure": [
+   "head"
+  ],
+  "head tilt": [
+   "head"
+  ],
+  "head tilting": [
+   "head"
+  ],
+  "head tremor": [
+   "head"
+  ],
+  "head turning": [
+   "head"
+  ],
+  "headache": [
+   "head"
+  ],
+  "health worry": [
+   "mind"
+  ],
+  "hearing changes": [
+   "ears"
+  ],
+  "hearing loss": [
+   "ears"
+  ],
+  "hearing voices": [
+   "mind"
+  ],
+  "heart murmur": [
+   "chest"
+  ],
+  "heart problems": [
+   "chest"
+  ],
+  "heartburn": [
+   "epigastric",
+   "chest_core"
+  ],
+  "heat intolerance": [
+   "general"
+  ],
+  "heaviness": [
+   "general"
+  ],
+  "heaviness in groin": [
+   "groin"
+  ],
+  "heaviness in scrotum": [
+   "genital"
+  ],
+  "heavy bleeding": [
+   "general"
+  ],
+  "heavy leg feeling": [
+   "legs"
+  ],
+  "heavy legs": [
+   "legs"
+  ],
+  "heavy periods": [
+   "pelvic_core"
+  ],
+  "heavy sweating": [
+   "general",
+   "skin"
+  ],
+  "heel pain": [
+   "foot"
+  ],
+  "heel turned inward": [
+   "foot"
+  ],
+  "heels not touching ground": [
+   "foot"
+  ],
+  "hiccups": [
+   "chest",
+   "abdomen"
+  ],
+  "hidden insecurity": [
+   "mind"
+  ],
+  "high blood pressure": [
+   "general"
+  ],
+  "high foot arch": [
+   "foot"
+  ],
+  "high pitched voice": [
+   "neck"
+  ],
+  "hip dislocation": [
+   "hips"
+  ],
+  "hip instability": [
+   "hips"
+  ],
+  "hip pain": [
+   "hips"
+  ],
+  "hip stiffness": [
+   "hips"
+  ],
+  "hissing in ears": [
+   "ears"
+  ],
+  "hives": [
+   "skin"
+  ],
+  "hoarseness": [
+   "neck"
+  ],
+  "holding objects farther away": [
+   "eyes"
+  ],
+  "hooded penis": [
+   "genital"
+  ],
+  "hopelessness": [
+   "mind"
+  ],
+  "hot dry skin": [
+   "skin"
+  ],
+  "hot flashes": [
+   "general"
+  ],
+  "hunger": [
+   "abdomen"
+  ],
+  "hyperactivity": [
+   "mind"
+  ],
+  "hypervigilance": [
+   "mind"
+  ],
+  "hypospadias": [
+   "genital"
+  ],
+  "hypothyroidism": [
+   "neck"
+  ],
+  "identity confusion": [
+   "mind"
+  ],
+  "identity disturbance": [
+   "mind"
+  ],
+  "identity switching": [
+   "mind"
+  ],
+  "illness preoccupation": [
+   "mind"
+  ],
+  "impatience": [
+   "mind"
+  ],
+  "impulsive spending": [
+   "mind"
+  ],
+  "impulsiveness": [
+   "mind"
+  ],
+  "inability to bear weight": [
+   "general"
+  ],
+  "inability to delay ejaculation": [
+   "genital"
+  ],
+  "inability to ejaculate": [
+   "genital"
+  ],
+  "inability to enjoy life": [
+   "mind"
+  ],
+  "inability to pass gas": [
+   "lower_abdomen"
+  ],
+  "inability to stand on toes": [
+   "toes"
+  ],
+  "inappropriate behavior": [
+   "mind"
+  ],
+  "inappropriate laughter": [
+   "mind"
+  ],
+  "incision site pain": [
+   "general"
+  ],
+  "incomplete bladder emptying": [
+   "above_pubic_bone"
+  ],
+  "incomplete bowel emptying": [
+   "lower_abdomen"
+  ],
+  "incomplete emptying": [
+   "above_pubic_bone"
+  ],
+  "inconsistent symptoms": [
+   "general"
+  ],
+  "inconsistent word pronunciation": [
+   "mind"
+  ],
+  "increased alcohol use": [
+   "mind"
+  ],
+  "increased energy": [
+   "general"
+  ],
+  "increased errors": [
+   "mind"
+  ],
+  "increased hunger": [
+   "abdomen"
+  ],
+  "increased thirst": [
+   "general",
+   "mouth"
+  ],
+  "indifference to praise": [
+   "mind"
+  ],
+  "indigestion": [
+   "epigastric"
+  ],
+  "infection": [
+   "general"
+  ],
+  "infertility": [
+   "pelvic_core"
+  ],
+  "injury": [
+   "general"
+  ],
+  "insomnia": [
+   "mind"
+  ],
+  "instability": [
+   "general"
+  ],
+  "intellectual disability": [
+   "mind"
+  ],
+  "interrupted urine stream": [
+   "above_pubic_bone"
+  ],
+  "interrupting others": [
+   "mind"
+  ],
+  "intrusive memories": [
+   "mind"
+  ],
+  "intrusive thoughts": [
+   "mind"
+  ],
+  "involuntary movements": [
+   "general"
+  ],
+  "inward turned foot": [
+   "foot"
+  ],
+  "iris spot": [
+   "eyes"
+  ],
+  "irregular breathing": [
+   "chest"
+  ],
+  "irregular heartbeat": [
+   "chest"
+  ],
+  "irregular periods": [
+   "pelvic_core"
+  ],
+  "irresponsibility": [
+   "mind"
+  ],
+  "irritable bowel symptoms": [
+   "lower_abdomen"
+  ],
+  "irritation": [
+   "general"
+  ],
+  "itching": [
+   "skin"
+  ],
+  "itching ear": [
+   "ears"
+  ],
+  "itching eyes": [
+   "eyes"
+  ],
+  "itching nose": [
+   "nose"
+  ],
+  "itching rash": [
+   "skin"
+  ],
+  "itching throat": [
+   "neck"
+  ],
+  "jaundice": [
+   "skin",
+   "eyes"
+  ],
+  "jaw clicking": [
+   "jaw"
+  ],
+  "jaw locking": [
+   "jaw"
+  ],
+  "jaw pain": [
+   "jaw"
+  ],
+  "jaw stiffness": [
+   "jaw"
+  ],
+  "jaw swelling": [
+   "jaw"
+  ],
+  "jaw tenderness": [
+   "jaw"
+  ],
+  "jerking movements": [
+   "general"
+  ],
+  "joint bleeding": [
+   "general"
+  ],
+  "joint deformity": [
+   "general"
+  ],
+  "joint dislocation": [
+   "general"
+  ],
+  "joint hypermobility": [
+   "general"
+  ],
+  "joint instability": [
+   "general"
+  ],
+  "joint locking": [
+   "general"
+  ],
+  "joint pain": [
+   "general"
+  ],
+  "joint popping": [
+   "general"
+  ],
+  "joint redness": [
+   "general"
+  ],
+  "joint stiffness": [
+   "general"
+  ],
+  "joint swelling": [
+   "general"
+  ],
+  "joint tenderness": [
+   "general"
+  ],
+  "joint warmth": [
+   "general"
+  ],
+  "joint weakness": [
+   "general"
+  ],
+  "kicking": [
+   "mind"
+  ],
+  "kidney failure": [
+   "flank"
+  ],
+  "kidney problems": [
+   "flank"
+  ],
+  "kidney stone pain": [
+   "flank"
+  ],
+  "kidney stones": [
+   "flank"
+  ],
+  "knee catching": [
+   "knee"
+  ],
+  "knee crackling": [
+   "knee"
+  ],
+  "knee giving way": [
+   "knee"
+  ],
+  "knee instability": [
+   "knee"
+  ],
+  "knee locking": [
+   "knee"
+  ],
+  "knee pain": [
+   "knee"
+  ],
+  "knee popping": [
+   "knee"
+  ],
+  "knee stiffness": [
+   "knee"
+  ],
+  "knee swelling": [
+   "knee"
+  ],
+  "knee tenderness": [
+   "knee"
+  ],
+  "lack of emotion": [
+   "mind"
+  ],
+  "lack of empathy": [
+   "mind"
+  ],
+  "lack of pretend play": [
+   "mind"
+  ],
+  "lack of remorse": [
+   "mind"
+  ],
+  "language difficulty": [
+   "mind"
+  ],
+  "lapse in awareness": [
+   "head"
+  ],
+  "large stools": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "late sleep onset": [
+   "mind"
+  ],
+  "laughing": [
+   "mind"
+  ],
+  "laughing in sleep": [
+   "mind"
+  ],
+  "laughing spells": [
+   "mind"
+  ],
+  "laughter": [
+   "mind"
+  ],
+  "laxative use": [
+   "mind"
+  ],
+  "leaking during sex": [
+   "genital"
+  ],
+  "leaking when bending over": [
+   "above_pubic_bone"
+  ],
+  "leaking when coughing": [
+   "above_pubic_bone"
+  ],
+  "leaking when exercising": [
+   "above_pubic_bone"
+  ],
+  "leaking when laughing": [
+   "mind"
+  ],
+  "leaking when lifting": [
+   "above_pubic_bone"
+  ],
+  "leaking when sneezing": [
+   "above_pubic_bone"
+  ],
+  "learning difficulty": [
+   "mind"
+  ],
+  "left right confusion": [
+   "mind"
+  ],
+  "leg cramping": [
+   "legs"
+  ],
+  "leg cramps": [
+   "legs"
+  ],
+  "leg deformity": [
+   "legs"
+  ],
+  "leg discomfort": [
+   "legs"
+  ],
+  "leg enlargement": [
+   "legs"
+  ],
+  "leg heaviness": [
+   "legs"
+  ],
+  "leg numbness": [
+   "legs"
+  ],
+  "leg pain": [
+   "legs"
+  ],
+  "leg pain when walking": [
+   "calf",
+   "legs"
+  ],
+  "leg shortening": [
+   "legs"
+  ],
+  "leg stiffness": [
+   "legs"
+  ],
+  "leg swelling": [
+   "legs"
+  ],
+  "leg tenderness": [
+   "legs"
+  ],
+  "leg twitching": [
+   "legs"
+  ],
+  "leg ulcer": [
+   "legs"
+  ],
+  "leg weakness": [
+   "legs"
+  ],
+  "legal problems": [
+   "mind"
+  ],
+  "less facial hair": [
+   "skin"
+  ],
+  "less orgasm": [
+   "genital"
+  ],
+  "lethargy": [
+   "general"
+  ],
+  "light flashes": [
+   "eyes"
+  ],
+  "light sensitivity": [
+   "eyes"
+  ],
+  "light skin": [
+   "skin"
+  ],
+  "lightheadedness": [
+   "head"
+  ],
+  "lightheadedness on standing": [
+   "head"
+  ],
+  "limb movement": [
+   "general"
+  ],
+  "limb numbness": [
+   "general"
+  ],
+  "limb overgrowth": [
+   "skin"
+  ],
+  "limb pain": [
+   "general"
+  ],
+  "limb paralysis": [
+   "general"
+  ],
+  "limb swelling": [
+   "general"
+  ],
+  "limb weakness": [
+   "general"
+  ],
+  "limited ankle movement": [
+   "ankle"
+  ],
+  "limited arm movement": [
+   "arms"
+  ],
+  "limited forearm rotation": [
+   "forearm"
+  ],
+  "limited mobility": [
+   "general"
+  ],
+  "limited movement": [
+   "general"
+  ],
+  "limited positive emotion": [
+   "mind"
+  ],
+  "limited range of motion": [
+   "general"
+  ],
+  "limited vocabulary": [
+   "mouth",
+   "mind"
+  ],
+  "limited wrist movement": [
+   "wrist"
+  ],
+  "limping": [
+   "legs"
+  ],
+  "lingering joint discomfort": [
+   "general"
+  ],
+  "lip blisters": [
+   "mouth"
+  ],
+  "lip discoloration": [
+   "mouth"
+  ],
+  "lip numbness": [
+   "mouth"
+  ],
+  "lip pain": [
+   "mouth"
+  ],
+  "lip smacking": [
+   "mouth"
+  ],
+  "lip sore": [
+   "mouth"
+  ],
+  "lip swelling": [
+   "mouth"
+  ],
+  "lip tingling": [
+   "mouth"
+  ],
+  "lip trembling": [
+   "mouth"
+  ],
+  "liver pain": [
+   "abdomen"
+  ],
+  "locked jaw": [
+   "jaw"
+  ],
+  "locking": [
+   "general"
+  ],
+  "long fingers": [
+   "fingers"
+  ],
+  "long limbs": [
+   "general"
+  ],
+  "long sleeves": [
+   "mind"
+  ],
+  "longing for the deceased": [
+   "mind"
+  ],
+  "loose eyelid skin": [
+   "eyes"
+  ],
+  "loose joints": [
+   "general"
+  ],
+  "loose skin": [
+   "skin"
+  ],
+  "loose stools": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "loose teeth": [
+   "mouth"
+  ],
+  "losing important items": [
+   "mind"
+  ],
+  "losing items": [
+   "mind"
+  ],
+  "losing train of thought": [
+   "mind"
+  ],
+  "loss of appetite": [
+   "abdomen",
+   "general"
+  ],
+  "loss of balance": [
+   "head"
+  ],
+  "loss of body fat": [
+   "general"
+  ],
+  "loss of consciousness": [
+   "head"
+  ],
+  "loss of control": [
+   "mind"
+  ],
+  "loss of control over eating": [
+   "abdomen"
+  ],
+  "loss of coordination": [
+   "general"
+  ],
+  "loss of empathy": [
+   "mind"
+  ],
+  "loss of hand use": [
+   "hand"
+  ],
+  "loss of height": [
+   "general"
+  ],
+  "loss of interest": [
+   "mind"
+  ],
+  "loss of meaning in life": [
+   "mind"
+  ],
+  "loss of motor skills": [
+   "general"
+  ],
+  "loss of sensation": [
+   "general"
+  ],
+  "loss of smell": [
+   "nose"
+  ],
+  "loss of speech": [
+   "mind"
+  ],
+  "loss of taste": [
+   "mouth"
+  ],
+  "low blood pressure": [
+   "general"
+  ],
+  "low blood sugar": [
+   "general"
+  ],
+  "low body temperature": [
+   "general"
+  ],
+  "low fever": [
+   "general"
+  ],
+  "low frustration tolerance": [
+   "mind"
+  ],
+  "low grade fever": [
+   "general"
+  ],
+  "low hairline": [
+   "scalp"
+  ],
+  "low mood": [
+   "mind"
+  ],
+  "low self esteem": [
+   "mind"
+  ],
+  "low sex drive": [
+   "genital"
+  ],
+  "lower abdominal pain": [
+   "abdomen"
+  ],
+  "lower back pain": [
+   "lower_back"
+  ],
+  "lower leg pain": [
+   "legs"
+  ],
+  "lump": [
+   "skin"
+  ],
+  "lump in mouth": [
+   "mouth"
+  ],
+  "lump near urethra": [
+   "genital"
+  ],
+  "lumpy skin": [
+   "skin"
+  ],
+  "lying": [
+   "mind"
+  ],
+  "lying about gambling": [
+   "mind"
+  ],
+  "magical thinking": [
+   "mind"
+  ],
+  "malnutrition": [
+   "general"
+  ],
+  "manipulation": [
+   "mind"
+  ],
+  "mean words when upset": [
+   "mind"
+  ],
+  "memories lack emotion": [
+   "mind"
+  ],
+  "memory loss": [
+   "mind"
+  ],
+  "menstrual bleeding": [
+   "pelvic_core"
+  ],
+  "menstrual changes": [
+   "pelvic_core"
+  ],
+  "mental fog": [
+   "mind"
+  ],
+  "mental health problems": [
+   "mind"
+  ],
+  "metallic taste": [
+   "mouth"
+  ],
+  "milky nipple discharge": [
+   "breast"
+  ],
+  "mind going blank": [
+   "mind"
+  ],
+  "mirror checking": [
+   "mind"
+  ],
+  "misaligned teeth": [
+   "mouth"
+  ],
+  "miscarriage": [
+   "pelvic_core"
+  ],
+  "misplacing items": [
+   "mind"
+  ],
+  "mispronouncing words": [
+   "mind"
+  ],
+  "missed appointments": [
+   "mind"
+  ],
+  "missed deadlines": [
+   "mind"
+  ],
+  "missed period": [
+   "pelvic_core"
+  ],
+  "missed work": [
+   "mind"
+  ],
+  "misshapen nails": [
+   "fingers",
+   "toes"
+  ],
+  "missing eyelashes": [
+   "eyes"
+  ],
+  "mole color change": [
+   "skin"
+  ],
+  "mole shape change": [
+   "skin"
+  ],
+  "mole size change": [
+   "skin"
+  ],
+  "moles": [
+   "skin"
+  ],
+  "money problems": [
+   "mind"
+  ],
+  "monotone speech": [
+   "mind"
+  ],
+  "mood changes": [
+   "mind"
+  ],
+  "moon face": [
+   "face"
+  ],
+  "morning cigarette use": [
+   "mind"
+  ],
+  "morning headache": [
+   "head"
+  ],
+  "morning stiffness": [
+   "general"
+  ],
+  "morning vomiting": [
+   "abdomen"
+  ],
+  "motion": [
+   "general"
+  ],
+  "mottled skin": [
+   "skin"
+  ],
+  "mouth bleeding": [
+   "mouth"
+  ],
+  "mouth blisters": [
+   "mouth"
+  ],
+  "mouth breathing": [
+   "nose",
+   "mouth"
+  ],
+  "mouth movements": [
+   "mouth"
+  ],
+  "mouth numbness": [
+   "mouth"
+  ],
+  "mouth pain": [
+   "mouth"
+  ],
+  "mouth sores": [
+   "mouth"
+  ],
+  "mouth twitching": [
+   "mouth"
+  ],
+  "movable lump": [
+   "skin"
+  ],
+  "movement changes": [
+   "general"
+  ],
+  "movement difficulty": [
+   "general"
+  ],
+  "movement freezing": [
+   "general"
+  ],
+  "movement problems": [
+   "general"
+  ],
+  "moving during sleep": [
+   "mind"
+  ],
+  "mucus discharge": [
+   "chest"
+  ],
+  "mucus in stool": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "mucus production": [
+   "chest"
+  ],
+  "muffled hearing": [
+   "ears"
+  ],
+  "muffled voice": [
+   "neck"
+  ],
+  "multiple surgical scars": [
+   "skin"
+  ],
+  "muscle atrophy": [
+   "general"
+  ],
+  "muscle cramps": [
+   "general"
+  ],
+  "muscle jerks": [
+   "general"
+  ],
+  "muscle loss": [
+   "general"
+  ],
+  "muscle pain": [
+   "general"
+  ],
+  "muscle rigidity": [
+   "general"
+  ],
+  "muscle spasms": [
+   "general"
+  ],
+  "muscle stiffness": [
+   "general"
+  ],
+  "muscle tension": [
+   "general"
+  ],
+  "muscle twitching": [
+   "general"
+  ],
+  "muscle wasting": [
+   "general"
+  ],
+  "muscle weakness": [
+   "general"
+  ],
+  "musty odor": [
+   "general"
+  ],
+  "nail biting": [
+   "mind",
+   "fingers"
+  ],
+  "nail border tenderness": [
+   "fingers",
+   "toes"
+  ],
+  "nail changes": [
+   "fingers",
+   "toes"
+  ],
+  "nail discoloration": [
+   "fingers",
+   "toes"
+  ],
+  "nail odor": [
+   "fingers",
+   "toes"
+  ],
+  "nail pain": [
+   "fingers",
+   "toes"
+  ],
+  "nail pitting": [
+   "fingers",
+   "toes"
+  ],
+  "nail separation": [
+   "fingers",
+   "toes"
+  ],
+  "nail swelling": [
+   "fingers",
+   "toes"
+  ],
+  "nail thickening": [
+   "fingers",
+   "toes"
+  ],
+  "narrow stool": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "nasal congestion": [
+   "nose"
+  ],
+  "nasal deformity": [
+   "nose"
+  ],
+  "nasal discharge": [
+   "nose"
+  ],
+  "nasal pain": [
+   "nose"
+  ],
+  "nasal regurgitation": [
+   "epigastric",
+   "chest_core"
+  ],
+  "nasal swelling": [
+   "nose"
+  ],
+  "nasal voice": [
+   "nose",
+   "neck"
+  ],
+  "nausea": [
+   "abdomen"
+  ],
+  "navel bulge": [
+   "abdomen"
+  ],
+  "navel tenderness": [
+   "abdomen"
+  ],
+  "nearsightedness": [
+   "eyes"
+  ],
+  "neck lump": [
+   "neck"
+  ],
+  "neck pain": [
+   "neck"
+  ],
+  "neck pounding": [
+   "neck"
+  ],
+  "neck pulsation": [
+   "neck"
+  ],
+  "neck spasm": [
+   "neck"
+  ],
+  "neck swelling": [
+   "neck"
+  ],
+  "neck weakness": [
+   "neck"
+  ],
+  "need for order": [
+   "mind"
+  ],
+  "need for reassurance": [
+   "mind"
+  ],
+  "neglecting responsibilities": [
+   "mind"
+  ],
+  "nerve pain": [
+   "general"
+  ],
+  "night awakenings": [
+   "mind"
+  ],
+  "night cough": [
+   "chest"
+  ],
+  "night cramps": [
+   "general"
+  ],
+  "night driving difficulty": [
+   "eyes"
+  ],
+  "night pain": [
+   "general"
+  ],
+  "night sweats": [
+   "general",
+   "skin"
+  ],
+  "night vision problems": [
+   "eyes"
+  ],
+  "nightmares": [
+   "mind"
+  ],
+  "nighttime bowel movements": [
+   "lower_abdomen"
+  ],
+  "nighttime episodes": [
+   "mind"
+  ],
+  "nighttime stool leakage": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "nighttime urination": [
+   "above_pubic_bone"
+  ],
+  "nipple bleeding": [
+   "breast"
+  ],
+  "nipple burning": [
+   "breast"
+  ],
+  "nipple changes": [
+   "breast"
+  ],
+  "nipple crusting": [
+   "breast"
+  ],
+  "nipple discharge": [
+   "breast"
+  ],
+  "nipple flattening": [
+   "breast"
+  ],
+  "nipple inversion": [
+   "breast"
+  ],
+  "nipple itching": [
+   "breast"
+  ],
+  "nipple pain": [
+   "breast"
+  ],
+  "nipple redness": [
+   "breast"
+  ],
+  "nipple scaling": [
+   "breast"
+  ],
+  "nipple sensitivity": [
+   "breast"
+  ],
+  "nipple sores": [
+   "breast"
+  ],
+  "nits": [
+   "scalp"
+  ],
+  "nits in hair": [
+   "scalp"
+  ],
+  "no interest in relationships": [
+   "mind"
+  ],
+  "no memory of episode": [
+   "mind"
+  ],
+  "no pulse": [
+   "chest"
+  ],
+  "no response to pain": [
+   "general"
+  ],
+  "noisy breathing": [
+   "chest"
+  ],
+  "non healing sore": [
+   "skin"
+  ],
+  "nose twitching": [
+   "nose"
+  ],
+  "nosebleed": [
+   "nose"
+  ],
+  "not responding to name": [
+   "mind"
+  ],
+  "numbness": [
+   "general"
+  ],
+  "numbness in feet": [
+   "foot"
+  ],
+  "nystagmus": [
+   "eyes"
+  ],
+  "odd beliefs": [
+   "mind"
+  ],
+  "odd dress": [
+   "mind"
+  ],
+  "oily skin": [
+   "skin"
+  ],
+  "omitted sounds": [
+   "mouth",
+   "mind"
+  ],
+  "omitted words in speech": [
+   "mind"
+  ],
+  "oozing": [
+   "skin"
+  ],
+  "oozing skin": [
+   "skin"
+  ],
+  "oral thrush": [
+   "mouth"
+  ],
+  "orange peel skin": [
+   "skin"
+  ],
+  "orthopnea": [
+   "chest"
+  ],
+  "outward leg rotation": [
+   "legs"
+  ],
+  "ovarian cysts": [
+   "pelvic_core"
+  ],
+  "overeating": [
+   "abdomen"
+  ],
+  "oversleeping": [
+   "mind"
+  ],
+  "pain": [
+   "general"
+  ],
+  "pain after ejaculation": [
+   "genital"
+  ],
+  "pain after exercise": [
+   "general"
+  ],
+  "pain after sitting": [
+   "buttocks_core",
+   "tailbone"
+  ],
+  "pain after standing": [
+   "general"
+  ],
+  "pain at rest": [
+   "general"
+  ],
+  "pain below kneecap": [
+   "knee"
+  ],
+  "pain climbing stairs": [
+   "knee"
+  ],
+  "pain during exercise": [
+   "general"
+  ],
+  "pain on first steps": [
+   "foot"
+  ],
+  "pain radiating up arm": [
+   "arms"
+  ],
+  "pain when biting": [
+   "mouth",
+   "jaw"
+  ],
+  "pain when chewing": [
+   "mouth"
+  ],
+  "pain when coughing": [
+   "chest"
+  ],
+  "pain when jumping": [
+   "knee"
+  ],
+  "pain when kneeling": [
+   "knee"
+  ],
+  "pain when lifting": [
+   "general"
+  ],
+  "pain when running": [
+   "general"
+  ],
+  "pain when sitting": [
+   "buttocks_core",
+   "tailbone"
+  ],
+  "pain when squatting": [
+   "knee"
+  ],
+  "pain when twisting": [
+   "general"
+  ],
+  "pain with bowel movements": [
+   "lower_abdomen"
+  ],
+  "pain with breathing": [
+   "chest"
+  ],
+  "pain with eye movement": [
+   "eyes"
+  ],
+  "pain with movement": [
+   "general"
+  ],
+  "pain with running": [
+   "general"
+  ],
+  "pain with sitting": [
+   "buttocks_core",
+   "tailbone"
+  ],
+  "pain with tampon use": [
+   "genital"
+  ],
+  "pain worse with breathing": [
+   "chest"
+  ],
+  "pain worse with movement": [
+   "general"
+  ],
+  "painful bowel movements": [
+   "lower_abdomen"
+  ],
+  "painful chewing": [
+   "mouth"
+  ],
+  "painful cough": [
+   "chest"
+  ],
+  "painful ejaculation": [
+   "genital"
+  ],
+  "painful gums": [
+   "mouth"
+  ],
+  "painful periods": [
+   "pelvic_core"
+  ],
+  "painful sex": [
+   "genital"
+  ],
+  "painful skin lumps": [
+   "skin"
+  ],
+  "painful stools": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "painful swallowing": [
+   "neck"
+  ],
+  "painful urination": [
+   "above_pubic_bone"
+  ],
+  "painless bleeding": [
+   "general"
+  ],
+  "painless lump": [
+   "skin"
+  ],
+  "pale eyelashes": [
+   "eyes"
+  ],
+  "pale eyes": [
+   "eyes"
+  ],
+  "pale face": [
+   "face"
+  ],
+  "pale skin": [
+   "skin"
+  ],
+  "pale stools": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "pale urine": [
+   "above_pubic_bone"
+  ],
+  "palm lump": [
+   "hand"
+  ],
+  "palm skin thickening": [
+   "hand"
+  ],
+  "palm tenderness": [
+   "hand"
+  ],
+  "palpitations": [
+   "chest"
+  ],
+  "panic": [
+   "mind"
+  ],
+  "panic attacks": [
+   "mind"
+  ],
+  "paralysis": [
+   "general"
+  ],
+  "paranoia": [
+   "mind"
+  ],
+  "passing cysts": [
+   "skin"
+  ],
+  "passing gas from vagina": [
+   "lower_abdomen",
+   "genital"
+  ],
+  "passing gas unexpectedly": [
+   "lower_abdomen"
+  ],
+  "passing stool from vagina": [
+   "rectum",
+   "lower_abdomen",
+   "genital"
+  ],
+  "passing tissue": [
+   "pelvic_core"
+  ],
+  "passing worms": [
+   "rectum"
+  ],
+  "pauses between syllables": [
+   "mouth",
+   "mind"
+  ],
+  "pauses in speech": [
+   "mind"
+  ],
+  "pearly bump": [
+   "skin"
+  ],
+  "peeling skin": [
+   "skin"
+  ],
+  "pelvic cramping": [
+   "pelvic_core"
+  ],
+  "pelvic discomfort": [
+   "pelvic_core"
+  ],
+  "pelvic pain": [
+   "pelvic_core"
+  ],
+  "pelvic pressure": [
+   "pelvic_core"
+  ],
+  "penile curvature": [
+   "genital"
+  ],
+  "penile discharge": [
+   "genital"
+  ],
+  "penile discoloration": [
+   "genital"
+  ],
+  "penile indentation": [
+   "genital"
+  ],
+  "penile lump": [
+   "genital"
+  ],
+  "penile pain": [
+   "genital"
+  ],
+  "penile shortening": [
+   "genital"
+  ],
+  "penile swelling": [
+   "genital"
+  ],
+  "penile tenderness": [
+   "genital"
+  ],
+  "penis growth": [
+   "genital"
+  ],
+  "perineal pain": [
+   "genital"
+  ],
+  "peripheral vision loss": [
+   "eyes"
+  ],
+  "petechiae": [
+   "skin"
+  ],
+  "physical fights": [
+   "mind"
+  ],
+  "pica": [
+   "mind"
+  ],
+  "picky eating": [
+   "abdomen"
+  ],
+  "pimples": [
+   "skin"
+  ],
+  "pink eye": [
+   "eyes"
+  ],
+  "pink frothy sputum": [
+   "chest"
+  ],
+  "pink urine": [
+   "above_pubic_bone"
+  ],
+  "pneumonia": [
+   "chest"
+  ],
+  "poor coordination": [
+   "general"
+  ],
+  "poor depth perception": [
+   "eyes"
+  ],
+  "poor eye contact": [
+   "mind"
+  ],
+  "poor feeding": [
+   "abdomen"
+  ],
+  "poor head control": [
+   "head"
+  ],
+  "poor hygiene": [
+   "mind"
+  ],
+  "poor judgment": [
+   "mind"
+  ],
+  "poor memory for spoken information": [
+   "mind"
+  ],
+  "poor muscle tone": [
+   "general"
+  ],
+  "poor night vision": [
+   "eyes"
+  ],
+  "poor organization": [
+   "mind"
+  ],
+  "poor response to treatment": [
+   "general"
+  ],
+  "poor school performance": [
+   "mind"
+  ],
+  "poor time management": [
+   "mind"
+  ],
+  "poor weight gain": [
+   "general"
+  ],
+  "popping sensation": [
+   "general"
+  ],
+  "popping sound": [
+   "general"
+  ],
+  "postmenopausal bleeding": [
+   "pelvic_core"
+  ],
+  "postnasal drip": [
+   "nose",
+   "neck"
+  ],
+  "posture change": [
+   "back"
+  ],
+  "preference for being alone": [
+   "mind"
+  ],
+  "premature aging": [
+   "general"
+  ],
+  "premature graying": [
+   "scalp"
+  ],
+  "preoccupation with death": [
+   "mind"
+  ],
+  "preoccupation with food": [
+   "abdomen"
+  ],
+  "preoccupation with gambling": [
+   "mind"
+  ],
+  "preoccupation with sex": [
+   "mind"
+  ],
+  "pressure in lower abdomen": [
+   "abdomen"
+  ],
+  "primary amenorrhea": [
+   "pelvic_core"
+  ],
+  "problems at school": [
+   "mind"
+  ],
+  "projectile vomiting": [
+   "abdomen"
+  ],
+  "prolonged bleeding": [
+   "general"
+  ],
+  "prolonged crying": [
+   "mind"
+  ],
+  "prolonged erection": [
+   "genital"
+  ],
+  "prolonged paralysis": [
+   "general"
+  ],
+  "prominent veins": [
+   "skin"
+  ],
+  "property damage": [
+   "mind"
+  ],
+  "protruding abdominal organs": [
+   "abdomen"
+  ],
+  "protruding tissue": [
+   "genital"
+  ],
+  "pubic hair": [
+   "skin"
+  ],
+  "pulling at ear": [
+   "ears"
+  ],
+  "pulsatile tinnitus": [
+   "ears"
+  ],
+  "pulsating lump": [
+   "skin"
+  ],
+  "pulsing lump": [
+   "skin"
+  ],
+  "pulsing sensation": [
+   "general"
+  ],
+  "pulsing sensation behind the knee": [
+   "knee"
+  ],
+  "punching": [
+   "mind"
+  ],
+  "pupil shape change": [
+   "eyes"
+  ],
+  "purple skin around eyes": [
+   "eyes"
+  ],
+  "purple skin spots": [
+   "skin"
+  ],
+  "pus": [
+   "skin"
+  ],
+  "pus between teeth": [
+   "mouth"
+  ],
+  "pus discharge": [
+   "skin"
+  ],
+  "pus drainage": [
+   "skin"
+  ],
+  "pus filled blisters": [
+   "skin"
+  ],
+  "pus filled bumps": [
+   "skin"
+  ],
+  "pushing": [
+   "mind"
+  ],
+  "racing thoughts": [
+   "mind"
+  ],
+  "radiating limb pain": [
+   "general"
+  ],
+  "radiating pain": [
+   "general"
+  ],
+  "raised arch": [
+   "foot"
+  ],
+  "raised border": [
+   "skin"
+  ],
+  "raised ridge on skull": [
+   "head"
+  ],
+  "raised scar": [
+   "skin"
+  ],
+  "raised skin plaques": [
+   "skin"
+  ],
+  "rambling speech": [
+   "mind"
+  ],
+  "rapid eye movements": [
+   "eyes"
+  ],
+  "rapid growth": [
+   "general"
+  ],
+  "rapid speech": [
+   "mind"
+  ],
+  "rapid uterine growth": [
+   "pelvic_core"
+  ],
+  "rapid weight gain": [
+   "general"
+  ],
+  "rapidly progressive dementia": [
+   "mind"
+  ],
+  "rash": [
+   "skin"
+  ],
+  "rawness": [
+   "skin"
+  ],
+  "raynaud phenomenon": [
+   "fingers",
+   "toes"
+  ],
+  "reassurance seeking": [
+   "mind"
+  ],
+  "receding gums": [
+   "mouth"
+  ],
+  "rechewing food": [
+   "mouth",
+   "abdomen"
+  ],
+  "reckless behavior": [
+   "mind"
+  ],
+  "rectal discharge": [
+   "rectum"
+  ],
+  "rectal pain": [
+   "rectum"
+  ],
+  "rectal pressure": [
+   "rectum"
+  ],
+  "rectal prolapse": [
+   "rectum"
+  ],
+  "recurrent vaginal infection": [
+   "genital"
+  ],
+  "recurrent yeast infection": [
+   "genital"
+  ],
+  "recurring urges": [
+   "mind"
+  ],
+  "red bumps": [
+   "skin"
+  ],
+  "red eyes": [
+   "eyes"
+  ],
+  "red gums": [
+   "mouth"
+  ],
+  "red patch": [
+   "skin"
+  ],
+  "red tongue": [
+   "mouth"
+  ],
+  "red tongue patches": [
+   "mouth"
+  ],
+  "red tonsils": [
+   "neck"
+  ],
+  "redness": [
+   "skin"
+  ],
+  "reduced ankle movement": [
+   "ankle"
+  ],
+  "reduced babbling": [
+   "mouth",
+   "mind"
+  ],
+  "reduced body hair": [
+   "skin"
+  ],
+  "reduced central vision": [
+   "eyes"
+  ],
+  "reduced ejaculate volume": [
+   "genital"
+  ],
+  "reduced facial expression": [
+   "face"
+  ],
+  "reduced facial hair": [
+   "skin"
+  ],
+  "reduced hip flexibility": [
+   "hips"
+  ],
+  "reduced joint motion": [
+   "general"
+  ],
+  "reduced muscle mass": [
+   "general"
+  ],
+  "reduced need for sleep": [
+   "mind"
+  ],
+  "reduced pain sensation": [
+   "general"
+  ],
+  "reduced pain sensitivity": [
+   "general"
+  ],
+  "reduced reflexes": [
+   "general"
+  ],
+  "reduced sense of smell": [
+   "nose"
+  ],
+  "reduced sexual satisfaction": [
+   "genital"
+  ],
+  "reduced sweating": [
+   "general",
+   "skin"
+  ],
+  "reduced toe motion": [
+   "toes"
+  ],
+  "refusal to feed": [
+   "abdomen"
+  ],
+  "refusal to go to school": [
+   "mind"
+  ],
+  "refusing rules": [
+   "mind"
+  ],
+  "regret after sexual behavior": [
+   "mind"
+  ],
+  "regurgitation": [
+   "epigastric",
+   "chest_core"
+  ],
+  "relationship distress": [
+   "mind"
+  ],
+  "relationship problems": [
+   "mind"
+  ],
+  "relief after stealing": [
+   "mind"
+  ],
+  "reluctance to be comforted": [
+   "mind"
+  ],
+  "repeated questions": [
+   "mind"
+  ],
+  "repeating sounds": [
+   "mouth",
+   "mind"
+  ],
+  "repeating words": [
+   "mind"
+  ],
+  "repetitive behaviors": [
+   "mind"
+  ],
+  "repetitive movements": [
+   "general"
+  ],
+  "resentfulness": [
+   "mind"
+  ],
+  "resistance to change": [
+   "mind"
+  ],
+  "restless legs": [
+   "legs"
+  ],
+  "restless sleep": [
+   "mind"
+  ],
+  "restlessness": [
+   "mind"
+  ],
+  "retching": [
+   "abdomen"
+  ],
+  "rib cage prominence": [
+   "chest"
+  ],
+  "ring shaped rash": [
+   "skin"
+  ],
+  "ringing in the ears": [
+   "ears"
+  ],
+  "rising feeling in stomach": [
+   "abdomen"
+  ],
+  "risky behavior": [
+   "mind"
+  ],
+  "rough patch": [
+   "skin"
+  ],
+  "rough skin": [
+   "skin"
+  ],
+  "rough skin patch": [
+   "skin"
+  ],
+  "rounded upper back": [
+   "upper_back"
+  ],
+  "running on toes": [
+   "toes"
+  ],
+  "runny nose": [
+   "nose"
+  ],
+  "sadness": [
+   "mind"
+  ],
+  "salt craving": [
+   "mind"
+  ],
+  "salty sweat": [
+   "general",
+   "skin"
+  ],
+  "saying goodbye": [
+   "mind"
+  ],
+  "scab": [
+   "skin"
+  ],
+  "scalp crusts": [
+   "scalp"
+  ],
+  "scalp itching": [
+   "scalp"
+  ],
+  "scalp pain": [
+   "scalp"
+  ],
+  "scalp scaling": [
+   "scalp"
+  ],
+  "scalp sores": [
+   "scalp"
+  ],
+  "scalp tenderness": [
+   "scalp"
+  ],
+  "scaly patch": [
+   "skin"
+  ],
+  "scaly patches": [
+   "skin"
+  ],
+  "scaly skin": [
+   "skin"
+  ],
+  "scaly skin patches": [
+   "skin"
+  ],
+  "scar like patch": [
+   "skin"
+  ],
+  "scarring": [
+   "skin"
+  ],
+  "scars": [
+   "skin"
+  ],
+  "scoliosis": [
+   "back"
+  ],
+  "scratches": [
+   "skin"
+  ],
+  "screaming": [
+   "mind"
+  ],
+  "screaming during sleep": [
+   "mind"
+  ],
+  "scrotal asymmetry": [
+   "genital"
+  ],
+  "scrotal lump": [
+   "genital"
+  ],
+  "scrotal pain": [
+   "genital"
+  ],
+  "scrotal redness": [
+   "genital"
+  ],
+  "scrotal skin discoloration": [
+   "genital"
+  ],
+  "scrotal swelling": [
+   "genital"
+  ],
+  "scrotal tenderness": [
+   "genital"
+  ],
+  "secrecy about behavior": [
+   "mind"
+  ],
+  "seizure like episodes": [
+   "head"
+  ],
+  "seizures": [
+   "head"
+  ],
+  "self harm": [
+   "mind"
+  ],
+  "sensation of a pebble in shoe": [
+   "foot"
+  ],
+  "sensation of lodged food": [
+   "abdomen"
+  ],
+  "sense of entitlement": [
+   "mind"
+  ],
+  "sense of impending doom": [
+   "mind"
+  ],
+  "sensing a presence": [
+   "mind"
+  ],
+  "sensitivity to criticism": [
+   "mind"
+  ],
+  "sensitivity to spicy food": [
+   "abdomen"
+  ],
+  "sensitivity to touch": [
+   "general"
+  ],
+  "serious acne": [
+   "skin"
+  ],
+  "sexual distress": [
+   "genital"
+  ],
+  "sexual dysfunction": [
+   "genital"
+  ],
+  "sexualized behavior": [
+   "mind"
+  ],
+  "shaking": [
+   "general"
+  ],
+  "shaky voice": [
+   "neck"
+  ],
+  "shame": [
+   "mind"
+  ],
+  "sharp pain": [
+   "general"
+  ],
+  "shin pain": [
+   "shin"
+  ],
+  "shiny skin": [
+   "skin"
+  ],
+  "shivering": [
+   "general"
+  ],
+  "shooting pain": [
+   "general"
+  ],
+  "short arms": [
+   "arms"
+  ],
+  "short legs": [
+   "legs"
+  ],
+  "short neck": [
+   "neck"
+  ],
+  "short stature": [
+   "general"
+  ],
+  "shortened leg": [
+   "legs"
+  ],
+  "shorter foot": [
+   "foot"
+  ],
+  "shortness of breath": [
+   "chest"
+  ],
+  "shortness of breath when lying flat": [
+   "chest"
+  ],
+  "shoulder blade prominence": [
+   "upper_back"
+  ],
+  "shoulder deformity": [
+   "shoulder"
+  ],
+  "shoulder pain": [
+   "shoulder"
+  ],
+  "shoulder shrugging": [
+   "shoulder"
+  ],
+  "shoulder stiffness": [
+   "shoulder"
+  ],
+  "shouting": [
+   "mind"
+  ],
+  "shuffling gait": [
+   "legs"
+  ],
+  "side pain": [
+   "flank"
+  ],
+  "sinus congestion": [
+   "forehead",
+   "nose"
+  ],
+  "sinus infection": [
+   "forehead"
+  ],
+  "sinus pain": [
+   "forehead"
+  ],
+  "sinus pressure": [
+   "forehead"
+  ],
+  "sitting up in bed": [
+   "chest"
+  ],
+  "skeletal deformity": [
+   "general"
+  ],
+  "skin abscess": [
+   "skin"
+  ],
+  "skin blisters": [
+   "skin"
+  ],
+  "skin bumps": [
+   "skin"
+  ],
+  "skin changes": [
+   "skin"
+  ],
+  "skin color change": [
+   "skin"
+  ],
+  "skin creases": [
+   "skin"
+  ],
+  "skin crusting": [
+   "skin"
+  ],
+  "skin darkening": [
+   "skin"
+  ],
+  "skin disfigurement": [
+   "skin"
+  ],
+  "skin flushing": [
+   "skin"
+  ],
+  "skin freckling": [
+   "skin"
+  ],
+  "skin growth": [
+   "skin"
+  ],
+  "skin infection": [
+   "skin"
+  ],
+  "skin inflammation": [
+   "skin"
+  ],
+  "skin irritation": [
+   "skin"
+  ],
+  "skin lesion": [
+   "skin"
+  ],
+  "skin lump": [
+   "skin"
+  ],
+  "skin mottling": [
+   "skin"
+  ],
+  "skin numbness": [
+   "skin"
+  ],
+  "skin opening": [
+   "skin"
+  ],
+  "skin overgrowth": [
+   "skin"
+  ],
+  "skin pain": [
+   "skin"
+  ],
+  "skin patches": [
+   "skin"
+  ],
+  "skin picking": [
+   "skin"
+  ],
+  "skin pigmentation": [
+   "skin"
+  ],
+  "skin pitting": [
+   "skin"
+  ],
+  "skin puckering": [
+   "skin"
+  ],
+  "skin rash": [
+   "skin"
+  ],
+  "skin redness": [
+   "skin"
+  ],
+  "skin rumpling": [
+   "skin"
+  ],
+  "skin scarring": [
+   "skin"
+  ],
+  "skin sensitivity": [
+   "skin"
+  ],
+  "skin sores": [
+   "skin"
+  ],
+  "skin spots": [
+   "skin"
+  ],
+  "skin streaks": [
+   "skin"
+  ],
+  "skin stretch marks": [
+   "skin"
+  ],
+  "skin swelling": [
+   "skin"
+  ],
+  "skin tag": [
+   "skin"
+  ],
+  "skin temperature change": [
+   "skin"
+  ],
+  "skin tenderness": [
+   "skin"
+  ],
+  "skin texture change": [
+   "skin"
+  ],
+  "skin thinning": [
+   "skin"
+  ],
+  "skin tightness": [
+   "skin"
+  ],
+  "skin tunnels": [
+   "skin"
+  ],
+  "skin ulcer": [
+   "skin"
+  ],
+  "skin warmth": [
+   "skin"
+  ],
+  "skin warts": [
+   "skin"
+  ],
+  "skipped heartbeat": [
+   "chest"
+  ],
+  "skipping meals": [
+   "mind"
+  ],
+  "sleep apnea": [
+   "mind"
+  ],
+  "sleep changes": [
+   "mind"
+  ],
+  "sleep paralysis": [
+   "mind"
+  ],
+  "sleepiness": [
+   "mind"
+  ],
+  "sleepwalking": [
+   "mind"
+  ],
+  "slow breathing": [
+   "chest"
+  ],
+  "slow growing toenails": [
+   "fingers",
+   "toes"
+  ],
+  "slow growth": [
+   "general"
+  ],
+  "slow heart rate": [
+   "chest"
+  ],
+  "slow heartbeat": [
+   "chest"
+  ],
+  "slow movement": [
+   "general"
+  ],
+  "slow reading": [
+   "mind"
+  ],
+  "slow speech": [
+   "mind"
+  ],
+  "slow thinking": [
+   "mind"
+  ],
+  "slow wound healing": [
+   "skin"
+  ],
+  "slowed breathing": [
+   "chest"
+  ],
+  "slowed thinking": [
+   "mind"
+  ],
+  "slurred speech": [
+   "mouth",
+   "head"
+  ],
+  "small blisters": [
+   "skin"
+  ],
+  "small ears": [
+   "ears"
+  ],
+  "small head size": [
+   "head"
+  ],
+  "small penis": [
+   "genital"
+  ],
+  "small pupil": [
+   "eyes"
+  ],
+  "small size": [
+   "general"
+  ],
+  "small testicles": [
+   "genital"
+  ],
+  "small tonsils": [
+   "neck"
+  ],
+  "smaller calf muscles": [
+   "calf"
+  ],
+  "smiling": [
+   "mind"
+  ],
+  "sneezing": [
+   "nose"
+  ],
+  "snoring": [
+   "nose",
+   "neck"
+  ],
+  "social anxiety": [
+   "mind"
+  ],
+  "social awkwardness": [
+   "mind"
+  ],
+  "social difficulties": [
+   "mind"
+  ],
+  "social withdrawal": [
+   "mind"
+  ],
+  "soft lump": [
+   "skin"
+  ],
+  "soiled underwear": [
+   "rectum"
+  ],
+  "sore throat": [
+   "neck"
+  ],
+  "sore tongue": [
+   "mouth"
+  ],
+  "soreness": [
+   "general"
+  ],
+  "sores": [
+   "skin"
+  ],
+  "sound sensitivity": [
+   "ears"
+  ],
+  "sound substitution": [
+   "mouth",
+   "mind"
+  ],
+  "sour taste": [
+   "mouth"
+  ],
+  "spasms during sleep": [
+   "mind"
+  ],
+  "spasms on both sides of face": [
+   "face"
+  ],
+  "spasticity": [
+   "general"
+  ],
+  "speaking nonsense words": [
+   "mind"
+  ],
+  "speech blocks": [
+   "mind"
+  ],
+  "speech changes": [
+   "mind"
+  ],
+  "speech hesitation": [
+   "mind"
+  ],
+  "spelling difficulty": [
+   "mind"
+  ],
+  "spelling problems": [
+   "mind"
+  ],
+  "spider angiomas": [
+   "skin"
+  ],
+  "spotting": [
+   "pelvic_core"
+  ],
+  "spraying urine": [
+   "above_pubic_bone"
+  ],
+  "squinting": [
+   "eyes"
+  ],
+  "stabbing pain": [
+   "general"
+  ],
+  "stair pain": [
+   "knee"
+  ],
+  "staring": [
+   "eyes"
+  ],
+  "staring spell": [
+   "eyes"
+  ],
+  "startle response": [
+   "mind"
+  ],
+  "sticky eyelids": [
+   "eyes"
+  ],
+  "sticky mouth": [
+   "mouth"
+  ],
+  "stiff gait": [
+   "legs"
+  ],
+  "stiff neck": [
+   "neck"
+  ],
+  "stiffening of body": [
+   "general"
+  ],
+  "stiffness": [
+   "general"
+  ],
+  "stiffness in foot": [
+   "foot"
+  ],
+  "stinging": [
+   "general"
+  ],
+  "stinging skin": [
+   "skin"
+  ],
+  "stomach noises": [
+   "abdomen"
+  ],
+  "stomach rumbling": [
+   "abdomen"
+  ],
+  "stomach ulcer": [
+   "abdomen"
+  ],
+  "stomach upset": [
+   "abdomen"
+  ],
+  "stooped posture": [
+   "back"
+  ],
+  "stop in activity": [
+   "head"
+  ],
+  "stopped breathing": [
+   "chest"
+  ],
+  "strained voice": [
+   "neck"
+  ],
+  "straining": [
+   "rectum"
+  ],
+  "straining during bowel movements": [
+   "lower_abdomen"
+  ],
+  "stretch marks": [
+   "skin"
+  ],
+  "stretching sounds": [
+   "general"
+  ],
+  "stretchy skin": [
+   "skin"
+  ],
+  "stridor": [
+   "chest"
+  ],
+  "stroke like episodes": [
+   "head"
+  ],
+  "strong smelling urine": [
+   "above_pubic_bone"
+  ],
+  "stump pain": [
+   "general"
+  ],
+  "substance use": [
+   "mind"
+  ],
+  "suicidal thoughts": [
+   "mind"
+  ],
+  "sun sensitivity": [
+   "skin"
+  ],
+  "sunburn": [
+   "skin"
+  ],
+  "sunken chest": [
+   "chest"
+  ],
+  "sunken eyes": [
+   "eyes"
+  ],
+  "sunlight sensitivity": [
+   "eyes"
+  ],
+  "surroundings look flat": [
+   "eyes"
+  ],
+  "surroundings seem unreal": [
+   "mind"
+  ],
+  "suspiciousness": [
+   "mind"
+  ],
+  "swearing": [
+   "mind"
+  ],
+  "sweating": [
+   "general",
+   "skin"
+  ],
+  "sweating changes": [
+   "general",
+   "skin"
+  ],
+  "sweating on feet": [
+   "general",
+   "skin"
+  ],
+  "sweating on hands": [
+   "general",
+   "skin"
+  ],
+  "sweaty palms": [
+   "general",
+   "skin"
+  ],
+  "swelling": [
+   "general"
+  ],
+  "swelling behind the knee": [
+   "knee"
+  ],
+  "swelling feet": [
+   "foot"
+  ],
+  "swelling fingers": [
+   "fingers"
+  ],
+  "swelling gums": [
+   "mouth"
+  ],
+  "swelling hands and feet": [
+   "hand",
+   "foot"
+  ],
+  "swelling lump": [
+   "skin"
+  ],
+  "swelling lymph nodes": [
+   "neck",
+   "armpit",
+   "groin"
+  ],
+  "swelling neck veins": [
+   "neck"
+  ],
+  "swelling tongue": [
+   "mouth"
+  ],
+  "swelling tonsils": [
+   "neck"
+  ],
+  "taking advantage of others": [
+   "mind"
+  ],
+  "talking about suicide": [
+   "mind"
+  ],
+  "talking fast": [
+   "mind"
+  ],
+  "talking in sleep": [
+   "mind"
+  ],
+  "talking too much": [
+   "mind"
+  ],
+  "tall stature": [
+   "general"
+  ],
+  "tampon falling out": [
+   "genital"
+  ],
+  "tantrums": [
+   "mind"
+  ],
+  "taste changes": [
+   "mouth"
+  ],
+  "tearing": [
+   "eyes"
+  ],
+  "teeth grinding": [
+   "mouth"
+  ],
+  "temper outbursts": [
+   "mind"
+  ],
+  "temperature instability": [
+   "general"
+  ],
+  "temperature sensation loss": [
+   "general"
+  ],
+  "tender gums": [
+   "mouth"
+  ],
+  "tender knot": [
+   "general"
+  ],
+  "tenderness": [
+   "general"
+  ],
+  "tenderness over shinbone": [
+   "shin"
+  ],
+  "tendon lumps": [
+   "skin"
+  ],
+  "tendon swelling": [
+   "general"
+  ],
+  "tension": [
+   "general"
+  ],
+  "tension before stealing": [
+   "mind"
+  ],
+  "testicle growth": [
+   "genital"
+  ],
+  "testicle in groin": [
+   "genital",
+   "groin"
+  ],
+  "testicle lump": [
+   "genital"
+  ],
+  "testicle not in scrotum": [
+   "genital"
+  ],
+  "testicle pain": [
+   "genital"
+  ],
+  "testicle shrinkage": [
+   "genital"
+  ],
+  "testicle swelling": [
+   "genital"
+  ],
+  "testicle tenderness": [
+   "genital"
+  ],
+  "testicular pain": [
+   "genital"
+  ],
+  "testicular swelling": [
+   "genital"
+  ],
+  "tet spells": [
+   "chest"
+  ],
+  "theft": [
+   "mind"
+  ],
+  "thick nasal discharge": [
+   "nose"
+  ],
+  "thick saliva": [
+   "mouth"
+  ],
+  "thickened nails": [
+   "fingers",
+   "toes"
+  ],
+  "thickened nose": [
+   "nose"
+  ],
+  "thickened skin": [
+   "skin"
+  ],
+  "thickened tendon": [
+   "general"
+  ],
+  "thigh pain": [
+   "thigh"
+  ],
+  "thin upper lip": [
+   "mouth"
+  ],
+  "thinning eyebrows": [
+   "eyes"
+  ],
+  "thinning scalp hair": [
+   "scalp"
+  ],
+  "thirst": [
+   "general",
+   "mouth"
+  ],
+  "thoughts of harming baby": [
+   "mind"
+  ],
+  "thrashing": [
+   "general"
+  ],
+  "threatening behavior": [
+   "mind"
+  ],
+  "throat clearing": [
+   "neck"
+  ],
+  "throat irritation": [
+   "neck"
+  ],
+  "throat lump sensation": [
+   "neck"
+  ],
+  "throat tightness": [
+   "neck"
+  ],
+  "throbbing": [
+   "general"
+  ],
+  "thumb pain": [
+   "fingers"
+  ],
+  "thyroid nodule": [
+   "neck"
+  ],
+  "tickling sensation": [
+   "general"
+  ],
+  "tics": [
+   "mind"
+  ],
+  "tight calf muscles": [
+   "calf"
+  ],
+  "tight collar feeling": [
+   "neck"
+  ],
+  "tightness": [
+   "general"
+  ],
+  "time distortion": [
+   "mind"
+  ],
+  "tingling": [
+   "general"
+  ],
+  "tingling at bite site": [
+   "general"
+  ],
+  "tingling in hands": [
+   "hand"
+  ],
+  "tissue blackening": [
+   "skin"
+  ],
+  "toe deformity": [
+   "toes"
+  ],
+  "toe numbness": [
+   "toes"
+  ],
+  "toe pain": [
+   "toes"
+  ],
+  "toe stiffness": [
+   "toes"
+  ],
+  "toe swelling": [
+   "toes"
+  ],
+  "tolerance to alcohol": [
+   "mind"
+  ],
+  "tongue lesions": [
+   "mouth"
+  ],
+  "tongue lump": [
+   "mouth"
+  ],
+  "tongue notched when extended": [
+   "mouth"
+  ],
+  "tongue pain": [
+   "mouth"
+  ],
+  "tongue sticking out": [
+   "mouth"
+  ],
+  "tongue thrusting": [
+   "mouth"
+  ],
+  "tongue weakness": [
+   "mouth"
+  ],
+  "tooth decay": [
+   "mouth"
+  ],
+  "tooth discoloration": [
+   "mouth"
+  ],
+  "tooth displacement": [
+   "mouth"
+  ],
+  "tooth gaps": [
+   "mouth"
+  ],
+  "tooth loss": [
+   "mouth"
+  ],
+  "tooth pain": [
+   "mouth"
+  ],
+  "tooth sensitivity": [
+   "mouth"
+  ],
+  "transient visual obscurations": [
+   "eyes"
+  ],
+  "tripping": [
+   "legs"
+  ],
+  "trouble breastfeeding": [
+   "breast",
+   "abdomen"
+  ],
+  "trouble climaxing during sex": [
+   "genital"
+  ],
+  "trouble concentrating": [
+   "mind"
+  ],
+  "trouble coping": [
+   "mind"
+  ],
+  "trouble coping with stress": [
+   "mind"
+  ],
+  "trouble eating": [
+   "abdomen"
+  ],
+  "trouble finishing tasks": [
+   "mind"
+  ],
+  "trouble focusing up close": [
+   "eyes"
+  ],
+  "trouble following conversation": [
+   "mind"
+  ],
+  "trouble forming new memories": [
+   "mind"
+  ],
+  "trouble getting dressed": [
+   "mind"
+  ],
+  "trouble imitating words": [
+   "mind"
+  ],
+  "trouble lying hand flat": [
+   "hand"
+  ],
+  "trouble making decisions": [
+   "mind"
+  ],
+  "trouble multitasking": [
+   "mind"
+  ],
+  "trouble paying attention": [
+   "mind"
+  ],
+  "trouble planning": [
+   "mind"
+  ],
+  "trouble reading color coding": [
+   "mind"
+  ],
+  "trouble reading traffic lights": [
+   "mind"
+  ],
+  "trouble recognizing faces": [
+   "mind"
+  ],
+  "trouble recognizing objects": [
+   "mind"
+  ],
+  "trouble remembering sequences": [
+   "mind"
+  ],
+  "trouble repeating phrases": [
+   "mind"
+  ],
+  "trouble repeating words": [
+   "mind"
+  ],
+  "trouble settling": [
+   "mind"
+  ],
+  "trouble sleeping": [
+   "mind"
+  ],
+  "trouble sleeping alone": [
+   "mind"
+  ],
+  "trouble smiling": [
+   "face"
+  ],
+  "trouble speaking": [
+   "mouth",
+   "mind"
+  ],
+  "trouble starting conversations": [
+   "mind"
+  ],
+  "trouble staying seated": [
+   "mind"
+  ],
+  "trouble sticking out tongue": [
+   "mouth"
+  ],
+  "trouble swallowing": [
+   "neck"
+  ],
+  "trouble telling colors apart": [
+   "eyes"
+  ],
+  "trouble understanding fast speech": [
+   "mind"
+  ],
+  "trouble understanding speech in noise": [
+   "mind"
+  ],
+  "trouble understanding words": [
+   "mind"
+  ],
+  "trouble using everyday tools": [
+   "mind"
+  ],
+  "trouble waking": [
+   "mind"
+  ],
+  "trouble walking": [
+   "legs"
+  ],
+  "trouble with daily tasks": [
+   "mind"
+  ],
+  "trouble with familiar tasks": [
+   "mind"
+  ],
+  "trouble with fine motor skills": [
+   "hand"
+  ],
+  "trouble with learned tasks": [
+   "mind"
+  ],
+  "trouble with math word problems": [
+   "mind"
+  ],
+  "trouble with social skills": [
+   "mind"
+  ],
+  "trouble writing": [
+   "mind"
+  ],
+  "twitching": [
+   "general"
+  ],
+  "unable to cut down drinking": [
+   "mind"
+  ],
+  "unclear speech": [
+   "mind"
+  ],
+  "uncomfortable fullness": [
+   "abdomen"
+  ],
+  "uncontrolled crying": [
+   "mind"
+  ],
+  "uncontrolled eye movements": [
+   "eyes"
+  ],
+  "uncontrolled laughing or crying": [
+   "mind"
+  ],
+  "underarm hair": [
+   "skin"
+  ],
+  "underarm pain": [
+   "armpit"
+  ],
+  "underarm sweating": [
+   "general",
+   "skin"
+  ],
+  "undescended testicles": [
+   "genital"
+  ],
+  "unequal pupils": [
+   "eyes"
+  ],
+  "uneven ears": [
+   "ears"
+  ],
+  "uneven hips": [
+   "hips"
+  ],
+  "uneven leg length": [
+   "legs"
+  ],
+  "uneven shoulders": [
+   "shoulder"
+  ],
+  "uneven skin texture": [
+   "skin"
+  ],
+  "uneven speech rhythm": [
+   "mind"
+  ],
+  "uneven waist": [
+   "back"
+  ],
+  "unpleasant taste": [
+   "mouth"
+  ],
+  "unreactive pupils": [
+   "eyes"
+  ],
+  "unrefreshing sleep": [
+   "mind"
+  ],
+  "unresponsiveness": [
+   "head"
+  ],
+  "unstable relationships": [
+   "mind"
+  ],
+  "unsteady gait": [
+   "legs"
+  ],
+  "unsuccessful attempts to cut back": [
+   "mind"
+  ],
+  "unusual discharge": [
+   "genital"
+  ],
+  "unusual eye movements": [
+   "eyes"
+  ],
+  "unusual movements": [
+   "general"
+  ],
+  "unusual smell": [
+   "nose"
+  ],
+  "unusual taste": [
+   "mouth"
+  ],
+  "unwanted sexual thoughts": [
+   "mind"
+  ],
+  "upper abdominal pain": [
+   "epigastric"
+  ],
+  "upper back pain": [
+   "upper_back"
+  ],
+  "upper respiratory infection": [
+   "chest"
+  ],
+  "upward slanting eyes": [
+   "eyes"
+  ],
+  "urethral discharge": [
+   "genital"
+  ],
+  "urge incontinence": [
+   "above_pubic_bone"
+  ],
+  "urge to defecate": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "urge to move legs": [
+   "legs"
+  ],
+  "urge to pass stool": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "urge to steal": [
+   "mind"
+  ],
+  "urgency": [
+   "above_pubic_bone"
+  ],
+  "urgency to defecate": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "urgency to pass stool": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "urgent bowel movement": [
+   "lower_abdomen"
+  ],
+  "urinary changes": [
+   "above_pubic_bone"
+  ],
+  "urinary frequency": [
+   "above_pubic_bone"
+  ],
+  "urinary problems": [
+   "above_pubic_bone"
+  ],
+  "urinary retention": [
+   "above_pubic_bone"
+  ],
+  "urinary tract infection": [
+   "above_pubic_bone"
+  ],
+  "urinary urgency": [
+   "above_pubic_bone"
+  ],
+  "urine leakage": [
+   "above_pubic_bone"
+  ],
+  "uterine contractions": [
+   "pelvic_core"
+  ],
+  "uterine cramping": [
+   "pelvic_core"
+  ],
+  "uterine tenderness": [
+   "pelvic_core"
+  ],
+  "vaginal bleeding": [
+   "genital"
+  ],
+  "vaginal bleeding after menopause": [
+   "genital",
+   "pelvic_core"
+  ],
+  "vaginal bulge": [
+   "genital"
+  ],
+  "vaginal burning": [
+   "genital"
+  ],
+  "vaginal discharge": [
+   "genital"
+  ],
+  "vaginal discomfort": [
+   "genital"
+  ],
+  "vaginal dryness": [
+   "genital"
+  ],
+  "vaginal fluid leakage": [
+   "genital"
+  ],
+  "vaginal fullness": [
+   "genital"
+  ],
+  "vaginal infection": [
+   "genital"
+  ],
+  "vaginal irritation": [
+   "genital"
+  ],
+  "vaginal itching": [
+   "genital"
+  ],
+  "vaginal lump": [
+   "genital"
+  ],
+  "vaginal odor": [
+   "genital"
+  ],
+  "vaginal pain": [
+   "genital"
+  ],
+  "vaginal redness": [
+   "genital"
+  ],
+  "vaginal spotting": [
+   "genital"
+  ],
+  "vaginal swelling": [
+   "genital"
+  ],
+  "vague symptoms": [
+   "general"
+  ],
+  "varicose veins": [
+   "skin"
+  ],
+  "vein inflammation": [
+   "skin"
+  ],
+  "velvety skin": [
+   "skin"
+  ],
+  "vertigo": [
+   "head"
+  ],
+  "vesicoureteral reflux": [
+   "above_pubic_bone"
+  ],
+  "vindictiveness": [
+   "mind"
+  ],
+  "visible belly veins": [
+   "abdomen"
+  ],
+  "visible blood vessels": [
+   "skin"
+  ],
+  "visible bone": [
+   "general"
+  ],
+  "visible holes in teeth": [
+   "mouth"
+  ],
+  "visible lice": [
+   "scalp"
+  ],
+  "visible stomach waves": [
+   "abdomen"
+  ],
+  "visible veins": [
+   "skin"
+  ],
+  "vision loss": [
+   "eyes"
+  ],
+  "vision problems": [
+   "eyes"
+  ],
+  "vision swelling": [
+   "eyes"
+  ],
+  "visual disturbance": [
+   "eyes"
+  ],
+  "visual field loss": [
+   "eyes"
+  ],
+  "visual hallucinations": [
+   "eyes"
+  ],
+  "vivid dreams": [
+   "mind"
+  ],
+  "voice change": [
+   "neck"
+  ],
+  "voice loss": [
+   "neck"
+  ],
+  "voice tremor": [
+   "neck"
+  ],
+  "voice weakness": [
+   "neck"
+  ],
+  "voicing errors": [
+   "mouth",
+   "mind"
+  ],
+  "vomiting": [
+   "abdomen"
+  ],
+  "vomiting blood": [
+   "abdomen"
+  ],
+  "vulva irritation": [
+   "genital"
+  ],
+  "vulva redness": [
+   "genital"
+  ],
+  "vulva swelling": [
+   "genital"
+  ],
+  "vulvar lump": [
+   "genital"
+  ],
+  "vulvar pain": [
+   "genital"
+  ],
+  "waking during the night": [
+   "mind"
+  ],
+  "waking up during the night": [
+   "mind"
+  ],
+  "waking up too early": [
+   "mind"
+  ],
+  "walking on side of foot": [
+   "foot"
+  ],
+  "walking on toes": [
+   "legs",
+   "toes"
+  ],
+  "walking while asleep": [
+   "mind"
+  ],
+  "wandering": [
+   "mind"
+  ],
+  "warm knee": [
+   "knee"
+  ],
+  "warm skin": [
+   "skin"
+  ],
+  "warmth": [
+   "general"
+  ],
+  "warmth over joint": [
+   "general"
+  ],
+  "wart like growth": [
+   "skin"
+  ],
+  "watery diarrhea": [
+   "lower_abdomen"
+  ],
+  "watery eyes": [
+   "eyes"
+  ],
+  "watery stool": [
+   "rectum",
+   "lower_abdomen"
+  ],
+  "waxy skin": [
+   "skin"
+  ],
+  "weak breathing": [
+   "chest"
+  ],
+  "weak grip": [
+   "hand"
+  ],
+  "weak pulse": [
+   "chest"
+  ],
+  "weak push off": [
+   "foot",
+   "ankle"
+  ],
+  "weak urine stream": [
+   "above_pubic_bone"
+  ],
+  "weak voice": [
+   "neck"
+  ],
+  "weakness": [
+   "general"
+  ],
+  "weakness on one side": [
+   "general"
+  ],
+  "webbed neck": [
+   "neck"
+  ],
+  "weight changes": [
+   "general"
+  ],
+  "weight gain": [
+   "general"
+  ],
+  "weight loss": [
+   "general"
+  ],
+  "welt": [
+   "skin"
+  ],
+  "wheezing": [
+   "chest"
+  ],
+  "white hair": [
+   "scalp"
+  ],
+  "white patch": [
+   "skin"
+  ],
+  "white patch in mouth": [
+   "mouth"
+  ],
+  "white patches in mouth": [
+   "mouth"
+  ],
+  "white patches on tonsils": [
+   "neck"
+  ],
+  "white pupil": [
+   "eyes"
+  ],
+  "white spots in mouth": [
+   "eyes",
+   "mouth"
+  ],
+  "white spots on tonsils": [
+   "neck"
+  ],
+  "whiteheads": [
+   "skin"
+  ],
+  "whooping sound": [
+   "chest"
+  ],
+  "whooshing sound": [
+   "ears"
+  ],
+  "wide eyed stare": [
+   "eyes"
+  ],
+  "wide set eyes": [
+   "eyes"
+  ],
+  "widespread pain": [
+   "general"
+  ],
+  "wish to change gender": [
+   "mind"
+  ],
+  "withdrawal symptoms": [
+   "mind"
+  ],
+  "word finding difficulty": [
+   "mind"
+  ],
+  "word pauses": [
+   "mind"
+  ],
+  "work problems": [
+   "mind"
+  ],
+  "worn teeth": [
+   "mouth"
+  ],
+  "worry about harm": [
+   "mind"
+  ],
+  "worry about sleep": [
+   "mind"
+  ],
+  "worsening condition": [
+   "general"
+  ],
+  "wound drainage": [
+   "skin"
+  ],
+  "wounds": [
+   "skin"
+  ],
+  "wrinkled skin": [
+   "skin"
+  ],
+  "wrist clicking": [
+   "wrist"
+  ],
+  "wrist pain": [
+   "wrist"
+  ],
+  "wrist rash": [
+   "wrist"
+  ],
+  "wrong stress in words": [
+   "mind"
+  ],
+  "xanthoma": [
+   "skin"
+  ],
+  "yeast infection": [
+   "genital"
+  ],
+  "yellow eye spots": [
+   "skin",
+   "eyes"
+  ],
+  "yellow eyes": [
+   "skin",
+   "eyes"
+  ],
+  "yellow scales": [
+   "skin"
+  ]
+ }
+}

@@ -9,6 +9,7 @@ import { auditLogger } from "./middleware/auditLogger.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 import { optionalAuth } from "./middleware/auth.js";
 import searchRouter from "./modules/search/router.js";
+import casesRouter from "./modules/cases/router.js";
 import aiRouter from "./modules/ai/router.js";
 import vaultRouter from "./modules/vault/router.js";
 import authRouter from "./modules/auth/router.js";
@@ -91,6 +92,7 @@ export function createApp() {
   // --------------- API routes ---------------
 
   app.use("/api/search", searchRouter);
+  app.use("/api/cases", casesRouter);
   app.use("/api/ai", aiRouter);
   app.use("/api/vault", vaultRouter);
   app.use("/api/auth", authRouter);

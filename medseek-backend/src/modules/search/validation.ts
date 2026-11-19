@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { parseCell } from "../cases/geo.js";
+
 // ─── Search query parameters ─────────────────────────────────────
 
 export const searchQuerySchema = z.object({
@@ -21,6 +23,20 @@ export const searchQuerySchema = z.object({
   age: z.coerce.number().int().min(0).max(150).optional(),
   sex: z.enum(["male", "female", "other"]).optional(),
   pregnant: z.coerce.boolean().optional(),
+
+  // The user's area as a half-degree grid corner, e.g. "19.0,72.5" (optional)
+  cell: z
+    .string()
+    .optional()
+    .transform((value, ctx) => {
+      if (value === undefined || value === "") return undefined;
+      const cell = parseCell(value);
+      if (!cell) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "cell must be an area corner such as 19.0,72.5" });
+        return z.NEVER;
+      }
+      return cell;
+    }),
 });
 
 // ─── Disease detail parameters ───────────────────────────────────

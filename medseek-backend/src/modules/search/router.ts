@@ -9,6 +9,7 @@ import {
   searchDiseases,
   getDiseaseById,
   autocompleteSymptoms,
+  listSymptoms,
 } from "./service.js";
 import { badRequest } from "../../utils/AppError.js";
 
@@ -29,8 +30,8 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
       );
     }
 
-    const { symptoms, limit, offset, sex } = parsed.data;
-    const result = await searchDiseases(symptoms, limit, offset, { sex });
+    const { symptoms, limit, offset, sex, cell } = parsed.data;
+    const result = await searchDiseases(symptoms, limit, offset, { sex, cell });
 
     res.json({
       data: result.results,
@@ -92,6 +93,21 @@ router.get(
     }
   }
 );
+
+// ─── GET /api/search/symptoms ────────────────────────────────────
+// Every symptom in the knowledge base with its synonyms, how many conditions
+// list it, and where on the body it is felt. Used by the "all symptoms"
+// browser and to light up the 3D body. The list only changes on a reseed.
+
+router.get("/symptoms", async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const symptoms = await listSymptoms();
+    res.set("Cache-Control", "public, max-age=3600");
+    res.json({ data: symptoms, meta: { total: symptoms.length } });
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default router;
 

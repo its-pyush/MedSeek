@@ -13,6 +13,7 @@ import {
   getSessionWithMessages,
   sendMessage,
 } from "./service.js";
+import { parseCell } from "../cases/geo.js";
 
 const router = Router();
 
@@ -107,7 +108,8 @@ router.post(
       const response = await sendMessage(
         paramsParsed.data.sessionId,
         req.user!.id,
-        bodyParsed.data.content
+        bodyParsed.data.content,
+        bodyParsed.data.cell ? parseCell(bodyParsed.data.cell) : null
       );
 
       res.json({ data: response });

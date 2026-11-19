@@ -6,6 +6,8 @@
  */
 
 import { env } from "../../config/env.js";
+import type { Cell } from "../cases/geo.js";
+import { getTopLocalSignals } from "../cases/service.js";
 import { query } from "../../db/helpers.js";
 import { notFound } from "../../utils/AppError.js";
 import { getNimClient, withRetry } from "../../services/ai/nim.js";
@@ -159,7 +161,8 @@ export async function getSessionWithMessages(
 export async function sendMessage(
   sessionId: number,
   patientId: number,
-  userContent: string
+  userContent: string,
+  cell: Cell | null = null
 ): Promise<AIChatResponse> {
   // Verify session belongs to patient
   const sessionCheck = await query<{ id: number }>(
@@ -241,6 +244,29 @@ export async function sendMessage(
         return `[${index + 1}] (${chunk.source_type.toUpperCase()} - Record ID: ${chunk.source_id}): ${chunk.text}`;
       })
       .join("\n");
+  }
+
+  // 5b. What is being diagnosed near the patient right now (only if they share an area).
+  // Not from the patient's records, so it is kept apart from the numbered sources.
+  if (cell) {
+    try {
+      const local = await getTopLocalSignals(cell, 3);
+      if (local.length > 0) {
+        patientContextText +=
+          "\n\nLOCAL CONTEXT (reports from other MedSeek users in the patient's area, self-declared and unverified" +
+          (local.some((s) => s.simulated) ? "; includes SIMULATED sample data" : "") +
+          "; this is NOT from the patient's records, do not cite it with [n]; mention it only if relevant to the question, " +
+          "as one possibility to raise with a doctor, never as a diagnosis):\n" +
+          local
+            .map((s) => `- ${s.disease_name}: ${s.cases} confirmed reports in the last ${s.window_days} days, above the usual level for the area.`)
+            .join("\n");
+      }
+    } catch (error) {
+      console.error(
+        "Local signal unavailable for chat:",
+        error instanceof Error ? error.message : "Unknown error"
+      );
+    }
   }
 
   // 6. Fetch conversation history (last 20 messages)

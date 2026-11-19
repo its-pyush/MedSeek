@@ -1,5 +1,7 @@
 import { query } from "../../db/helpers.js";
 import { notFound } from "../../utils/AppError.js";
+import type { Cell } from "../cases/geo.js";
+import { getLocalSignals, type LocalSignal } from "../cases/service.js";
 
 // ─── Types ───────────────────────────────────────────────────────
 
@@ -14,6 +16,8 @@ export interface DiseaseResult {
   relevance_rank?: number;
   matched_symptoms: string[];
   total_symptoms: number;
+  /** Present when confirmed cases near the user raised this condition's score. */
+  local_signal?: LocalSignal;
 }
 
 export interface SearchResult {
@@ -157,8 +161,9 @@ export interface RankedRow {
   prevalence: string;
   /** Symptom evidence only: Σ matched weights × share of the query explained. */
   evidence: number;
-  /** evidence × prevalence prior — the main-list ranking score. */
+  /** evidence × prevalence prior × local boost — the main-list ranking score. */
   score: number;
+  local_signal?: LocalSignal;
   match_count: number;
   has_key: boolean;
   matched_symptoms: string[];
@@ -175,6 +180,7 @@ function toResult(row: RankedRow): DiseaseResult {
     score: row.score,
     matched_symptoms: row.matched_symptoms,
     total_symptoms: row.total_symptoms,
+    ...(row.local_signal ? { local_signal: row.local_signal } : {}),
   };
 }
 
@@ -220,6 +226,8 @@ export function groupByRisk<T extends { urgency_level: string }>(rows: T[]): T[]
 
 export interface SearchFilters {
   sex?: "male" | "female" | "other";
+  /** The user's area; when given, confirmed cases nearby can raise a condition. */
+  cell?: Cell;
 }
 
 /**
@@ -228,6 +236,7 @@ export interface SearchFilters {
  *   score = Σ weight(disease, matched symptom)
  *           × (idf of matched symptoms ÷ idf of all entered symptoms)
  *           × prevalence prior
+ *           × local boost (only when the user shares an area; see cases/service.ts)
  *
  * The middle factor penalises diseases that explain only part of what the
  * user entered; the prior favours common conditions.
@@ -297,7 +306,7 @@ export async function searchDiseases(
   );
 
   const rows: RankedRow[] = ranked.rows
-    .map((r) => {
+    .map((r): RankedRow => {
       const evidence = parseFloat(String(r.evidence));
       return {
         id: r.id,
@@ -312,7 +321,29 @@ export async function searchDiseases(
         matched_symptoms: r.matched_symptoms,
         total_symptoms: parseInt(String(r.total_symptoms), 10),
       };
-    })
+    });
+
+  // Local boost: confirmed cases near the user. Search still works without it
+  // (no area given, table not migrated yet, or the query fails).
+  if (filters.cell) {
+    try {
+      const signals = await getLocalSignals(rows.map((r) => r.name), filters.cell);
+      for (const row of rows) {
+        const signal = signals.get(row.name);
+        if (signal) {
+          row.score *= signal.boost;
+          row.local_signal = signal;
+        }
+      }
+    } catch (error) {
+      console.error(
+        "Local signal unavailable, ranking without it:",
+        error instanceof Error ? error.message : "Unknown error"
+      );
+    }
+  }
+
+  rows
     .sort((a, b) => b.score - a.score || b.match_count - a.match_count || a.name.localeCompare(b.name));
 
   // Relevance decides WHICH conditions make the page; within the page they are
@@ -459,4 +490,43 @@ export async function autocompleteSymptoms(
     matched_text: r.matched_text,
     similarity: parseFloat(String(r.sim)),
   }));
+}
+
+// ─── All symptoms ────────────────────────────────────────────────
+
+export interface SymptomListItem {
+  name: string;
+  /** Other words people use for this symptom. */
+  synonyms: string[];
+  /** Number of conditions in the knowledge base that list this symptom. */
+  disease_count: number;
+  /** Body picker area/part ids, or the groups "general" / "skin" / "mind". */
+  body_areas: string[];
+}
+
+/**
+ * Every symptom in the knowledge base, most widely shared first.
+ * The vocabulary is small (about 2,000 rows), so it is sent in one response
+ * and filtered in the browser.
+ */
+export async function listSymptoms(): Promise<SymptomListItem[]> {
+  const result = await query<SymptomListItem>(
+    `
+    SELECT
+      s.name,
+      COALESCE(syn.synonyms, '{}') AS synonyms,
+      COALESCE(dc.n, 0)::int AS disease_count,
+      s.body_areas
+    FROM symptoms s
+    LEFT JOIN (
+      SELECT symptom_id, array_agg(synonym_text ORDER BY synonym_text) AS synonyms
+      FROM symptom_synonyms GROUP BY symptom_id
+    ) syn ON syn.symptom_id = s.id
+    LEFT JOIN (
+      SELECT symptom_id, COUNT(*) AS n FROM disease_symptoms GROUP BY symptom_id
+    ) dc ON dc.symptom_id = s.id
+    ORDER BY disease_count DESC, s.name ASC
+    `
+  );
+  return result.rows;
 }

@@ -1,0 +1,265 @@
+{
+  "_about": "Body areas and parts used by the 3D body picker. Generated from medseek-frontend/src/components/regionHierarchy.ts by `npm run body:export` (frontend); do not edit by hand. `groups` are symptom groups with no place on the body.",
+  "areas": [
+    {
+      "id": "head",
+      "label": "Head & face",
+      "parts": [
+        {
+          "id": "scalp",
+          "label": "Scalp"
+        },
+        {
+          "id": "forehead",
+          "label": "Forehead"
+        },
+        {
+          "id": "eyes",
+          "label": "Eyes"
+        },
+        {
+          "id": "nose",
+          "label": "Nose"
+        },
+        {
+          "id": "face",
+          "label": "Cheeks"
+        },
+        {
+          "id": "mouth",
+          "label": "Mouth"
+        },
+        {
+          "id": "jaw",
+          "label": "Jaw"
+        },
+        {
+          "id": "ears",
+          "label": "Ears"
+        }
+      ]
+    },
+    {
+      "id": "neck",
+      "label": "Neck & throat",
+      "parts": [
+        {
+          "id": "neck",
+          "label": "Neck & throat"
+        }
+      ]
+    },
+    {
+      "id": "chest",
+      "label": "Chest",
+      "parts": [
+        {
+          "id": "upper_chest",
+          "label": "Upper chest"
+        },
+        {
+          "id": "breast",
+          "label": "Breast"
+        },
+        {
+          "id": "chest_core",
+          "label": "Centre of chest"
+        }
+      ]
+    },
+    {
+      "id": "abdomen",
+      "label": "Belly",
+      "parts": [
+        {
+          "id": "epigastric",
+          "label": "Pit of stomach"
+        },
+        {
+          "id": "upper_abdomen",
+          "label": "Upper belly"
+        },
+        {
+          "id": "lower_abdomen",
+          "label": "Lower belly"
+        }
+      ]
+    },
+    {
+      "id": "arms",
+      "label": "Arms & hands",
+      "parts": [
+        {
+          "id": "shoulder",
+          "label": "Shoulder"
+        },
+        {
+          "id": "armpit",
+          "label": "Armpit"
+        },
+        {
+          "id": "upper_arm",
+          "label": "Upper arm"
+        },
+        {
+          "id": "elbow",
+          "label": "Elbow"
+        },
+        {
+          "id": "forearm",
+          "label": "Forearm"
+        },
+        {
+          "id": "wrist",
+          "label": "Wrist"
+        },
+        {
+          "id": "hand",
+          "label": "Hand"
+        },
+        {
+          "id": "fingers",
+          "label": "Fingers"
+        }
+      ]
+    },
+    {
+      "id": "pelvic",
+      "label": "Pelvis & groin",
+      "parts": [
+        {
+          "id": "above_pubic_bone",
+          "label": "Bladder area"
+        },
+        {
+          "id": "pelvic_core",
+          "label": "Pelvis"
+        },
+        {
+          "id": "genital",
+          "label": "Genitals"
+        },
+        {
+          "id": "groin",
+          "label": "Groin"
+        }
+      ]
+    },
+    {
+      "id": "legs",
+      "label": "Legs & feet",
+      "parts": [
+        {
+          "id": "thigh",
+          "label": "Thigh"
+        },
+        {
+          "id": "knee",
+          "label": "Knee"
+        },
+        {
+          "id": "shin",
+          "label": "Shin"
+        },
+        {
+          "id": "ankle",
+          "label": "Ankle"
+        },
+        {
+          "id": "foot",
+          "label": "Foot"
+        },
+        {
+          "id": "toes",
+          "label": "Toes"
+        }
+      ]
+    },
+    {
+      "id": "head_back",
+      "label": "Back of the head",
+      "parts": [
+        {
+          "id": "head_back",
+          "label": "Back of the head"
+        }
+      ]
+    },
+    {
+      "id": "back",
+      "label": "Back",
+      "parts": [
+        {
+          "id": "upper_back",
+          "label": "Upper back"
+        },
+        {
+          "id": "middle_back",
+          "label": "Middle back"
+        },
+        {
+          "id": "lower_back",
+          "label": "Lower back"
+        },
+        {
+          "id": "flank",
+          "label": "Side (flank)"
+        }
+      ]
+    },
+    {
+      "id": "buttocks",
+      "label": "Hips & buttocks",
+      "parts": [
+        {
+          "id": "buttocks_core",
+          "label": "Buttocks"
+        },
+        {
+          "id": "hips",
+          "label": "Hips"
+        },
+        {
+          "id": "rectum",
+          "label": "Back passage"
+        },
+        {
+          "id": "tailbone",
+          "label": "Tailbone"
+        }
+      ]
+    },
+    {
+      "id": "legs_back",
+      "label": "Back of the legs",
+      "parts": [
+        {
+          "id": "hamstring",
+          "label": "Back of the thigh"
+        },
+        {
+          "id": "popliteal",
+          "label": "Behind the knee"
+        },
+        {
+          "id": "calf",
+          "label": "Calf"
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "general",
+      "label": "Whole body"
+    },
+    {
+      "id": "skin",
+      "label": "Skin"
+    },
+    {
+      "id": "mind",
+      "label": "Mind & mood"
+    }
+  ]
+}

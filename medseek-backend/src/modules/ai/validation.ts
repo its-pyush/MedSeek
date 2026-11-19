@@ -5,6 +5,8 @@ export const sendMessageSchema = z.object({
     .string()
     .min(1, "Message cannot be empty")
     .max(4000, "Message is too long (max 4000 characters)"),
+  /** The user's area as a half-degree grid corner, e.g. "19.0,72.5" (optional). */
+  cell: z.string().max(20).optional(),
 });
 
 export const sessionIdSchema = z.object({

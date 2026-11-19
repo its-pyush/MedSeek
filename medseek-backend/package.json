@@ -25,7 +25,11 @@
     "rag:backfill": "tsx scripts/rag-backfill.ts",
     "kb:extract": "tsx scripts/kb/extract.ts",
     "kb:build": "tsx scripts/kb/build.ts",
-    "kb:check": "tsx scripts/kb/check-ranking.ts"
+    "kb:check": "tsx scripts/kb/check-ranking.ts",
+    "kb:areas:build": "tsx scripts/kb/areas.ts build",
+    "kb:areas:check": "tsx scripts/kb/areas.ts check",
+    "kb:areas": "tsx scripts/kb/areas.ts write",
+    "cases:sample": "tsx scripts/sample-cases.ts"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",

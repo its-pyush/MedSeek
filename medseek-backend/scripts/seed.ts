@@ -3,6 +3,7 @@
  *
  * Input:  data/kb/medseek_kb.json  (built by `npm run kb:extract` + `npm run kb:build`)
  * Tables: diseases, symptoms, symptom_synonyms, disease_symptoms
+ *         (symptoms.body_areas comes from data/kb/symptom_areas.json)
  *
  * The four tables are replaced in a single transaction. Before anything is
  * changed, their current contents are dumped to data/kb/backup-<timestamp>.json.
@@ -18,6 +19,7 @@ import pg from "pg";
 
 import { env } from "../src/config/env.js";
 import type { KnowledgeBase } from "./kb/build.js";
+import { readAreas } from "./kb/areas.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const KB_DIR = path.join(__dirname, "..", "data", "kb");
@@ -30,6 +32,8 @@ async function seed() {
     throw new Error(`Knowledge base not found at ${KB_PATH}. Run: npm run kb:extract && npm run kb:build`);
   }
   const kb: KnowledgeBase = JSON.parse(fs.readFileSync(KB_PATH, "utf-8"));
+  // Body areas per symptom (data/kb/symptom_areas.json); empty if the file is missing.
+  const bodyAreas = readAreas();
   console.log(`\nMedSeek seed — ${kb.version}`);
   console.log(kb.stats);
 
@@ -82,11 +86,14 @@ async function seed() {
     // 3. Symptoms
     const s = kb.symptoms;
     const symptomRows = await client.query<{ id: number; name: string }>(
-      `INSERT INTO symptoms (name, canonical, idf)
-       SELECT name, true, idf FROM unnest($1::text[], $2::real[]) AS t(name, idf)
+      `INSERT INTO symptoms (name, canonical, idf, body_areas)
+       SELECT name, true, idf, ARRAY(SELECT jsonb_array_elements_text(areas::jsonb))
+       FROM unnest($1::text[], $2::real[], $3::text[]) AS t(name, idf, areas)
        RETURNING id, name`,
-      [s.map((x) => x.name), s.map((x) => x.idf)]
+      [s.map((x) => x.name), s.map((x) => x.idf), s.map((x) => JSON.stringify(bodyAreas[x.name] ?? []))]
     );
+    const untagged = s.filter((x) => !bodyAreas[x.name]?.length).length;
+    if (untagged) console.warn(`  ${untagged} symptoms have no body area — run: npm run kb:areas:build`);
     const symptomId = new Map(symptomRows.rows.map((r) => [r.name, r.id]));
 
     // 4. Synonyms
