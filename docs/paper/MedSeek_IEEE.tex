@@ -1,0 +1,341 @@
+% MedSeek paper -- IEEE conference format.
+% Overleaf: New Project > Blank Project, paste this file as main.tex, compiler pdfLaTeX.
+% Every number in this paper is produced by the project itself:
+%   Table I    : medseek-backend/data/kb/medseek_kb.json (stats block) and merge_report.json
+%   Tables II-III and the worked example : cd medseek-backend && npx tsx ../docs/paper/ablation.mts
+%   Section VII-A  : npm run kb:check -- --kb   (and --api <live url>)
+\documentclass[conference]{IEEEtran}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{cite}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{url}
+
+\begin{document}
+
+\title{MedSeek: A Symptom Search Engine and History-Grounded Health Assistant Built on a Reproducible, LLM-Structured Knowledge Base}
+
+\author{
+\IEEEauthorblockN{Piyush Singh}
+\IEEEauthorblockA{\textit{Department of Information Technology} \\
+\textit{Ajay Kumar Garg Engineering College}\\
+Ghaziabad, India \\
+piyush2313037@akgec.ac.in}
+\and
+\IEEEauthorblockN{Pratyush Kumar}
+\IEEEauthorblockA{\textit{Department of Information Technology} \\
+\textit{Ajay Kumar Garg Engineering College}\\
+Ghaziabad, India \\
+pratyush2313088@akgec.ac.in}
+\and
+\IEEEauthorblockN{Rishabh Singh}
+\IEEEauthorblockA{\textit{Department of Information Technology} \\
+\textit{Ajay Kumar Garg Engineering College}\\
+Ghaziabad, India \\
+rishabh2313138@akgec.ac.in}
+\and
+\IEEEauthorblockN{Prakhar Sipolya}
+\IEEEauthorblockA{\textit{Department of Information Technology} \\
+\textit{Ajay Kumar Garg Engineering College}\\
+Ghaziabad, India \\
+prakhar2313008@akgec.ac.in}
+\and
+\IEEEauthorblockN{Ankita Singh}
+\IEEEauthorblockA{\textit{Department of Information Technology} \\
+\textit{Ajay Kumar Garg Engineering College}\\
+Ghaziabad, India \\
+% TODO: replace this placeholder address before submission.
+ankita.singh.research@example.com}
+}
+
+\maketitle
+
+\begin{abstract}
+General-purpose chatbots are widely used for symptom questions, but they know nothing about the person asking. MedSeek is a deployed web system that combines a public symptom search engine with a login-protected health assistant whose answers are grounded in the user's own encrypted health records. The search engine runs on MedSeek KB v1, a knowledge base of 1,222 conditions, 1,962 symptoms, and 11,554 condition--symptom links, rebuilt by a cached, repeatable pipeline in which a language model structures public reference text. Conditions are ranked by frequency- and rarity-weighted symptom evidence, the share of the query a condition explains, and a prevalence prior. On a 40-case sanity check written by the developers, the deployed formula places an expected condition first in 29 cases (73\%) and in the top three in 39 (98\%). An ablation shows that the prevalence prior costs four first-place hits but reduces urgent conditions among the top five results for single vague symptoms from 17 of 30 to 3 of 30. These figures are engineering measurements on cases the knowledge base was tuned against. They are not a clinical evaluation, and a season- and location-aware prior, the project's original goal, is not yet implemented.
+\end{abstract}
+
+\begin{IEEEkeywords}
+symptom checker, medical knowledge base, information retrieval, retrieval-augmented generation, personal health records
+\end{IEEEkeywords}
+
+\section{Introduction}
+
+People routinely describe symptoms to search engines and chatbots before they see a doctor. Two problems follow. Dedicated symptom checkers list the correct condition first in only about a third of standardized cases~\cite{semigran2015}, and their safety evidence is thin~\cite{fraser2018}. General chatbots answer fluently but start from zero each time: they do not know the person's conditions, medicines, or allergies, so the advice stays generic.
+
+MedSeek addresses both with two connected products. The first is a public symptom search engine that returns a ranked, risk-grouped list of possible conditions. The second is a health assistant, available after login, that retrieves relevant entries from the user's own health vault before answering. The vault is personal: there is no hospital integration and no third-party access.
+
+This paper describes the system as built and reports what has been measured. It makes three contributions:
+\begin{itemize}
+\item A repeatable pipeline that turns public reference text into a structured symptom knowledge base, with model-assisted synonym merging and a separate, explicit file of editorial adjustments.
+\item A transparent ranking formula, with an ablation showing what each factor contributes and what it costs.
+\item A retrieval design for the assistant in which the vector index holds no readable health text and every query is restricted to one user.
+\end{itemize}
+
+MedSeek is an information tool. It does not diagnose, and nothing in this paper establishes clinical accuracy.
+
+\section{Related Work}
+
+\subsection{Symptom Checkers}
+
+Semigran \textit{et al.} audited 23 symptom checkers with standardized vignettes and found the correct diagnosis listed first in 34\% of evaluations and within the top 20 in 58\%~\cite{semigran2015}. A later comparison of eight apps with general practitioners found wide variation between tools in both condition suggestion and urgency advice~\cite{gilbert2020}, and a systematic review reported a correct primary diagnosis in 19--38\% of cases across the included studies~\cite{wallace2022}. Fraser \textit{et al.} discuss how the safety of such tools should be evaluated~\cite{fraser2018}. These studies use independent vignettes and clinician comparison, a standard that MedSeek's current sanity check does not meet (Section~\ref{sec:limits}).
+
+\subsection{Retrieval-Augmented Generation in Medicine}
+
+Retrieval-augmented generation (RAG) supplies a language model with retrieved text at answer time~\cite{lewis2020}, commonly found by dense vector search~\cite{karpukhin2020}. In medicine, the MIRAGE benchmark of 7,663 questions shows that corpus, retriever, and model choice all change results materially~\cite{xiong2024}, and generated text can be fluent yet unsupported~\cite{ji2023}. Strong examination scores do not by themselves establish safe use with patients~\cite{singhal2023}. Published medical RAG work mostly retrieves from shared literature. MedSeek instead retrieves from one person's own records, which shifts the main engineering concern from corpus quality to privacy and isolation.
+
+\subsection{Term Weighting and Diagnosis Datasets}
+
+MedSeek's symptom weights follow the long-standing idea that a term shared by few documents is more informative than one shared by many~\cite{sparckjones1972,robertson2009}. DDXPlus provides about 1.3 million synthetic patients with differential diagnoses over 49 pathologies~\cite{fansi2022} and is a candidate for the held-out evaluation planned in Section~\ref{sec:future}.
+
+\section{System Overview}
+
+MedSeek has a Next.js frontend and a Node.js/TypeScript/Express backend over PostgreSQL. All logic lives in the backend; the frontend only renders and calls the API. The backend has four modules behind one gateway that handles authentication and audit logging:
+\begin{itemize}
+\item \textit{Search} (public): symptom resolution, ranking, condition pages, autocomplete.
+\item \textit{Assistant} (login): chat sessions, retrieval from the user's records, red-flag escalation.
+\item \textit{Vault} (login): encrypted storage of conditions, medications, allergies, and reports.
+\item \textit{Audit} (login): a log of every authenticated request, visible to the user.
+\end{itemize}
+
+On the home page the user types symptoms or taps a 3D body model to pick them from a list for that body area. Passwords are hashed with bcrypt, and sessions use a 15-minute access token and a 7-day refresh token. The system is deployed on free hosting tiers; the first request after an idle period took about 23 seconds when measured.
+
+\section{Knowledge Base Construction}
+
+An earlier version used a 41-disease public dataset. MedSeek KB v1 replaces it through four scripted steps.
+
+\subsection{Extraction}
+
+The source is a scrape of the Mayo Clinic online disease index (overview, symptoms, when to see a doctor, risk factors). For each condition, one language-model call (Claude Haiku) returns a JSON record that is checked against a schema: a two- to three-sentence summary in original wording; up to 20 symptoms, each with a frequency (common, sometimes, rare) and a ``key'' flag for distinctive signs; an urgency level; a prevalence band; and a sex restriction. Every response is cached on disk under a hash of the prompt version and source, so a rebuild with unchanged input makes no model calls.
+
+For 314 conditions the scraper captured no symptom text. Their records, and those of the 9 conditions added in Section~\ref{sec:curation}, were written from the model's general knowledge and are labelled as such in the dataset; 318 such records remain after curation.
+
+\subsection{Vocabulary Normalization}
+
+Symptom phrases are first grouped lexically, ignoring word order, plurals, and severity words, so that ``pain in chest'' and ``chest pains'' become one entry. Phrases used by at least three conditions form a core vocabulary. A model (Claude Sonnet by default) proposes synonym groups within the core, and a second pass maps each remaining phrase onto the core or keeps it. A rule-based guard rejects any merge between phrases containing opposite terms such as gain/loss or high/low. In the current build, 73 groups absorbed 92 core phrases, 254 rarer phrases were mapped, and the guard rejected none. Every merged surface form is kept as a searchable synonym.
+
+\subsection{Editorial Curation}
+\label{sec:curation}
+
+Hand-written adjustments are kept in one file, separate from the generated data. Eighteen entries that were symptoms and not conditions were dropped; staged or recurrent cancer entries are ranked as rare; 15 conditions carry a prevalence band adjusted for India; and 9 India-relevant conditions missing from the source were added. In total 18 prevalence values were overridden. These are editorial choices, not measured data.
+
+\subsection{Result}
+
+Table~\ref{tab:kb} summarizes the dataset. The most shared symptom is fatigue (437 conditions), followed by shortness of breath (278), nausea (271), fever (259), and headache (253). Urgency and prevalence are model estimates, not clinical or epidemiological data.
+
+\begin{table}[!t]
+\caption{MedSeek KB v1 Composition}
+\label{tab:kb}
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright\arraybackslash}p{1.75in}>{\raggedright\arraybackslash}p{1.35in}}
+\hline
+\textbf{Item} & \textbf{Value} \\
+\hline
+Conditions & 1,222 \\
+\quad structured from reference text & 904 (74.0\%) \\
+\quad written from model knowledge & 318 (26.0\%) \\
+Symptoms (canonical) & 1,962 \\
+\quad listed by one condition only & 1,248 (63.6\%) \\
+Synonyms & 768 \\
+Condition--symptom links & 11,554 \\
+\quad flagged as key & 2,737 (23.7\%) \\
+\quad common / sometimes / rare & 5,051 / 5,313 / 1,190 \\
+Symptoms per condition & median 9, range 2--20 \\
+Urgency: low / moderate / high / emergency & 198 / 542 / 367 / 115 \\
+Prevalence: very common / common / uncommon / rare & 113 / 324 / 454 / 331 \\
+Sex: any / female only / male only & 1,119 / 68 / 35 \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Ranking}
+
+\subsection{Symptom Resolution}
+
+Each entered phrase is resolved to one canonical symptom in a fixed order: exact name, then exact synonym, then the best trigram-similarity match (PostgreSQL \texttt{pg\_trgm}, threshold 0.3) across names and synonyms. Exact synonyms are tried before any fuzzy match so that a known lay phrase is never captured by a look-alike name.
+
+\subsection{Score}
+
+Let $N$ be the number of conditions and $n_s$ the number that list symptom $s$. The rarity of a symptom and the weight of the link between condition $d$ and symptom $s$ are
+\begin{equation}
+\mathrm{idf}(s)=\ln\left(1+\frac{N}{n_s}\right), \qquad
+w_{d,s}=f_{d,s}\,k_{d,s}\,\mathrm{idf}(s),
+\label{eq:weight}
+\end{equation}
+where $f_{d,s}$ is 1.0, 0.6, or 0.3 for common, sometimes, or rare, and $k_{d,s}$ is 1.25 for key symptoms and 1 otherwise. For a query $Q$ and the subset $M_d \subseteq Q$ that condition $d$ lists,
+\begin{equation}
+\mathrm{score}(d)=\left(\sum_{s\in M_d} w_{d,s}\right)
+\frac{\sum_{s\in M_d}\mathrm{idf}(s)}{\sum_{s\in Q}\mathrm{idf}(s)}\;\pi_d .
+\label{eq:score}
+\end{equation}
+The middle factor (coverage) penalizes conditions that explain only part of the query. The prior $\pi_d$ is 1.0, 0.7, 0.4, or 0.2 for very common, common, uncommon, or rare conditions. All constants were set by hand. A sex filter hides sex-specific conditions only when the user states the other sex.
+
+\textit{Example.} For the query ``runny nose, sneezing, sore throat'', 74 conditions match at least one symptom. Common cold lists all three (two flagged as key), so its weights sum to 13.59 with coverage 1.0. Hay fever lists sneezing and runny nose but not sore throat: its weights sum to 9.48, coverage is 0.72, and its score is 6.83. Both are very common, so the prior is 1.0 for each, and common cold ranks first.
+
+\subsection{Presentation and Warnings}
+
+The score decides which conditions reach the page. Within the page, results are grouped from lower to higher risk, and the three best matches keep a visible rank tag. Because the prior pushes rare conditions down, a separate ``don't rule out'' list shows at most three urgent conditions that missed the page, ranked on symptom evidence without the prior. To avoid alarming a user over one vague symptom, a warning needs at least two matched symptoms, or a key symptom when only one was entered.
+
+\section{History-Grounded Assistant and Vault}
+
+\subsection{Vault}
+
+Each record is encrypted on the server with AES-256-GCM~\cite{dworkin2007} under a single server-held key, with a fresh random 12-byte nonce per record. Stored bytes are the nonce, the 16-byte authentication tag, and the ciphertext. The server holds the key and can read records: this is encryption at rest, not end-to-end encryption.
+
+\subsection{Retrieval}
+
+When a vault record or the profile changes, its text is embedded through a hosted embedding endpoint (NVIDIA NIM) into a 2,048-dimension half-precision vector and stored in pgvector under an HNSW cosine index~\cite{malkov2020}. The vector table holds only the vector and a reference to the source record, never the text. At question time the query is embedded, the five nearest vectors belonging to that user are selected by a filter in the SQL statement itself, matches below 0.25 cosine similarity are discarded, and only then are the referenced records decrypted and placed in the prompt.
+
+\subsection{Generation and Safety}
+
+A hosted chat model answers at temperature 0.2 with numbered citations to the retrieved records. Any reasoning block the model emits is stripped before display. Before any retrieval or model call, each user message is checked by fixed rules for seven red-flag patterns: cardiac, stroke, breathing emergency, severe allergic reaction, suicidal thoughts, fever with neck stiffness, and severe abdominal pain. The rules handle direct phrases and negation (``no chest pain'' does not trigger). A triggered rule returns an emergency message at once, and the model is not called. Every conversation carries a notice that the assistant is an AI and not a doctor.
+
+\subsection{Audit}
+
+Middleware records every authenticated request with its action, target, and outcome. The user can filter, inspect, and export this log.
+
+\section{Measurements}
+
+\subsection{Method}
+
+The sanity check has 40 cases written by the developers in everyday language, each with two to five symptoms (146 in total) and a list of acceptable condition names; a hit is any result whose name contains one of them. Six further probes enter a single vague symptom to see how alarming the answer is. Results were computed in memory from the published dataset and reproduced exactly by the live public API on 17 November 2026. Intervals are 95\% Wilson intervals, and variants are compared with the deployed formula by an exact McNemar test on first-place hits.
+
+All 146 entered symptoms resolved: 116 by exact name, 19 by synonym, and 11 by fuzzy match.
+
+\subsection{Ranking Ablation}
+
+\begin{table}[!t]
+\caption{Ranking Ablation on the 40-Case Sanity Check (Counts out of 40)}
+\label{tab:ablation}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{lcccccc}
+\hline
+\textbf{Variant} & \textbf{Top-1} & \textbf{Top-3} & \textbf{Top-10} & \textbf{MRR} & \textbf{Urgent} & \textbf{$p$} \\
+\hline
+Match count only & 20 & 32 & 37 & 0.655 & 16/30 & 0.064 \\
+Weights only & 33 & 38 & 39 & 0.888 & 17/30 & 0.219 \\
+Weights + coverage & 32 & 37 & 39 & 0.865 & 17/30 & 0.453 \\
+Weights + prior & 29 & 38 & 39 & 0.836 & 3/30 & 1.000 \\
+\textbf{Full (deployed)} & \textbf{29} & \textbf{39} & \textbf{39} & \textbf{0.847} & \textbf{3/30} & -- \\
+Full, no key boost & 29 & 39 & 39 & 0.847 & 3/30 & 1.000 \\
+Full, no idf in weights & 32 & 39 & 39 & 0.885 & 3/30 & 0.250 \\
+\hline
+\multicolumn{7}{p{3.3in}}{\rule{0pt}{2.4ex}Urgent: high- or emergency-urgency conditions among the top five results, summed over six single-symptom probes (30 slots). $p$: exact McNemar test on first-place hits against the deployed formula.}
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:ablation} removes one factor at a time. For the deployed formula, 29 of 40 is 73\% (interval 57--84\%) and 39 of 40 is 98\% (interval 87--100\%).
+
+Three observations follow. First, weighting matters most: moving from a plain count of matched symptoms to weighted evidence raises first-place hits from 20 to 33. Second, the prevalence prior is a trade. It lowers first-place hits from 33 to 29, but it is the only factor that changes how alarming the answer to a vague symptom is: urgent conditions fall from 17 of 30 top-five slots to 3. Third, the key-symptom boost changes nothing on these cases, and removing rarity from the link weights (while keeping it in coverage) scores three more first-place hits than the deployed formula. With 40 cases, no variant differs significantly from the deployed formula on first-place hits ($p \geq 0.064$). The table shows direction, not proof.
+
+\subsection{Single-Symptom Probes}
+
+\begin{table}[!t]
+\caption{Single-Symptom Probes, Deployed Formula}
+\label{tab:probes}
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{lccc}
+\hline
+\textbf{Symptom} & \textbf{Conditions listing it} & \textbf{Urgent in top 5} & \textbf{Warning cards} \\
+\hline
+Vomiting & 243 & 1 & 2 \\
+Headache & 253 & 0 & 3 \\
+Fever & 259 & 0 & 3 \\
+Fatigue & 437 & 2 & 1 \\
+Cough & 125 & 0 & 2 \\
+Nausea & 271 & 0 & 0 \\
+\hline
+\end{tabular}
+\end{table}
+
+Each probe matches more than a hundred conditions, yet the user sees at most three warning cards (Table~\ref{tab:probes}).
+
+\subsection{Known Miss}
+\label{sec:miss}
+
+One case fails outright. For ``cough, fever, shortness of breath, chest pain'', pneumonia ranks 18th, behind COVID-19 and influenza. Its record lists ``cough with phlegm'', which is a different vocabulary entry from plain ``cough'', so the condition is credited with three of the four symptoms. The same pattern can affect any condition whose record uses a more specific phrase than the one a user types.
+
+\subsection{Software Checks}
+
+The backend has 84 automated tests covering ranking, vocabulary normalization, retrieval isolation, escalation rules, and route protection; all pass. The assistant's answer quality, citation correctness, and retrieval relevance have not been measured.
+
+\section{Discussion}
+
+The ablation supports the design intent more than the headline number. A symptom search engine can score well on first-place accuracy by ranking on evidence alone, but it then fills the top of the page with serious conditions when the user types one common symptom. The prior, together with the capped warning list, moves those conditions out of the main list without hiding them. Whether that trade is right for users is a safety question that vignette accuracy does not answer~\cite{fraser2018}.
+
+The table also shows where the formula is not yet justified. Rarity enters the score twice, in the link weight and in coverage, and the simpler variant did at least as well. The key-symptom flag is used by the warning rule, but its ranking boost is not shown to help. Both are candidates for removal once a larger test set exists.
+
+Structuring reference text with a language model made a 1,222-condition knowledge base feasible for a small team, and caching makes the build repeatable. The cost is that every urgency and prevalence value is an estimate, and a quarter of the records have no source text behind them.
+
+\section{Limitations and Safety}
+\label{sec:limits}
+
+\textit{The sanity check is not an evaluation.} The 40 cases were written by the developers, and the curation file was edited while looking at their results, so 73\% and 98\% are optimistic. The cases are short, typical presentations with lenient name matching. There is no held-out set, no clinician-written vignette, and no comparison with other tools, so these figures cannot be set beside the published results in Section~II.
+
+\textit{The data is model-estimated.} Urgency, prevalence, symptom frequency, and key flags come from a language model and have not been reviewed by a clinician. The 318 model-written records have no reference text. Prevalence is a four-level band, adjusted for India by hand for 15 conditions.
+
+\textit{No season or location signal.} Ranking does not use the date or the user's region. The prior is static.
+
+\textit{The assistant is unevaluated.} No measurement exists of answer correctness, citation support, or escalation sensitivity on real conversations. The escalation rules are keyword-based and will miss phrasings they do not list.
+
+\textit{Security scope.} Vault records are encrypted at rest under one server-held key; chat messages and profile fields are stored unencrypted. The audit log is an ordinary table, not tamper-proof.
+
+\textit{Source.} The raw reference text is not redistributed and summaries are reworded, but the source's terms of use must be reviewed before any wider release.
+
+MedSeek must not replace examination, testing, or a clinician's judgment.
+
+\section{Future Work}
+\label{sec:future}
+
+The next step is an evaluation on cases the knowledge base was not tuned on, using held-out vignettes or DDXPlus~\cite{fansi2022}, with a comparison against at least one existing tool. After that comes the feature that motivated the project: a season- and location-aware prior that multiplies into $\pi_d$ in~\eqref{eq:score}. Regional differences in disease timing within India, for example in influenza seasonality~\cite{chadha2015}, suggest that a single national prior is insufficient. Whether such a prior improves ranking is an open question that this paper does not answer. Further items are clinician review of urgency labels, linking specific and general symptom phrases to fix the miss in Section~\ref{sec:miss}, and measuring the assistant's citations.
+
+\section{Reproducibility}
+
+The knowledge base file, the curation file, the merge report, and all scripts are in the project repository. Four commands rebuild and check the system: \texttt{kb:extract} (cached model calls), \texttt{kb:build} (normalization and weights), \texttt{seed} (loads the search tables in one transaction after a backup), and \texttt{kb:check} (the 40 cases and six probes, against the database, a running API, or the dataset file). Tables~\ref{tab:ablation} and~\ref{tab:probes} are produced by one script from the dataset file alone and need no database or model access. The raw scrape is not included. No patient data was used anywhere in this work.
+
+\section{Conclusion}
+
+MedSeek is a working system: a public symptom search engine over a 1,222-condition knowledge base, and an assistant that answers from the user's own encrypted records. The ranking formula is simple enough to inspect, and the ablation shows what its prevalence prior buys and costs. The reported accuracy is a sanity check on developer-written cases. A held-out evaluation and the season- and location-aware prior are the work that remains before any claim about real-world usefulness can be made.
+
+\begin{thebibliography}{00}
+
+\bibitem{semigran2015} H. L. Semigran, J. A. Linder, C. Gidengil, and A. Mehrotra, ``Evaluation of symptom checkers for self diagnosis and triage: Audit study,'' \textit{BMJ}, vol. 351, Art. no. h3480, 2015, doi: 10.1136/bmj.h3480.
+
+\bibitem{fraser2018} H. Fraser, E. Coiera, and D. Wong, ``Safety of patient-facing digital symptom checkers,'' \textit{The Lancet}, vol. 392, no. 10161, pp. 2263--2264, 2018, doi: 10.1016/S0140-6736(18)32819-8.
+
+\bibitem{gilbert2020} S. Gilbert \textit{et al.}, ``How accurate are digital symptom assessment apps for suggesting conditions and urgency advice? A clinical vignettes comparison to GPs,'' \textit{BMJ Open}, vol. 10, no. 12, Art. no. e040269, 2020, doi: 10.1136/bmjopen-2020-040269.
+
+\bibitem{wallace2022} W. Wallace \textit{et al.}, ``The diagnostic and triage accuracy of digital and online symptom checker tools: A systematic review,'' \textit{npj Digit. Med.}, vol. 5, Art. no. 118, 2022, doi: 10.1038/s41746-022-00667-w.
+
+\bibitem{lewis2020} P. Lewis \textit{et al.}, ``Retrieval-augmented generation for knowledge-intensive NLP tasks,'' in \textit{Proc. Adv. Neural Inf. Process. Syst. (NeurIPS)}, 2020. [Online]. Available: \url{https://arxiv.org/abs/2005.11401}
+
+\bibitem{karpukhin2020} V. Karpukhin \textit{et al.}, ``Dense passage retrieval for open-domain question answering,'' in \textit{Proc. Conf. Empirical Methods Natural Lang. Process. (EMNLP)}, 2020, pp. 6769--6781.
+
+\bibitem{xiong2024} G. Xiong, Q. Jin, Z. Lu, and A. Zhang, ``Benchmarking retrieval-augmented generation for medicine,'' in \textit{Findings Assoc. Comput. Linguistics: ACL 2024}, 2024, pp. 6233--6251, doi: 10.18653/v1/2024.findings-acl.372.
+
+\bibitem{ji2023} Z. Ji \textit{et al.}, ``Survey of hallucination in natural language generation,'' \textit{ACM Comput. Surv.}, vol. 55, no. 12, Art. no. 248, 2023, doi: 10.1145/3571730.
+
+\bibitem{singhal2023} K. Singhal \textit{et al.}, ``Large language models encode clinical knowledge,'' \textit{Nature}, vol. 620, pp. 172--180, 2023, doi: 10.1038/s41586-023-06291-2.
+
+\bibitem{sparckjones1972} K. Sp\"arck Jones, ``A statistical interpretation of term specificity and its application in retrieval,'' \textit{J. Documentation}, vol. 28, no. 1, pp. 11--21, 1972.
+
+\bibitem{robertson2009} S. Robertson and H. Zaragoza, ``The probabilistic relevance framework: BM25 and beyond,'' \textit{Found. Trends Inf. Retr.}, vol. 3, no. 4, pp. 333--389, 2009.
+
+\bibitem{fansi2022} A. Fansi Tchango, R. Goel, Z. Wen, J. Martel, and J. Ghosn, ``DDXPlus: A new dataset for automatic medical diagnosis,'' in \textit{Proc. Adv. Neural Inf. Process. Syst. (NeurIPS), Datasets and Benchmarks Track}, 2022. [Online]. Available: \url{https://arxiv.org/abs/2205.09148}
+
+\bibitem{dworkin2007} M. Dworkin, ``Recommendation for block cipher modes of operation: Galois/Counter Mode (GCM) and GMAC,'' NIST Special Publication 800-38D, 2007.
+
+\bibitem{malkov2020} Y. A. Malkov and D. A. Yashunin, ``Efficient and robust approximate nearest neighbor search using hierarchical navigable small world graphs,'' \textit{IEEE Trans. Pattern Anal. Mach. Intell.}, vol. 42, no. 4, pp. 824--836, 2020.
+
+\bibitem{chadha2015} M. S. Chadha \textit{et al.}, ``Dynamics of influenza seasonality at sub-regional levels in India and implications for vaccination timing,'' \textit{PLOS ONE}, vol. 10, no. 5, Art. no. e0124122, 2015, doi: 10.1371/journal.pone.0124122.
+
+\end{thebibliography}
+
+\end{document}
