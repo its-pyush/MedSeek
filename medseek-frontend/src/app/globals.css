@@ -280,18 +280,6 @@ html {
     0 8px 18px -6px rgba(87, 152, 207, 0.22);
 }
 
-.btn-modern:active:not(:disabled),
-.btn-3d:active:not(:disabled),
-.btn-modern-secondary:active:not(:disabled),
-.btn-3d-secondary:active:not(:disabled),
-.btn-modern-primary:active:not(:disabled),
-.btn-3d-primary:active:not(:disabled),
-.btn-modern-danger:active:not(:disabled),
-.btn-3d-danger:active:not(:disabled) {
-  transform: translateY(1px);
-  box-shadow: inset 0 2px 4px 0 rgba(15, 23, 42, 0.18);
-}
-
 .btn-modern:disabled,
 .btn-3d:disabled,
 .btn-modern-secondary:disabled,
@@ -364,6 +352,20 @@ html {
 .btn-3d-danger:hover:not(:disabled) {
   transform: translateY(-1px);
   border-color: rgba(239, 68, 68, 0.8);
+}
+
+/* Press: sink every button. Must come after all the :hover rules above —
+   same specificity, so whichever is later wins while the pointer is down. */
+.btn-modern:active:not(:disabled),
+.btn-3d:active:not(:disabled),
+.btn-modern-secondary:active:not(:disabled),
+.btn-3d-secondary:active:not(:disabled),
+.btn-modern-primary:active:not(:disabled),
+.btn-3d-primary:active:not(:disabled),
+.btn-modern-danger:active:not(:disabled),
+.btn-3d-danger:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 4px 0 rgba(15, 23, 42, 0.18);
 }
 
 /* ─── Glass surfaces ─────────────────────────────────────────── */
