@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDiseaseById, DiseaseDetail } from "@/lib/api";
 import UrgencyBadge from "@/components/UrgencyBadge";
+import ReportDiagnosis from "@/components/ReportDiagnosis";
 import {
   IconArrowLeft,
   IconWarning,
@@ -125,6 +126,8 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
             </a>
           </p>
         )}
+
+        <ReportDiagnosis diseaseId={disease.id} />
       </div>
 
       {/* Urgency Clinical Alert Box */}

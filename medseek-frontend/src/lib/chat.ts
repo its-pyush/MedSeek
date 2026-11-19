@@ -62,13 +62,14 @@ export async function getChatSession(
 
 export async function sendChatMessage(
   sessionId: number,
-  content: string
+  content: string,
+  cell: string | null = null
 ): Promise<AIChatResponse> {
   const res = await fetchWithAuth(
     `${API_BASE_URL}/api/ai/sessions/${sessionId}/messages`,
     {
       method: "POST",
-      body: JSON.stringify({ content }),
+      body: JSON.stringify(cell ? { content, cell } : { content }),
     }
   );
   if (!res.ok) {

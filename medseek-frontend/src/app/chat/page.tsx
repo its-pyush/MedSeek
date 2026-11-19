@@ -10,6 +10,7 @@ import {
   ChatSession,
   ChatMessage,
 } from "@/lib/chat";
+import { getAreaCell } from "@/lib/location";
 import {
   IconConsultation,
   IconPlus,
@@ -98,7 +99,7 @@ function ChatContent() {
     setMessages((prev) => [...prev, tempUserMsg]);
 
     try {
-      const response = await sendChatMessage(activeSessionId, userContent);
+      const response = await sendChatMessage(activeSessionId, userContent, getAreaCell());
       setMessages((prev) => [
         ...prev.filter((m) => m.id !== tempUserMsg.id),
         { ...tempUserMsg, id: response.message.id - 1 },

@@ -18,17 +18,18 @@ import {
   REGION_HIERARCHY,
   MajorRegion,
   SubRegion,
-  RegionProxy,
   RegionSelectionPayload,
-  getRegionProxyPoints,
-  getRegionCentroid,
-  createRegionGroup,
+  PART_TO_MAJOR,
+  expandToParts,
+  getMajor,
 } from "./regionHierarchy";
-import RegionDebugOverlay from "./RegionDebugOverlay";
+import { PART_IDS, PART_INDEX, BODY_MODEL_URL, labelVertices, type BodyId } from "./body/segmentBody";
 import BodyPickerPanel from "./BodyPickerPanel";
+import { useTheme } from "./ThemeToggle";
+import { useSymptomCatalog } from "@/lib/symptoms";
 import { createPortal } from "react-dom";
 
-export type { SubRegion, MajorRegion, RegionSelectionPayload, RegionProxy };
+export type { SubRegion, MajorRegion, RegionSelectionPayload };
 
 /* ─── Frame pacing ───────────────────────────────────────────── */
 
@@ -68,11 +69,6 @@ function FrameDriver({ active, fps, redrawKey }: { active: boolean; fps: number;
 }
 
 /* ─── Anatomical Data & Symptom Mapping ──────────────────────── */
-
-export interface BodyPoint {
-  pos: [number, number, number];
-  radius: number;
-}
 
 export interface RankedSymptom {
   id: string; // Symptom key; resolved to a canonical symptom by the backend (seeded as a synonym)
@@ -698,127 +694,106 @@ REGION_SYMPTOMS["calves"] = REGION_SYMPTOMS["calf"];
 REGION_SYMPTOMS["feet"] = REGION_SYMPTOMS["foot"];
 REGION_SYMPTOMS["hands"] = REGION_SYMPTOMS["hand"];
 
-const KEYWORD_RULES = [
-  { match: ["head", "migraine", "sensorium", "dizziness", "spinning", "concentration", "unsteadiness", "vertigo", "coma", "fever", "fatigue", "lethargy", "malaise", "anxiety", "depression", "irritability", "mood", "shivering", "chills", "sweating", "restlessness", "family_history", "toxic_look", "balance"], regions: ["head", "forehead"] },
-  { match: ["scalp", "hair", "alopecia", "dandruff"], regions: ["scalp"] },
-  { match: ["eye", "vision", "seeing", "blind", "pupil", "teary", "watering_from_eyes", "visual"], regions: ["eyes"] },
-  { match: ["nose", "sneez", "sinus", "smell", "rhinorrhea"], regions: ["nose", "forehead"] },
-  { match: ["tongue", "lip", "speech", "mouth", "face", "cheek"], regions: ["face", "mouth"] },
-  { match: ["jaw", "tmj", "chewing", "mandible"], regions: ["jaw"] },
-  { match: ["ear", "hearing", "tinnitus", "ringing", "vertigo"], regions: ["ears"] },
-  { match: ["throat", "cough", "sputum", "phlegm", "thyroid", "swallow"], regions: ["neck", "upper_chest"] },
-  { match: ["neck", "cervical", "lymph", "goiter"], regions: ["neck"] },
-  { match: ["chest", "heart", "breath", "lung", "palpitation", "congestion"], regions: ["chest", "chest_core", "upper_chest"] },
-  { match: ["breast", "mastalgia", "mammary", "nipple"], regions: ["breast"] },
-  { match: ["stomach", "abdom", "belly", "nausea", "vomit", "digest", "acidity", "appetite", "hunger", "liver", "gas", "weight", "sugar", "obesity", "alcohol", "dehydration", "fluid"], regions: ["abdomen", "epigastric", "upper_abdomen", "lower_abdomen"] },
-  { match: ["epigastric", "heartburn", "acid_reflux"], regions: ["epigastric"] },
-  { match: ["pelvis", "urin", "pee", "micturition", "bladder", "bowel", "stool", "anus", "anal", "diarrh", "constipat", "menstruat", "polyuria", "extra_marital"], regions: ["pelvic", "above_pubic_bone", "pelvic_core", "genital"] },
-  { match: ["groin", "inguinal"], regions: ["groin"] },
-  { match: ["back", "spine", "lumbago", "sciatica"], regions: ["back", "lower_back", "upper_back", "middle_back"] },
-  { match: ["flank", "kidney", "renal"], regions: ["flank"] },
-  { match: ["buttock", "gluteal", "piriformis"], regions: ["buttocks", "buttocks_core"] },
-  { match: ["hip", "trochanter", "pelvic_girdle"], regions: ["hips"] },
-  { match: ["rectum", "anal", "hemorrhoid"], regions: ["rectum"] },
-  { match: ["tailbone", "coccyx"], regions: ["tailbone"] },
-  { match: ["shoulder", "rotator", "deltoid"], regions: ["shoulder"] },
-  { match: ["armpit", "axilla"], regions: ["armpit"] },
-  { match: ["bicep", "tricep", "upper_arm"], regions: ["upper_arm"] },
-  { match: ["elbow", "olecranon"], regions: ["elbow"] },
-  { match: ["forearm"], regions: ["forearm"] },
-  { match: ["wrist", "carpal"], regions: ["wrist"] },
-  { match: ["hand", "finger", "wrist", "nail"], regions: ["hand", "fingers"] },
-  { match: ["arm", "injection", "transfusion"], regions: ["arms"] },
-  { match: ["thigh", "quadriceps", "hamstring"], regions: ["thigh", "hamstring"] },
-  { match: ["knee", "patella", "popliteal"], regions: ["knee", "popliteal"] },
-  { match: ["shin", "tibia"], regions: ["shin"] },
-  { match: ["calf", "calves", "vein", "cramp"], regions: ["calf", "legs_back"] },
-  { match: ["ankle", "malleolus"], regions: ["ankle"] },
-  { match: ["foot", "feet", "heel", "toe", "walk", "podagra"], regions: ["foot", "toes"] },
-  { match: ["joint", "stiffness"], regions: ["knee", "fingers", "wrist", "shoulder"] },
-  { match: ["muscle"], regions: ["arms", "thigh", "calf"] },
-  { match: ["limb", "one_body_side", "bruising"], regions: ["arms", "legs"] },
-  { match: ["leg"], regions: ["legs", "thigh", "calf"] },
-  { match: ["extremeties"], regions: ["hand", "foot"] },
-  { match: ["vessel"], regions: ["calf", "arms"] },
-  { match: ["rash", "itch", "blister", "pimple", "spot", "peel", "scur", "patch", "crust", "skin", "silver"], regions: ["chest", "arms"] },
-];
+/**
+ * Which body parts a set of symptoms points at.
+ *
+ * `areasByTerm` comes from the knowledge base (symptom name or synonym → area
+ * ids), so the body lights up from the same data the search uses. Until it has
+ * loaded, a symptom lights the parts whose picker list contains it.
+ */
+const PICKER_SYMPTOM_PARTS: Record<string, string[]> = (() => {
+  const map: Record<string, Set<string>> = {};
+  for (const [regionId, data] of Object.entries(REGION_SYMPTOMS)) {
+    const parts = expandToParts(regionId);
+    for (const s of [...data.topSymptoms, ...(data.secondarySymptoms ?? [])]) {
+      (map[s.id] ??= new Set());
+      parts.forEach((p) => map[s.id].add(p));
+    }
+  }
+  return Object.fromEntries(Object.entries(map).map(([k, v]) => [k, [...v]]));
+})();
+
+function getActiveParts(
+  symptoms: string[],
+  areasByTerm: Record<string, string[]> | null
+): string[] {
+  const parts = new Set<string>();
+  for (const s of symptoms) {
+    const key = s.trim().toLowerCase();
+    const areas = areasByTerm?.[key];
+    if (areas) areas.forEach((a) => expandToParts(a).forEach((p) => parts.add(p)));
+    else PICKER_SYMPTOM_PARTS[key]?.forEach((p) => parts.add(p));
+  }
+  return [...parts].sort();
+}
 
 /**
- * Maps active symptoms to 3D body points using the new REGION_HIERARCHY.
- * Bilateral pairs feed BOTH sides into active points so both illuminate simultaneously.
+ * Closest the camera gets to the body while zoomed in on an area, [desktop, phone].
+ * Close enough to read the area, far enough that the areas around it stay on
+ * screen and can be tapped directly.
  */
-function getActivePoints(symptoms: string[]): BodyPoint[] {
-  if (!symptoms || symptoms.length === 0) return [];
-  const points: BodyPoint[] = [];
-  const matchedRegionIds = new Set<string>();
-
-  symptoms.forEach((s) => {
-    const lowerS = s.toLowerCase().replace(/_/g, " ");
-    for (const rule of KEYWORD_RULES) {
-      for (const kw of rule.match) {
-        if (lowerS.includes(kw) || s.toLowerCase().includes(kw)) {
-          rule.regions.forEach((r) => matchedRegionIds.add(r));
-        }
-      }
-    }
-  });
-
-  matchedRegionIds.forEach((regionId) => {
-    const proxyData = getRegionProxyPoints(regionId);
-    if (proxyData) {
-      proxyData.points.forEach((pos) => {
-        points.push({ pos, radius: proxyData.radius });
-      });
-    }
-  });
-
-  return points.slice(0, 10);
-}
+const ZOOM_MIN_DIST: [number, number] = [2.9, 3.2];
 
 /* ─── Rotating 3D Body Mesh Component ────────────────────────── */
 
+/** A tap on the body: the part under the finger and the area it belongs to. */
+export interface BodyHit {
+  majorId: string;
+  partId: string;
+}
+
 interface RotatingBodyProps {
-  activePoints: BodyPoint[];
+  /** Parts lit because of the symptoms in the search bar. */
+  activeParts: string[];
   selectMode: boolean;
   mode: "full" | "zoom";
   activeMajorId: string | null;
   selectedSubRegionId: string | null;
+  /** Area id or part id currently hovered (from the model or the list). */
   hoveredGroupId: string | null;
-  isBackView: boolean;
   targetRotationYRef: React.MutableRefObject<number>;
   isDraggingRef: React.MutableRefObject<boolean>;
-  onRegionClick: (proxy: RegionProxy) => void;
+  onRegionClick: (hit: BodyHit) => void;
   onRegionHover: (groupId: string | null) => void;
-  debugMode?: boolean;
-  debugFilter?: "current" | "all";
+  /** Dev only: colour every part differently to check the boundaries. */
+  paintParts?: boolean;
+  /** Dark theme: deeper body tone, softer rim. */
+  dark?: boolean;
+  /** Which body mesh to show. Fixed for the component's life (the parent remounts it on change). */
+  bodyId?: BodyId;
+}
+
+/** Distinct colour per part for the dev paint mode (same palette as `npm run body:render`). */
+function partColour(index: number): [number, number, number] {
+  const h = (index * 137.5) % 360, s = 0.75, l = index % 2 ? 0.45 : 0.62;
+  const f = (n: number) => {
+    const k = (n + h / 30) % 12;
+    return l - s * Math.min(l, 1 - l) * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+  };
+  return [f(0), f(8), f(4)];
 }
 
 function RotatingBody({
-  activePoints,
+  activeParts,
   selectMode,
   mode,
   activeMajorId,
   selectedSubRegionId,
   hoveredGroupId,
-  isBackView,
   targetRotationYRef,
   isDraggingRef,
   onRegionClick,
   onRegionHover,
-  debugMode = false,
-  debugFilter = "current",
+  paintParts = false,
+  dark = false,
+  bodyId = "male",
 }: RotatingBodyProps) {
   const groupRef = useRef<THREE.Group>(null!);
-  const { camera, raycaster, pointer } = useThree();
-  const { scene } = useGLTF("/human_body.glb");
-  const activePointsRef = useRef<BodyPoint[]>(activePoints);
+  const invalidate = useThree((s) => s.invalidate);
+  const { scene } = useGLTF(BODY_MODEL_URL[bodyId]);
   const hoverIntensityRef = useRef<number>(0);
   const cameraTargetRef = useRef(new THREE.Vector3(-1.25, 2.235, 0));
   const isCameraInitializedRef = useRef<boolean>(false);
-
-  useEffect(() => {
-    activePointsRef.current = activePoints;
-  }, [activePoints]);
 
   // 1. Runtime bounding box calibration of Object_4 via new THREE.Box3().setFromObject(mesh)
   const meshBounds = useMemo(() => {
@@ -856,43 +831,85 @@ function RotatingBody({
     return { box, size, center, maxRadiusXZ };
   }, [scene]);
 
-  // Bake world transformation matrix into geometry once
-  const bakedGeometry = useMemo(() => {
+  // The body, with the world transform baked in and every vertex labelled
+  // with the body part it belongs to (see body/segmentBody.ts).
+  const body = useMemo(() => {
     const mesh = scene.getObjectByName("Object_4") as THREE.Mesh | undefined;
     if (!mesh) return null;
     scene.updateMatrixWorld(true);
-    const geo = mesh.geometry.clone();
-    geo.applyMatrix4(mesh.matrixWorld);
-    geo.computeVertexNormals();
-    return geo;
-  }, [scene]);
+    const geometry = mesh.geometry.clone();
+    geometry.applyMatrix4(mesh.matrixWorld);
+    geometry.computeVertexNormals();
+
+    const posAttr = geometry.attributes.position;
+    const nrmAttr = geometry.attributes.normal;
+    const count = posAttr.count;
+    const positions = new Float32Array(count * 3);
+    const normals = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      positions[i * 3] = posAttr.getX(i);
+      positions[i * 3 + 1] = posAttr.getY(i);
+      positions[i * 3 + 2] = posAttr.getZ(i);
+      normals[i * 3] = nrmAttr.getX(i);
+      normals[i * 3 + 1] = nrmAttr.getY(i);
+      normals[i * 3 + 2] = nrmAttr.getZ(i);
+    }
+    const labels = labelVertices(positions, normals, bodyId);
+
+    // Per-vertex highlight weights (0 or 1). The GPU blends them across each
+    // triangle, so highlight edges are smooth even where triangles are large.
+    geometry.setAttribute("aHover", new THREE.BufferAttribute(new Float32Array(count), 1));
+    geometry.setAttribute("aActive", new THREE.BufferAttribute(new Float32Array(count), 1));
+
+    if (process.env.NODE_ENV !== "production") {
+      const paint = new Float32Array(count * 3);
+      for (let i = 0; i < count; i++) paint.set(partColour(labels[i]), i * 3);
+      geometry.setAttribute("aPaint", new THREE.BufferAttribute(paint, 3));
+    }
+
+    // Height of the middle of each area (midpoint of its extent), for framing the camera on it.
+    const minY: Record<string, number> = {};
+    const maxY: Record<string, number> = {};
+    for (let i = 0; i < count; i++) {
+      const major = PART_TO_MAJOR[PART_IDS[labels[i]]];
+      const y = positions[i * 3 + 1];
+      minY[major] = Math.min(minY[major] ?? Infinity, y);
+      maxY[major] = Math.max(maxY[major] ?? -Infinity, y);
+    }
+    const centerY: Record<string, number> = {};
+    for (const id of Object.keys(minY)) centerY[id] = (minY[id] + maxY[id]) / 2;
+
+    return { geometry, labels, centerY };
+  }, [scene, bodyId]);
 
   useEffect(() => {
     return () => {
-      bakedGeometry?.dispose();
+      body?.geometry.dispose();
     };
-  }, [bakedGeometry]);
+  }, [body]);
 
-  // Helper to sync uniforms without per-frame traversals
-  const syncUniforms = useCallback((shader: { uniforms: Record<string, THREE.IUniform> }, points: BodyPoint[]) => {
-    if (!shader || !shader.uniforms) return;
-    const count = Math.min(points.length, 10);
-    shader.uniforms.uNumActivePoints.value = count;
-    for (let i = 0; i < 10; i++) {
-      if (i < count) {
-        shader.uniforms.uActivePoints.value[i].set(...points[i].pos);
-        shader.uniforms.uActiveRadii.value[i] = points[i].radius;
-      } else {
-        shader.uniforms.uActivePoints.value[i].set(0, -999, 0);
-        shader.uniforms.uActiveRadii.value[i] = 0;
+  /** Sets a per-vertex weight attribute to 1 for vertices in the given parts. */
+  const paintWeights = useCallback(
+    (attribute: "aHover" | "aActive", partIds: string[]) => {
+      if (!body) return;
+      const wanted = new Uint8Array(PART_IDS.length);
+      for (const id of partIds) {
+        const index = PART_INDEX[id];
+        if (index !== undefined) wanted[index] = 1;
       }
-    }
-  }, []);
+      const attr = body.geometry.attributes[attribute] as THREE.BufferAttribute;
+      const array = attr.array as Float32Array;
+      for (let i = 0; i < array.length; i++) array[i] = wanted[body.labels[i]];
+      attr.needsUpdate = true;
+      invalidate();
+    },
+    [body, invalidate]
+  );
 
-  // Solid opaque alabaster base material with illuminated surface highlights (100% opaque)
+  // Solid body material; the highlight is mixed into the surface colour.
   const baseMaterial = useMemo(() => {
     const mat = new THREE.MeshStandardMaterial({
-      color: 0x8ab6dc, // Tint of the brand blue (#5798cf); the solid body replaces the wireframe
+      color: 0x8ab6dc, // Tint of the brand blue (#5798cf)
       roughness: 0.45,
       metalness: 0.04, // Low metalness keeps it clinical
       depthWrite: true,
@@ -900,54 +917,43 @@ function RotatingBody({
     });
 
     mat.onBeforeCompile = (shader) => {
-      shader.uniforms.uActivePoints = {
-        value: Array.from({ length: 10 }, () => new THREE.Vector3(0, -999, 0)),
-      };
-      shader.uniforms.uActiveRadii = {
-        value: new Float32Array(10),
-      };
-      shader.uniforms.uNumActivePoints = { value: 0 };
-
-      // Bilateral-ready hover highlight uniforms (up to 2 points for left/right pairs)
-      shader.uniforms.uHoverPoints = {
-        value: [new THREE.Vector3(0, -999, 0), new THREE.Vector3(0, -999, 0)],
-      };
-      shader.uniforms.uNumHoverPoints = { value: 0 };
-      shader.uniforms.uHoverRadius = { value: 0.0 };
       shader.uniforms.uHoverIntensity = { value: 0.0 };
-
+      shader.uniforms.uPaint = { value: 0.0 };
+      shader.uniforms.uRim = { value: mat.userData.rim ?? 0.8 };
       mat.userData.shader = shader;
-      syncUniforms(shader, activePointsRef.current);
 
       shader.vertexShader = `
-        varying vec3 vBakedPosition;
+        attribute float aHover;
+        attribute float aActive;
+        attribute vec3 aPaint;
+        varying float vHover;
+        varying float vActive;
+        varying vec3 vPaint;
         ${shader.vertexShader}
       `.replace(
         `#include <project_vertex>`,
         `
-        vBakedPosition = position;
+        vHover = aHover;
+        vActive = aActive;
+        vPaint = aPaint;
         #include <project_vertex>
         `
       );
 
       shader.fragmentShader = `
-        uniform vec3 uActivePoints[10];
-        uniform float uActiveRadii[10];
-        uniform int uNumActivePoints;
-
-        uniform vec3 uHoverPoints[2];
-        uniform int uNumHoverPoints;
-        uniform float uHoverRadius;
         uniform float uHoverIntensity;
-
-        varying vec3 vBakedPosition;
+        uniform float uPaint;
+        uniform float uRim;
+        varying float vHover;
+        varying float vActive;
+        varying vec3 vPaint;
         ${shader.fragmentShader}
       `.replace(
         `#include <opaque_fragment>`,
         `
         // Soft edge glow so the outline reads on light and dark backgrounds.
         float rim = 1.0 - abs(dot(normalize(normal), normalize(vViewPosition)));
-        outgoingLight += vec3(0.62, 0.82, 0.98) * pow(rim, 2.0) * 0.8;
+        outgoingLight += vec3(0.62, 0.82, 0.98) * pow(rim, 2.0) * uRim;
         #include <opaque_fragment>
         `
       ).replace(
@@ -955,40 +961,23 @@ function RotatingBody({
         `
         vec4 diffuseColor = vec4( diffuse, opacity );
 
-        // 1. Selected symptom glow
-        float glow = 0.0;
-        for (int i = 0; i < 10; i++) {
-          if (i >= uNumActivePoints) break;
-          float dist = distance(vBakedPosition, uActivePoints[i]);
-          float radius = uActiveRadii[i];
-          float intensity = smoothstep(radius, radius * 0.25, dist);
-          glow = max(glow, intensity);
-        }
-        glow = clamp(glow, 0.0, 1.0);
+        // Parts lit by the chosen symptoms, and the part under the pointer /
+        // currently selected. Weights are 0..1 across a boundary triangle.
+        float glow = smoothstep(0.3, 0.7, vActive);
+        float hoverGlow = smoothstep(0.3, 0.7, vHover) * uHoverIntensity;
 
-        // 2. Real-time hover glow (Electric Cyan, simultaneously illuminates both sides if bilateral)
-        float hoverGlow = 0.0;
-        if (uHoverRadius > 0.0 && uHoverIntensity > 0.001) {
-          for (int i = 0; i < 2; i++) {
-            if (i >= uNumHoverPoints) break;
-            float hoverDist = distance(vBakedPosition, uHoverPoints[i]);
-            float intensity = smoothstep(uHoverRadius, uHoverRadius * 0.2, hoverDist) * uHoverIntensity;
-            hoverGlow = max(hoverGlow, intensity);
-          }
-          hoverGlow = clamp(hoverGlow, 0.0, 1.0);
-        }
+        vec3 surfaceHover = vec3(0.05, 0.72, 0.52);     // Brand emerald: reads clearly on the blue body
+        vec3 surfaceHighlight = vec3(1.0, 0.22, 0.35); // Crimson
 
-        vec3 surfaceHover = vec3(0.18, 0.78, 0.98);     // Radiant electric cyan wash
-        vec3 surfaceHighlight = vec3(1.0, 0.22, 0.35); // Radiant crimson wash
-
-        diffuseColor.rgb = mix(diffuseColor.rgb, surfaceHover, hoverGlow * 0.45);
-        diffuseColor.rgb = mix(diffuseColor.rgb, surfaceHighlight, glow * 0.55);
+        diffuseColor.rgb = mix(diffuseColor.rgb, surfaceHighlight, glow * 0.7);
+        diffuseColor.rgb = mix(diffuseColor.rgb, surfaceHover, hoverGlow * 0.72);
+        diffuseColor.rgb = mix(diffuseColor.rgb, vPaint, uPaint);
         `
       );
     };
 
     return mat;
-  }, [syncUniforms]);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -996,20 +985,44 @@ function RotatingBody({
     };
   }, [baseMaterial]);
 
-  // Update uniforms strictly when activePoints changes
+  // Dark mode: a deeper body tone and a softer rim, so the model doesn't glare
+  // against the dark page.
+  useEffect(() => {
+    baseMaterial.color.set(dark ? 0x3f6f99 : 0x8ab6dc);
+    baseMaterial.userData.rim = dark ? 0.35 : 0.8;
+    if (baseMaterial.userData.shader) baseMaterial.userData.shader.uniforms.uRim.value = baseMaterial.userData.rim;
+    invalidate();
+  }, [dark, baseMaterial, invalidate]);
+
+  // Symptoms → lit parts.
+  useEffect(() => {
+    paintWeights("aActive", activeParts);
+  }, [activeParts, paintWeights]);
+
+  // Hovered area/part, or the selected part while zoomed in.
+  const highlightId = selectMode
+    ? hoveredGroupId || (mode === "zoom" ? selectedSubRegionId : null)
+    : null;
+  useEffect(() => {
+    // When the highlight clears, keep the last shape and let it fade out.
+    if (highlightId) paintWeights("aHover", expandToParts(highlightId));
+  }, [highlightId, paintWeights]);
+
   useEffect(() => {
     if (baseMaterial.userData.shader) {
-      syncUniforms(baseMaterial.userData.shader, activePoints);
+      baseMaterial.userData.shader.uniforms.uPaint.value = paintParts ? 1 : 0;
     }
-  }, [activePoints, baseMaterial, syncUniforms]);
+    invalidate();
+  }, [paintParts, baseMaterial, invalidate]);
 
-  // Per-frame update: rotation, camera dolly framing transition, and bilateral highlight shader sync
+  // Per-frame update: rotation, camera framing, highlight fade
+
   useFrame(({ camera, size }, delta) => {
     if (!groupRef.current) return;
 
     // 1. Rotation handling
     if (!selectMode) {
-      const speed = activePoints.length > 0 ? 0.04 : 0.12;
+      const speed = activeParts.length > 0 ? 0.04 : 0.12;
       groupRef.current.rotation.y += delta * speed;
       targetRotationYRef.current = groupRef.current.rotation.y;
     } else {
@@ -1089,53 +1102,21 @@ function RotatingBody({
     let targetLookY = defaultLookY;
 
     if (mode === "zoom" && activeMajorId) {
-      const major = REGION_HIERARCHY.find((m) => m.id === activeMajorId);
+      const major = getMajor(activeMajorId);
       if (major) {
-        // In ZOOM MODE: Inspector drawer opens on the right side of the screen.
-        // Shift camera X to +0.60 so the framed body region sits at relative X = -0.60
-        // (centered cleanly in the unobstructed left ~65% of the viewport).
+        // The list sits on the right on desktop; shift the camera so the
+        // framed area is centred in the space that is left.
         targetCamX = isMobileView ? 0 : 0.60;
         targetLookX = isMobileView ? 0 : 0.60;
-        const majorCentroid = getRegionCentroid(major.volumes);
-        targetLookY = majorCentroid[1];
-        targetCamY = majorCentroid[1];
-
-        // Hand-tuned framing distance per major category
-        switch (major.id) {
-          case "head":
-          case "head_back":
-            targetCamZ = isMobileView ? 2.5 : 2.1;
-            break;
-          case "neck":
-            targetCamZ = isMobileView ? 2.4 : 2.0;
-            break;
-          case "chest":
-            targetCamZ = isMobileView ? 2.8 : 2.4;
-            break;
-          case "abdomen":
-            targetCamZ = isMobileView ? 2.9 : 2.5;
-            break;
-          case "arms": // Bilateral major: frame both arms comfortably in view
-            targetCamZ = isMobileView ? 4.2 : 3.8;
-            break;
-          case "pelvic":
-            targetCamZ = isMobileView ? 2.6 : 2.2;
-            break;
-          case "legs": // Bilateral major: frame both legs comfortably in view
-          case "legs_back":
-            targetCamZ = isMobileView ? 3.8 : 3.4;
-            targetLookY = 1.05;
-            targetCamY = 1.05;
-            break;
-          case "back":
-            targetCamZ = isMobileView ? 3.2 : 2.8;
-            break;
-          case "buttocks":
-            targetCamZ = isMobileView ? 2.8 : 2.4;
-            break;
-          default:
-            targetCamZ = isMobileView ? 3.2 : 2.8;
-        }
+        const focusY = body?.centerY[major.id] ?? centerY;
+        targetLookY = focusY;
+        targetCamY = focusY;
+        // Never closer than ZOOM_MIN_DIST: the neighbouring areas must stay in
+        // view so the user can tap straight across to them.
+        targetCamZ = Math.max(
+          major.zoom[isMobileView ? 1 : 0],
+          ZOOM_MIN_DIST[isMobileView ? 1 : 0]
+        );
       }
     }
 
@@ -1165,184 +1146,67 @@ function RotatingBody({
 
     camera.lookAt(cameraTargetRef.current);
 
-    // 3. Bilateral Highlight Shader Driver (Hover & Selection Glow)
-    // Priority: real-time hovered region > selected sub-region
-    const activeHighlightId = hoveredGroupId || (mode === "zoom" ? selectedSubRegionId : null);
-    const highlightData = activeHighlightId ? getRegionProxyPoints(activeHighlightId) : null;
-    const hasHighlight = Boolean(selectMode && highlightData);
-
-    const targetIntensity = hasHighlight ? 1.0 : 0.0;
-    hoverIntensityRef.current = THREE.MathUtils.lerp(
-      hoverIntensityRef.current,
-      targetIntensity,
-      0.18
-    );
-
-    // Sync to base alabaster material shader
+    // Highlight fade in/out
+    const targetIntensity = highlightId ? 1.0 : 0.0;
+    hoverIntensityRef.current = THREE.MathUtils.lerp(hoverIntensityRef.current, targetIntensity, 0.18);
     if (baseMaterial.userData.shader) {
-      const s = baseMaterial.userData.shader;
-      s.uniforms.uHoverIntensity.value = hoverIntensityRef.current;
-      if (hasHighlight && highlightData) {
-        s.uniforms.uNumHoverPoints.value = highlightData.points.length;
-        for (let i = 0; i < 2; i++) {
-          if (i < highlightData.points.length) {
-            s.uniforms.uHoverPoints.value[i].set(...highlightData.points[i]);
-          } else {
-            s.uniforms.uHoverPoints.value[i].set(0, -999, 0);
-          }
-        }
-        s.uniforms.uHoverRadius.value = highlightData.radius * 1.15;
-      }
+      const u = baseMaterial.userData.shader.uniforms;
+      u.uHoverIntensity.value = hoverIntensityRef.current;
+      u.uPaint.value = paintParts ? 1 : 0;
     }
   });
 
-  // 1. Invisible hit-testing material for Three.js geometry raycasting
-  const invisibleHitMaterial = useMemo(
-    () =>
-      // Hidden: the renderer skips these shapes entirely, but taps still hit-test them.
-      new THREE.MeshBasicMaterial({ visible: false }),
-    []
-  );
+  /** The body part of the triangle a pointer event landed on. */
+  const hitFromEvent = (e: ThreeEvent<PointerEvent>): BodyHit | null => {
+    if (!body || !e.face) return null;
+    const { a, b, c } = e.face;
+    const la = body.labels[a], lb = body.labels[b], lc = body.labels[c];
+    const partId = PART_IDS[lb === lc ? lb : la];
+    return { partId, majorId: PART_TO_MAJOR[partId] };
+  };
 
-  // 2. Pre-build Region Object3D groups for all Major and Sub regions
-  const collisionGroups = useMemo(() => {
-    const majorGroups: THREE.Group[] = [];
-    const subGroups: THREE.Group[] = [];
-
-    for (const major of REGION_HIERARCHY) {
-      const mGroup = createRegionGroup(major, major.id, true, invisibleHitMaterial);
-      mGroup.userData.view = major.view;
-      majorGroups.push(mGroup);
-
-      if (major.subRegions) {
-        for (const sub of major.subRegions) {
-          const sGroup = createRegionGroup(sub, major.id, false, invisibleHitMaterial);
-          sGroup.userData.view = major.view;
-          subGroups.push(sGroup);
-        }
-      }
-    }
-
-    return { majorGroups, subGroups };
-  }, [invisibleHitMaterial]);
-
-  // Hit testing on pointer up (only if user was not dragging)
+  // Tap (pointer up without a drag): report the part under the finger.
   const handleMeshPointerUp = (e: ThreeEvent<PointerEvent>) => {
     if (!selectMode || isDraggingRef.current) return;
     e.stopPropagation();
-
-    const currentView = isBackView ? "back" : "front";
-    let activeGroups: THREE.Group[] = [];
-
-    if (mode === "full" || !activeMajorId) {
-      activeGroups = collisionGroups.majorGroups.filter(
-        (g) => g.userData.view === currentView
-      );
-    } else {
-      // Zoom mode: sub-regions of active major
-      activeGroups = collisionGroups.subGroups.filter(
-        (g) => g.userData.majorId === activeMajorId
-      );
-    }
-
-    raycaster.setFromCamera(pointer, camera);
-    const intersects = raycaster.intersectObjects(activeGroups, true);
-    if (intersects.length > 0) {
-      const hit = intersects[0];
-      const hitData = hit.object.userData;
-      const proxy: RegionProxy = {
-        groupId: hitData.groupId,
-        label: hitData.label,
-        pos: [hit.point.x, hit.point.y, hit.point.z],
-        radius: 0.2,
-        isBilateral: Boolean(hitData.isBilateral),
-        majorId: hitData.majorId,
-        subRegionId: hitData.subRegionId,
-        isLeaf: Boolean(hitData.isLeaf),
-        volumes: [],
-      };
-      onRegionClick(proxy);
-    }
+    const hit = hitFromEvent(e);
+    if (hit) onRegionClick(hit);
   };
 
-  const handleMeshPointerMove = () => {
+  const handleMeshPointerMove = (e: ThreeEvent<PointerEvent>) => {
     if (!selectMode || isDraggingRef.current) return;
     if (
       typeof window !== "undefined" &&
       window.matchMedia &&
       !window.matchMedia("(hover: hover)").matches
     ) {
-      return; // Skip hover calculation on touch-only devices
+      return; // No hover on touch-only devices
     }
-
-    const currentView = isBackView ? "back" : "front";
-    let activeGroups: THREE.Group[] = [];
-
-    if (mode === "full" || !activeMajorId) {
-      activeGroups = collisionGroups.majorGroups.filter(
-        (g) => g.userData.view === currentView
-      );
-    } else {
-      // Zoom mode: sub-regions of active major
-      activeGroups = collisionGroups.subGroups.filter(
-        (g) => g.userData.majorId === activeMajorId
-      );
-    }
-
-    raycaster.setFromCamera(pointer, camera);
-    const intersects = raycaster.intersectObjects(activeGroups, true);
-    if (intersects.length > 0) {
-      const hit = intersects[0];
-      const hitData = hit.object.userData;
-      onRegionHover(hitData.groupId);
-    } else {
-      onRegionHover(null);
-    }
+    const hit = hitFromEvent(e);
+    if (!hit) return;
+    // Whole area while choosing an area; single part once zoomed in.
+    onRegionHover(mode === "zoom" ? hit.partId : hit.majorId);
   };
 
   const handleMeshPointerOut = () => {
-    if (selectMode) {
-      onRegionHover(null);
-    }
+    if (selectMode) onRegionHover(null);
   };
 
-  if (!bakedGeometry) return null;
+  if (!body) return null;
 
   return (
-    <group
-      ref={groupRef}
-      position={[0, 0, 0]}
-      scale={[1, 1, 1]}
-      onPointerUp={handleMeshPointerUp}
-      onPointerMove={handleMeshPointerMove}
-      onPointerOut={handleMeshPointerOut}
-    >
-      {/* Invisible Collision Groups attached to rotating body */}
-      {collisionGroups.majorGroups.map((g) => (
-        <primitive key={g.name} object={g} />
-      ))}
-      {collisionGroups.subGroups.map((g) => (
-        <primitive key={g.name} object={g} />
-      ))}
-
-      {/* Visual Body Mesh */}
+    <group ref={groupRef} position={[0, 0, 0]} scale={[1, 1, 1]}>
       <mesh
-        geometry={bakedGeometry}
+        geometry={body.geometry}
         material={baseMaterial}
-      />
-      {/* Dev-Only Proxy Wireframe Visualizer */}
-      <RegionDebugOverlay
-        enabled={Boolean(debugMode)}
-        filter={debugFilter || "current"}
-        isBackView={isBackView}
-        mode={mode}
-        activeMajorId={activeMajorId}
-        selectedSubRegionId={selectedSubRegionId}
-        hoveredGroupId={hoveredGroupId}
+        onPointerUp={handleMeshPointerUp}
+        onPointerMove={handleMeshPointerMove}
+        onPointerOut={handleMeshPointerOut}
       />
     </group>
   );
 }
+
 
 /* ─── Main Component ──────────────────────────────────────────── */
 
@@ -1356,6 +1220,8 @@ interface HumanBodyModelProps {
   panelContainer?: HTMLElement | null;
   /** Called when the user presses Search inside the picker. */
   onSearchRequested?: () => void;
+  /** Opens the full symptom list, filtered to the given area or part (null = everything). */
+  onBrowseAll?: (areaId: string | null) => void;
   /**
    * Phone behaviour: while choosing an area the picker is only a slim bar and
    * the model keeps the screen; the list appears after an area is tapped.
@@ -1363,6 +1229,8 @@ interface HumanBodyModelProps {
   tapFirst?: boolean;
   /** Tells the page how much room the picker needs right now. */
   onPickerLayoutChange?: (layout: "bar" | "panel") => void;
+  /** Which body to show (male or female mesh). */
+  body?: BodyId;
 }
 
 export default function HumanBodyModel({
@@ -1372,11 +1240,14 @@ export default function HumanBodyModel({
   onSelectModeChange,
   panelContainer,
   onSearchRequested,
+  onBrowseAll,
   tapFirst = false,
   onPickerLayoutChange,
+  body = "male",
 }: HumanBodyModelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(true);
+  const dark = useTheme() === "dark";
 
   // The idle rotation is decoration. It runs for a few seconds after the page
   // loads or the pointer touches the model, then the canvas stops drawing
@@ -1409,11 +1280,8 @@ export default function HumanBodyModel({
   const [, setSearchQuery] = useState("");
   const [, setIsExpanded] = useState(false);
 
-  // Dev-Only Debug Visualizer State (active in dev or via NEXT_PUBLIC_DEBUG_PROXIES)
-  const [debugMode, setDebugMode] = useState(
-    typeof process !== "undefined" && process.env.NEXT_PUBLIC_DEBUG_PROXIES === "true"
-  );
-  const [debugFilter, setDebugFilter] = useState<"current" | "all">("current");
+  // Dev only: colour every body part differently to check the boundaries.
+  const [paintParts, setPaintParts] = useState(false);
 
   // Drag rotation & snap refs
   const targetRotationYRef = useRef<number>(0);
@@ -1440,7 +1308,12 @@ export default function HumanBodyModel({
     return () => observer.disconnect();
   }, []);
 
-  const activePoints = useMemo(() => getActivePoints(activeSymptoms), [activeSymptoms]);
+  // Symptom → body area, from the knowledge base (loaded once, shared with the symptom browser).
+  const catalog = useSymptomCatalog();
+  const activeParts = useMemo(
+    () => getActiveParts(activeSymptoms, catalog?.areasByTerm ?? null),
+    [activeSymptoms, catalog]
+  );
 
   // Determine current orientation state (front vs back)
   const [isBackView, setIsBackView] = useState(false);
@@ -1483,57 +1356,42 @@ export default function HumanBodyModel({
   }, []);
 
   // Select Major Section from UI dock or 3D click
-  const handleSelectMajor = useCallback((major: MajorRegion) => {
-    const isLeaf = !major.subRegions || major.subRegions.length === 0;
+  const handleSelectMajor = useCallback((major: MajorRegion, partId?: string) => {
+    // Every area zooms in, including the ones that are a single part (neck,
+    // back of the head), so a tap on them from another area never zooms out.
+    // A tap on the body lands on a specific part; open that one.
+    const part = major.subRegions?.length
+      ? (major.subRegions.find((s) => s.id === partId) ?? major.subRegions[0]).id
+      : major.id;
+    setMode("zoom");
+    setActiveMajorId(major.id);
+    setActiveSubRegionId(part);
+    onSelectRegion?.({ majorId: major.id, subRegionId: part });
+    setSearchQuery("");
+    setIsExpanded(false);
+    zoomBaseRotationRef.current = targetRotationYRef.current;
 
-    if (isLeaf || !major.subRegions || major.subRegions.length === 0) {
-      // Leaf major skips zoom mode entirely — reports directly to callback
-      onSelectRegion?.({
-        majorId: major.id,
-        subRegionId: major.id,
-      });
-      setMode("full");
-      setActiveMajorId(null);
-      setActiveSubRegionId(major.id);
-      setSearchQuery("");
-      setIsExpanded(false);
-    } else {
-      // Major has subcategories: enter ZOOM MODE
-      setMode("zoom");
-      setActiveMajorId(major.id);
-      setActiveSubRegionId(major.subRegions[0].id);
-      setSearchQuery("");
-      setIsExpanded(false);
-      zoomBaseRotationRef.current = targetRotationYRef.current;
-    }
-
-    if (major.view === "back") {
-      snapToBack();
-    } else {
-      snapToFront();
-    }
+    // Areas listed on both sides (arms, neck) keep whichever side is showing.
+    if (major.view === "back") snapToBack();
+    else if (major.view === "front") snapToFront();
   }, [onSelectRegion, snapToBack, snapToFront]);
 
-  // Click handler from 3D raycast hit-testing
+  // A tap on the 3D body
   const handleRegionClick = useCallback(
-    (proxy: RegionProxy) => {
-      if (mode === "full") {
-        const major = REGION_HIERARCHY.find((m) => m.id === proxy.majorId);
-        if (!major) return;
-        handleSelectMajor(major);
-      } else {
-        // In ZOOM MODE: selecting an active sub-region proxy
-        onSelectRegion?.({
-          majorId: proxy.majorId,
-          subRegionId: proxy.groupId,
-        });
-        setActiveSubRegionId(proxy.groupId);
-        if (proxy.majorId && proxy.majorId !== activeMajorId) {
-          setActiveMajorId(proxy.majorId);
-        }
-        setSearchQuery("");
-        setIsExpanded(false);
+    (hit: BodyHit) => {
+      const major = getMajor(hit.majorId);
+      if (!major) return;
+      // The pointer has not moved, so the area-wide hover would otherwise stay lit.
+      setHoveredGroupId(null);
+      if (mode === "full" || hit.majorId !== activeMajorId) {
+        // First tap, or a tap on a different area while zoomed in.
+        handleSelectMajor(major, hit.partId);
+        return;
       }
+      onSelectRegion?.({ majorId: hit.majorId, subRegionId: hit.partId });
+      setActiveSubRegionId(hit.partId);
+      setSearchQuery("");
+      setIsExpanded(false);
     },
     [mode, activeMajorId, handleSelectMajor, onSelectRegion]
   );
@@ -1608,7 +1466,7 @@ export default function HumanBodyModel({
   // Filter symptoms based on local search query
   const visibleMajors = useMemo(() => {
     const view = isBackView ? "back" : "front";
-    return REGION_HIERARCHY.filter((m) => m.view === view);
+    return REGION_HIERARCHY.filter((m) => m.view === view || m.view === "both");
   }, [isBackView]);
 
   // Phone: the area list is opt-in; by default areas are chosen by tapping the model.
@@ -1628,8 +1486,42 @@ export default function HumanBodyModel({
     setHoveredGroupId(null);
   };
 
+  // More symptoms for the open part, straight from the knowledge base: the
+  // most widely shared ones that the hand-written list above does not show.
+  const moreSymptoms = useMemo(() => {
+    if (!catalog || !subRegionData || !activeSubRegionId) return [];
+    const listed = new Set(
+      [...subRegionData.topSymptoms, ...(subRegionData.secondarySymptoms ?? [])].map((s) => s.id)
+    );
+    const parts = new Set(expandToParts(activeSubRegionId));
+    return catalog.symptoms
+      .filter(
+        (s) =>
+          !listed.has(s.name) &&
+          s.bodyAreas.some((a) => a === activeSubRegionId || parts.has(a))
+      )
+      .slice(0, 8)
+      .map((s) => ({ id: s.name, name: s.name.charAt(0).toUpperCase() + s.name.slice(1) }));
+  }, [catalog, subRegionData, activeSubRegionId]);
+
+  // How many of the picked symptoms belong to each area, for the area chips.
+  const countsByArea = useMemo(() => {
+    const counts: Record<string, number> = {};
+    const areasByTerm = catalog?.areasByTerm ?? null;
+    for (const s of activeSymptoms) {
+      const majors = new Set(getActiveParts([s], areasByTerm).map((p) => PART_TO_MAJOR[p]));
+      majors.forEach((m) => (counts[m] = (counts[m] ?? 0) + 1));
+    }
+    return counts;
+  }, [activeSymptoms, catalog]);
+
   const pickerPanel = (
     <BodyPickerPanel
+      countsByArea={countsByArea}
+      moreSymptoms={moreSymptoms}
+      onBrowseAll={
+        onBrowseAll ? () => onBrowseAll(activeSubRegionId ?? activeMajorId ?? null) : undefined
+      }
       isBackView={isBackView}
       onShowFront={snapToFront}
       onShowBack={snapToBack}
@@ -1688,85 +1580,49 @@ export default function HumanBodyModel({
         <FrameDriver
           active={inView && (selectMode || awake)}
           fps={selectMode ? 60 : 30}
-          redrawKey={activePoints}
+          redrawKey={activeParts}
         />
-        <ambientLight intensity={1.8} />
-        <directionalLight position={[4, 8, 5]} intensity={1.3} color="#ffffff" />
-        <directionalLight position={[-4, 2, 3]} intensity={0.7} color="#e0eeff" />
-        <directionalLight position={[0, -4, 2]} intensity={0.4} color="#fff8eb" />
-        <directionalLight position={[0, 4, -5]} intensity={0.6} color="#dbe8ff" />
+        {/* Dimmer light in dark mode so the body doesn't glare. */}
+        <ambientLight intensity={dark ? 0.85 : 1.8} />
+        <directionalLight position={[4, 8, 5]} intensity={dark ? 0.95 : 1.3} color="#ffffff" />
+        <directionalLight position={[-4, 2, 3]} intensity={dark ? 0.45 : 0.7} color="#e0eeff" />
+        <directionalLight position={[0, -4, 2]} intensity={dark ? 0.2 : 0.4} color="#fff8eb" />
+        <directionalLight position={[0, 4, -5]} intensity={dark ? 0.4 : 0.6} color="#dbe8ff" />
         <Suspense fallback={null}>
           <RotatingBody
-            activePoints={activePoints}
+            key={body}
+            bodyId={body}
+            activeParts={activeParts}
             selectMode={selectMode}
             mode={mode}
             activeMajorId={activeMajorId}
             selectedSubRegionId={activeSubRegionId}
             hoveredGroupId={hoveredGroupId}
-            isBackView={isBackView}
             targetRotationYRef={targetRotationYRef}
             isDraggingRef={isDraggingRef}
             onRegionClick={handleRegionClick}
             onRegionHover={setHoveredGroupId}
-            debugMode={debugMode}
-            debugFilter={debugFilter}
+            paintParts={paintParts}
+            dark={dark}
           />
         </Suspense>
       </Canvas>
 
-      {/* ─── DEV-ONLY: 3D Region Proxy Debug Visualizer Toggle ───── */}
+      {/* ─── Dev only: colour each body part to check the boundaries ─── */}
       {process.env.NODE_ENV !== "production" && (
-        <div className="absolute top-4 left-4 z-40 pointer-events-auto flex items-center gap-1.5 animate-fade-in">
-          <button
-            type="button"
-            onClick={() => setDebugMode(!debugMode)}
-            className={`px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold transition-all shadow-md flex items-center gap-1.5 border ${
-              debugMode
-                ? "bg-amber-500 text-white border-amber-600 ring-2 ring-amber-300"
-                : "bg-slate-900/85 hover:bg-slate-900 text-slate-200 border-slate-700 backdrop-blur-md"
-            }`}
-            title="Dev-Only: Toggle Anatomical 3D Proxy Wireframe Visualizer"
-            id="dev-debug-proxies-toggle"
-          >
-            <span>🛠️ 3D Proxies</span>
-            <span
-              className={`px-1.5 py-0.5 rounded text-[10px] ${
-                debugMode ? "bg-black/30 text-white" : "bg-white/20 text-slate-300"
-              }`}
-            >
-              {debugMode ? "ON" : "OFF"}
-            </span>
-          </button>
-
-          {debugMode && (
-            <div className="flex items-center gap-1 bg-white/95 backdrop-blur-md p-1 rounded-xl border border-slate-200 shadow-md text-[11px] font-mono">
-              <button
-                type="button"
-                onClick={() => setDebugFilter("current")}
-                className={`px-2 py-0.5 rounded-lg transition-colors ${
-                  debugFilter === "current"
-                    ? "bg-brand text-white font-bold"
-                    : "text-slate-600 hover:bg-slate-100"
-                }`}
-                title="Show only proxies for active mode/view"
-              >
-                View
-              </button>
-              <button
-                type="button"
-                onClick={() => setDebugFilter("all")}
-                className={`px-2 py-0.5 rounded-lg transition-colors ${
-                  debugFilter === "all"
-                    ? "bg-brand text-white font-bold"
-                    : "text-slate-600 hover:bg-slate-100"
-                }`}
-                title="Show all 3D proxies simultaneously"
-              >
-                All
-              </button>
-            </div>
-          )}
-        </div>
+        <button
+          type="button"
+          onClick={() => setPaintParts((v) => !v)}
+          className={`absolute top-4 left-4 z-40 pointer-events-auto px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold shadow-md border ${
+            paintParts
+              ? "bg-amber-500 text-white border-amber-600"
+              : "bg-slate-900/85 text-slate-200 border-slate-700"
+          }`}
+          title="Dev only: colour every body part differently"
+          id="dev-paint-parts-toggle"
+        >
+          Paint parts: {paintParts ? "ON" : "OFF"}
+        </button>
       )}
 
       {/* ─── Idle: the whole model is one big button ─────────────── */}
@@ -1801,4 +1657,5 @@ export default function HumanBodyModel({
   );
 }
 
-useGLTF.preload("/human_body.glb");
+useGLTF.preload(BODY_MODEL_URL.male);
+useGLTF.preload(BODY_MODEL_URL.female);

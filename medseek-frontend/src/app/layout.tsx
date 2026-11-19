@@ -75,6 +75,16 @@ export default function RootLayout({
             </div>
             <span className="text-slate-400 font-mono text-[11px]">v1.2</span>
           </div>
+          {/* Required by the models' CC BY 4.0 licences. */}
+          <p className="max-w-6xl mx-auto px-4 sm:px-6 mt-3 text-[11px] text-slate-400 text-center sm:text-left">
+            3D bodies: &ldquo;
+            <a className="underline hover:text-slate-600" href="https://sketchfab.com/3d-models/human-body-f022e4a3641943328b2fbfdf0f7c3e1e" target="_blank" rel="noopener noreferrer">HUMAN_BODY</a>
+            &rdquo; by vistaalienprime and &ldquo;
+            <a className="underline hover:text-slate-600" href="https://sketchfab.com/3d-models/female-basemesh-2b0ee38ee2c142a8ac96f65c45a5b9f2" target="_blank" rel="noopener noreferrer">Female Basemesh</a>
+            &rdquo; by davidboyadzhyan, licensed under{" "}
+            <a className="underline hover:text-slate-600" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>
+            ; the female model was merged and rescaled for MedSeek.
+          </p>
         </footer>
       </body>
     </html>

@@ -25,6 +25,11 @@ function subscribe(notify: () => void) {
   return () => listeners.delete(notify);
 }
 
+/** The current theme; re-renders when the toggle changes it. */
+export function useTheme(): Theme {
+  return useSyncExternalStore<Theme>(subscribe, currentTheme, () => "light");
+}
+
 /**
  * Runs before the page paints (see layout.tsx) so there is no flash of the
  * wrong theme: a saved choice wins, otherwise the device setting is used.
@@ -32,7 +37,7 @@ function subscribe(notify: () => void) {
 export const themeInitScript = `(function(){try{var t=localStorage.getItem("${STORAGE_KEY}");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme="light"}})();`;
 
 export default function ThemeToggle() {
-  const theme = useSyncExternalStore<Theme>(subscribe, currentTheme, () => "light");
+  const theme = useTheme();
   const next: Theme = theme === "dark" ? "light" : "dark";
 
   return (

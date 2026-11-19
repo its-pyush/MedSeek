@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { IconArrowLeft, IconCheck, IconClose, IconChevronRight, IconSearch } from "./icons";
 import type { MajorRegion } from "./regionHierarchy";
 
@@ -51,6 +51,14 @@ interface BodyPickerPanelProps {
   onClose: () => void;
   onSearch: () => void;
 
+  /** Number of picked symptoms per area id, shown on the area chips. */
+  countsByArea?: Record<string, number>;
+
+  /** More symptoms for the open part, from the knowledge base. */
+  moreSymptoms?: PickerSymptom[];
+  /** Opens the full symptom list (filtered to the open area, if any). */
+  onBrowseAll?: () => void;
+
   /**
    * "bar": a single slim row for phones while the user picks an area by
    * tapping the body, so the model keeps the whole screen.
@@ -80,22 +88,42 @@ export default function BodyPickerPanel({
   onClear,
   onClose,
   onSearch,
+  countsByArea = {},
+  moreSymptoms = [],
+  onBrowseAll,
   layout = "panel",
   onShowList,
   onHideList,
 }: BodyPickerPanelProps) {
-  const [filter, setFilter] = useState("");
+  // The filter belongs to one part: jumping to another part (from the body or
+  // a chip) starts with an empty filter.
+  const [filterState, setFilterState] = useState({ part: activePartId, text: "" });
+  const filter = filterState.part === activePartId ? filterState.text : "";
+  const setFilter = (text: string) => setFilterState({ part: activePartId, text });
+
+  // Keep the chip of the open area in view after a jump from the body.
+  const areaRowRef = useRef<HTMLDivElement>(null);
+  const activeAreaId = activeArea?.id;
+  useEffect(() => {
+    const row = areaRowRef.current;
+    const chip = row?.querySelector<HTMLElement>('[aria-pressed="true"]');
+    if (!row || !chip) return;
+    const left = chip.offsetLeft - row.offsetLeft;
+    if (left < row.scrollLeft || left + chip.offsetWidth > row.scrollLeft + row.clientWidth) {
+      row.scrollTo({ left: left - 16, behavior: "smooth" });
+    }
+  }, [activeAreaId, isBackView]);
   const onSymptomStep = Boolean(region && activePartId);
 
   const symptoms = useMemo(() => {
     if (!region) return [];
-    const all = [...region.topSymptoms, ...(region.secondarySymptoms ?? [])];
+    const all = [...region.topSymptoms, ...(region.secondarySymptoms ?? []), ...moreSymptoms];
     const q = filter.trim().toLowerCase();
     if (!q) return all;
     return all.filter(
       (s) => s.name.toLowerCase().includes(q) || s.description?.toLowerCase().includes(q)
     );
-  }, [region, filter]);
+  }, [region, filter, moreSymptoms]);
 
   const title = onSymptomStep ? region!.name : "Where is the problem?";
   const count = selectedSymptoms.length;
@@ -184,6 +212,10 @@ export default function BodyPickerPanel({
             <IconArrowLeft size={16} />
             <span>All areas</span>
           </button>
+        ) : null}
+        {/* Front/Back stays available while picking symptoms, so the other side is one tap away. */}
+        {onSymptomStep ? (
+          sideSwitch
         ) : (
           <>
             {sideSwitch}
@@ -212,9 +244,50 @@ export default function BodyPickerPanel({
       <div className="px-4 pt-3 pb-2">
         <h2 className="text-base font-bold text-slate-900">{title}</h2>
         <p className="text-sm text-slate-500">
-          {onSymptomStep ? "Tick everything you feel here." : "Tap the body, or choose from this list."}
+          {onSymptomStep
+            ? "Tick what you feel. Tap another part of the body to switch."
+            : "Tap the body, or choose from this list."}
         </p>
       </div>
+
+      {/* Step 2: jump straight to another area; the count shows what is picked there */}
+      {onSymptomStep && (
+        <div
+          ref={areaRowRef}
+          className="flex gap-1.5 px-4 pb-2 overflow-x-auto shrink-0"
+          aria-label="Body areas"
+        >
+          {areas.map((area) => {
+            const active = area.id === activeArea?.id;
+            const n = countsByArea[area.id] ?? 0;
+            return (
+              <button
+                key={area.id}
+                type="button"
+                aria-pressed={active}
+                onClick={() => onSelectArea(area)}
+                onPointerEnter={() => onHoverRegion(area.id)}
+                onPointerLeave={() => onHoverRegion(null)}
+                className={`shrink-0 inline-flex items-center gap-1.5 min-h-8 px-3 rounded-lg text-[13px] font-semibold border transition-colors ${
+                  active
+                    ? "bg-brand/10 border-brand text-brand-ink"
+                    : "bg-white border-slate-200 text-slate-600 hover:border-brand/60"
+                }`}
+              >
+                {area.label}
+                {n > 0 && (
+                  <span
+                    className="inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-full bg-brand text-white text-[11px] font-bold"
+                    aria-label={`${n} picked`}
+                  >
+                    {n}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Step 2 extras: parts of the chosen area + filter */}
       {onSymptomStep && activeArea?.subRegions && activeArea.subRegions.length > 1 && (
@@ -316,6 +389,16 @@ export default function BodyPickerPanel({
               <li className="py-6 text-center text-sm text-slate-500">Nothing in this list matches.</li>
             )}
           </ul>
+        )}
+
+        {onBrowseAll && (
+          <button
+            type="button"
+            onClick={onBrowseAll}
+            className="mt-2 w-full min-h-11 px-4 rounded-xl border border-dashed border-slate-300 text-sm font-semibold text-brand-ink hover:border-brand/60 hover:bg-brand/5"
+          >
+            {onSymptomStep ? "Not listed? See all symptoms for this area" : "Browse all symptoms"}
+          </button>
         )}
       </div>
 

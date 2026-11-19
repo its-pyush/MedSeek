@@ -22,6 +22,8 @@ export interface DiseaseResult {
   relevance_rank?: number;
   matched_symptoms: string[];
   total_symptoms: number;
+  /** Present when confirmed cases near the user raised this condition. */
+  local_signal?: { cases: number; boost: number; window_days: number; simulated: boolean };
 }
 
 export interface SearchResponse {
@@ -65,13 +67,17 @@ export interface AutocompleteItem {
 export async function searchDiseases(
   symptoms: string[],
   limit = 20,
-  offset = 0
+  offset = 0,
+  cell: string | null = null,
+  sex: "female" | "male" | null = null
 ): Promise<SearchResponse> {
   const params = new URLSearchParams({
     symptoms: symptoms.join(","),
     limit: String(limit),
     offset: String(offset),
   });
+  if (cell) params.set("cell", cell);
+  if (sex) params.set("sex", sex);
 
   const res = await fetch(`${API_BASE_URL}/api/search?${params}`);
   if (!res.ok) {

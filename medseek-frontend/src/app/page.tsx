@@ -3,7 +3,12 @@
 import React, { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import SymptomSearch from "@/components/SymptomSearch";
+import SymptomBrowser from "@/components/SymptomBrowser";
 import DiseaseCard from "@/components/DiseaseCard";
+import AreaControl from "@/components/AreaControl";
+import { getAreaCell } from "@/lib/location";
+import { useBodySex, getBodySex, bodyFor, searchSexFor } from "@/lib/bodySex";
+import { BodySexChooser, BodySwitch } from "@/components/BodySexControls";
 import { searchDiseases, DiseaseResult, ResolvedSymptom } from "@/lib/api";
 import {
   IconSearch,
@@ -14,11 +19,6 @@ import {
 
 const HumanBodyModel = dynamic(
   () => import("@/components/HumanBodyModel"),
-  { ssr: false }
-);
-
-const Threads = dynamic(
-  () => import("@/components/Threads"),
   { ssr: false }
 );
 
@@ -45,6 +45,7 @@ const RISK_TIERS = [
 ] as const;
 
 export default function Home() {
+  const bodySex = useBodySex();
   const [results, setResults] = useState<DiseaseResult[]>([]);
   const [dontRuleOut, setDontRuleOut] = useState<DiseaseResult[]>([]);
   const [resolvedSymptoms, setResolvedSymptoms] = useState<ResolvedSymptom[]>([]);
@@ -57,6 +58,9 @@ export default function Home() {
   const [desktopSlot, setDesktopSlot] = useState<HTMLDivElement | null>(null);
   const [mobileSlot, setMobileSlot] = useState<HTMLDivElement | null>(null);
   const [pickerLayout, setPickerLayout] = useState<"bar" | "panel">("panel");
+  // The "all symptoms" list; `area` preselects a body area when opened from the picker.
+  const [browser, setBrowser] = useState<{ open: boolean; area: string | null }>({ open: false, area: null });
+  const openBrowser = useCallback((area: string | null = null) => setBrowser({ open: true, area }), []);
   const isDesktop = useIsDesktop();
   // On a phone, picking on the body takes over the screen below the search bar.
   const mobilePicking = bodySelectMode && !isDesktop;
@@ -84,7 +88,7 @@ export default function Home() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await searchDiseases(symptoms);
+      const response = await searchDiseases(symptoms, 20, 0, getAreaCell(), searchSexFor(getBodySex()));
       setResults(response.data);
       setDontRuleOut(response.dont_rule_out);
       setResolvedSymptoms(response.meta.resolved_symptoms);
@@ -101,6 +105,22 @@ export default function Home() {
 
   return (
     <div className="flex flex-col flex-1">
+      <SymptomBrowser
+        open={browser.open}
+        initialArea={browser.area}
+        onClose={() => setBrowser((b) => ({ ...b, open: false }))}
+        selectedSymptoms={activeSymptoms}
+        onToggleSymptom={(name) =>
+          setActiveSymptoms((current) =>
+            current.includes(name) ? current.filter((s) => s !== name) : [...current, name]
+          )
+        }
+        onClear={() => setActiveSymptoms([])}
+        onSearch={() => {
+          setBrowser((b) => ({ ...b, open: false }));
+          handleSearch(activeSymptoms);
+        }}
+      />
       {/* Hero: search on the left, anatomical model in its own column on the right */}
       <section
         className={`overflow-hidden border-b border-line/80 flex flex-col ${
@@ -113,29 +133,25 @@ export default function Home() {
         <div className="absolute top-[8%] left-[5%] w-96 h-96 rounded-full bg-glow/35 blur-[90px] pointer-events-none -z-10" />
         <div className="absolute top-[20%] right-[8%] w-[500px] h-[500px] rounded-full bg-brand/14 blur-[110px] pointer-events-none -z-10" />
 
-        {/* Animated threads: desktop only, behind everything */}
-        {isDesktop && (
-          <div className="absolute inset-0 pointer-events-none -z-5 overflow-hidden opacity-70">
-            <Threads
-              color={[0.34, 0.6, 0.81]}
-              amplitude={1.2}
-              distance={0.18}
-              speed={0.35}
-              enableMouseInteraction={false}
-            />
-          </div>
-        )}
-
         {/* Desktop model: its own right-hand column, never under the text */}
         {isDesktop && (
           <div className="absolute inset-y-0 right-0 left-[56%] xl:left-[54%] z-0">
+            {bodySex === null ? (
+              <BodySexChooser className="absolute inset-0 z-30 pointer-events-auto" />
+            ) : (
+              <BodySwitch value={bodySex} className="absolute top-3 right-4 z-30 pointer-events-auto" />
+            )}
+            {bodySex !== null && (
             <HumanBodyModel
+              body={bodyFor(bodySex)}
               activeSymptoms={activeSymptoms}
               onSymptomsChange={setActiveSymptoms}
               onSelectModeChange={handleSelectModeChange}
               panelContainer={pickerSlot}
               onSearchRequested={() => handleSearch(activeSymptoms)}
+              onBrowseAll={openBrowser}
             />
+            )}
           </div>
         )}
 
@@ -186,6 +202,15 @@ export default function Home() {
                     {q}
                   </button>
                 ))}
+                <button
+                  type="button"
+                  onClick={() => openBrowser(null)}
+                  className="h-9 px-3 rounded-full text-sm font-semibold text-brand-ink hover:bg-brand/10 underline underline-offset-4 decoration-brand/40"
+                  id="browse-all-symptoms"
+                >
+                  Browse all symptoms
+                </button>
+                <AreaControl />
               </div>
             )}
 
@@ -210,15 +235,24 @@ export default function Home() {
           <div
             className={`relative w-full overflow-hidden ${mobilePicking ? "flex-1 min-h-0" : "h-[62dvh] min-h-[420px]"}`}
           >
-            <HumanBodyModel
-              activeSymptoms={activeSymptoms}
-              onSymptomsChange={setActiveSymptoms}
-              onSelectModeChange={handleSelectModeChange}
-              panelContainer={pickerSlot}
-              onSearchRequested={() => handleSearch(activeSymptoms)}
-              tapFirst
-              onPickerLayoutChange={setPickerLayout}
-            />
+            {bodySex === null ? (
+              <BodySexChooser className="absolute inset-0 z-30" />
+            ) : (
+              <>
+                <BodySwitch value={bodySex} className="absolute top-3 right-4 z-30" />
+                <HumanBodyModel
+                  body={bodyFor(bodySex)}
+                  activeSymptoms={activeSymptoms}
+                  onSymptomsChange={setActiveSymptoms}
+                  onSelectModeChange={handleSelectModeChange}
+                  panelContainer={pickerSlot}
+                  onSearchRequested={() => handleSearch(activeSymptoms)}
+                  onBrowseAll={openBrowser}
+                  tapFirst
+                  onPickerLayoutChange={setPickerLayout}
+                />
+              </>
+            )}
           </div>
         )}
 

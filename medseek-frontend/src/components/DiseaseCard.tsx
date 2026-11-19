@@ -13,6 +13,7 @@ interface DiseaseCardProps {
   matched_symptoms: string[];
   total_symptoms: number;
   isWarning?: boolean;
+  local_signal?: { cases: number; window_days: number; simulated: boolean };
 }
 
 export default function DiseaseCard({
@@ -24,6 +25,7 @@ export default function DiseaseCard({
   matched_symptoms,
   total_symptoms,
   isWarning = false,
+  local_signal,
 }: DiseaseCardProps) {
   const matchPercentage = total_symptoms > 0
     ? Math.round((matched_symptoms.length / total_symptoms) * 100)
@@ -63,6 +65,16 @@ export default function DiseaseCard({
       {description && (
         <p className="text-xs text-slate-600 mb-3 line-clamp-2 leading-relaxed font-normal">
           {description}
+        </p>
+      )}
+
+      {local_signal && (
+        <p className="mb-3 inline-flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-emerald-800 bg-emerald-50/90 border border-emerald-200 rounded-lg px-2 py-1">
+          {local_signal.cases} confirmed {local_signal.cases === 1 ? "case" : "cases"} near you in the last{" "}
+          {Math.round(local_signal.window_days / 7)} weeks
+          {local_signal.simulated && (
+            <span className="px-1.5 py-px rounded bg-amber-100 text-amber-800 border border-amber-300">Sample data</span>
+          )}
         </p>
       )}
 
