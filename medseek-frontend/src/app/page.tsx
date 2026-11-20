@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import SymptomSearch from "@/components/SymptomSearch";
 import SymptomBrowser from "@/components/SymptomBrowser";
@@ -15,6 +15,7 @@ import {
   IconWarning,
   IconCheck,
   IconClose,
+  IconArrowLeft,
 } from "@/components/icons";
 
 const HumanBodyModel = dynamic(
@@ -56,33 +57,21 @@ export default function Home() {
   const [activeSymptoms, setActiveSymptoms] = useState<string[]>([]);
   const [bodySelectMode, setBodySelectMode] = useState(false);
   const [desktopSlot, setDesktopSlot] = useState<HTMLDivElement | null>(null);
-  const [mobileSlot, setMobileSlot] = useState<HTMLDivElement | null>(null);
-  const [pickerLayout, setPickerLayout] = useState<"bar" | "panel">("panel");
   // The "all symptoms" list; `area` preselects a body area when opened from the picker.
   const [browser, setBrowser] = useState<{ open: boolean; area: string | null }>({ open: false, area: null });
   const openBrowser = useCallback((area: string | null = null) => setBrowser({ open: true, area }), []);
   const isDesktop = useIsDesktop();
-  // On a phone, picking on the body takes over the screen below the search bar.
-  const mobilePicking = bodySelectMode && !isDesktop;
-  const pickerSlot = isDesktop ? desktopSlot : mobileSlot;
 
-  // The phone picker is a full-screen layer; the page behind it must not scroll.
+  // Phones: the body fills the first screen, so after a search scroll down to
+  // the results (otherwise they sit unseen below the body).
+  const resultsRef = useRef<HTMLElement>(null);
+  const [searchCount, setSearchCount] = useState(0);
   useEffect(() => {
-    if (!mobilePicking) return;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previous;
-    };
-  }, [mobilePicking]);
+    if (searchCount === 0 || isDesktop) return;
+    resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [searchCount, isDesktop]);
 
-  const handleSelectModeChange = useCallback((active: boolean) => {
-    setBodySelectMode(active);
-    // On a phone the picker uses the whole screen, so start from the top of the page.
-    if (active && !window.matchMedia("(min-width: 1024px)").matches) {
-      window.scrollTo({ top: 0 });
-    }
-  }, []);
+  const removeSymptom = (name: string) => setActiveSymptoms((current) => current.filter((s) => s !== name));
 
   const handleSearch = async (symptoms: string[]) => {
     setIsLoading(true);
@@ -94,10 +83,13 @@ export default function Home() {
       setResolvedSymptoms(response.meta.resolved_symptoms);
       setTotal(response.meta.total);
       setHasSearched(true);
+      setSearchCount((n) => n + 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Search query failed");
       setResults([]);
       setDontRuleOut([]);
+      setHasSearched(true);
+      setSearchCount((n) => n + 1);
     } finally {
       setIsLoading(false);
     }
@@ -123,10 +115,8 @@ export default function Home() {
       />
       {/* Hero: search on the left, anatomical model in its own column on the right */}
       <section
-        className={`overflow-hidden border-b border-line/80 flex flex-col ${
-          mobilePicking
-            ? "fixed inset-x-0 top-14 bottom-0 z-40 bg-canvas"
-            : `relative bg-gradient-to-b from-canvas/50 via-canvas/85 to-canvas ${!hasSearched ? "flex-1 justify-center" : ""}`
+        className={`relative overflow-hidden border-b border-line/80 flex flex-col bg-gradient-to-b from-canvas/50 via-canvas/85 to-canvas ${
+          !hasSearched ? "flex-1 justify-center" : ""
         }`}
       >
         {/* Soft ambient colour behind the glass panels */}
@@ -146,8 +136,8 @@ export default function Home() {
               body={bodyFor(bodySex)}
               activeSymptoms={activeSymptoms}
               onSymptomsChange={setActiveSymptoms}
-              onSelectModeChange={handleSelectModeChange}
-              panelContainer={pickerSlot}
+              onSelectModeChange={setBodySelectMode}
+              panelContainer={desktopSlot}
               onSearchRequested={() => handleSearch(activeSymptoms)}
               onBrowseAll={openBrowser}
             />
@@ -155,7 +145,9 @@ export default function Home() {
           </div>
         )}
 
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 pt-5 pb-4 sm:pt-10 lg:pb-10 pointer-events-none">
+        {/* Desktop: text and search on the left. Hidden on phones by CSS (not
+            unmounted), so the text stays in the server-rendered page. */}
+        <div className="hidden lg:block relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 pt-5 pb-4 sm:pt-10 lg:pb-10 pointer-events-none">
           <div className={`pointer-events-auto lg:max-w-[52%] ${hasSearched ? "lg:min-h-0" : "lg:min-h-[600px]"} flex flex-col lg:justify-center`}>
             {/* Intro text steps aside while the picker is open, so the list has room */}
             {!bodySelectMode && (
@@ -230,50 +222,104 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Phones: the model is the centrepiece, large and directly below the search */}
+        {/* Phones: the body is the page. Tap a part, tick its symptoms, search. */}
         {!isDesktop && (
-          <div
-            className={`relative w-full overflow-hidden ${mobilePicking ? "flex-1 min-h-0" : "h-[62dvh] min-h-[420px]"}`}
-          >
-            {bodySex === null ? (
-              <BodySexChooser className="absolute inset-0 z-30" />
-            ) : (
-              <>
-                <BodySwitch value={bodySex} className="absolute top-3 right-4 z-30" />
+          <div className="relative flex flex-col h-[calc(100dvh-3.5rem)] min-h-[520px]">
+            <div className="flex items-center gap-3 px-4 pt-3 pb-1">
+              <div className="min-w-0">
+                <h2 className="text-2xl font-bold tracking-tight text-slate-900 leading-tight">
+                  Where does it <span className="text-brand">hurt?</span>
+                </h2>
+                <p className="text-sm text-slate-500">Tap the body, then tick what you feel.</p>
+              </div>
+              <button
+                type="button"
+                id="mobile-search-button"
+                onClick={() => handleSearch(activeSymptoms)}
+                disabled={activeSymptoms.length === 0 || isLoading}
+                className="btn-3d-primary ml-auto shrink-0 min-h-11 px-4 rounded-xl text-sm font-bold disabled:opacity-50"
+              >
+                {isLoading ? "Searching…" : activeSymptoms.length ? `Search (${activeSymptoms.length})` : "Search"}
+              </button>
+            </div>
+
+            <div className="relative flex-1 min-h-0">
+              {bodySex === null ? (
+                <BodySexChooser className="absolute inset-0 z-30" />
+              ) : (
                 <HumanBodyModel
+                  variant="chips"
+                  cornerControl={<BodySwitch value={bodySex} />}
                   body={bodyFor(bodySex)}
                   activeSymptoms={activeSymptoms}
                   onSymptomsChange={setActiveSymptoms}
-                  onSelectModeChange={handleSelectModeChange}
-                  panelContainer={pickerSlot}
-                  onSearchRequested={() => handleSearch(activeSymptoms)}
                   onBrowseAll={openBrowser}
-                  tapFirst
-                  onPickerLayoutChange={setPickerLayout}
                 />
-              </>
+              )}
+            </div>
+
+            {/* What has been picked so far, from the body or the full list */}
+            {activeSymptoms.length > 0 && (
+              <div className="flex items-center gap-1.5 px-4 pt-2 overflow-x-auto shrink-0 [scrollbar-width:none]" aria-label="Picked symptoms">
+                {activeSymptoms.map((name) => (
+                  <span
+                    key={name}
+                    className="shrink-0 inline-flex items-center gap-1 pl-3 pr-1 h-9 rounded-full glass-chip text-sm font-semibold text-brand-ink capitalize"
+                  >
+                    {name}
+                    <button
+                      type="button"
+                      onClick={() => removeSymptom(name)}
+                      className="inline-flex items-center justify-center w-7 h-7 rounded-full text-slate-500 hover:bg-slate-200/60"
+                      aria-label={`Remove ${name}`}
+                    >
+                      <IconClose size={14} />
+                    </button>
+                  </span>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setActiveSymptoms([])}
+                  className="shrink-0 h-9 px-2 text-sm font-semibold text-slate-500"
+                >
+                  Clear
+                </button>
+              </div>
             )}
+
+            <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 px-3 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] shrink-0">
+              <button
+                type="button"
+                onClick={() => openBrowser(null)}
+                className="inline-flex items-center gap-1.5 h-10 px-3 rounded-xl glass-chip text-sm font-semibold text-brand-ink"
+                id="mobile-all-symptoms"
+              >
+                <IconSearch size={15} />
+                All symptoms
+              </button>
+              <AreaControl />
+            </div>
           </div>
         )}
-
-        {/* Phones: a slim bar while choosing an area, a half-screen list once one is chosen */}
-        <div
-          ref={setMobileSlot}
-          className={
-            mobilePicking
-              ? pickerLayout === "bar"
-                ? "shrink-0"
-                : "shrink-0 h-[50dvh] animate-slide-up"
-              : "hidden"
-          }
-        />
       </section>
 
       {/* Differential Results Section */}
       {hasSearched && (
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 w-full animate-fade-in relative">
+        <section ref={resultsRef} className="scroll-mt-16 max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 w-full animate-fade-in relative">
           {/* Subtle Results Ambient Aura */}
           <div className="absolute top-[10%] right-[15%] w-72 h-72 rounded-full bg-brand/08 blur-[90px] pointer-events-none -z-10" />
+
+          {/* Phones: the body is above; one tap goes back to it */}
+          {!isDesktop && (
+            <button
+              type="button"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="mb-4 inline-flex items-center gap-1.5 min-h-10 px-3 rounded-xl glass-chip text-sm font-semibold text-brand-ink"
+            >
+              <IconArrowLeft size={15} className="rotate-90" />
+              Change symptoms on the body
+            </button>
+          )}
 
           {/* Resolved Symptoms Telemetry */}
           {resolvedSymptoms.length > 0 && (

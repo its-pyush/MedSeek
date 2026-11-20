@@ -58,17 +58,6 @@ interface BodyPickerPanelProps {
   moreSymptoms?: PickerSymptom[];
   /** Opens the full symptom list (filtered to the open area, if any). */
   onBrowseAll?: () => void;
-
-  /**
-   * "bar": a single slim row for phones while the user picks an area by
-   * tapping the body, so the model keeps the whole screen.
-   * "panel" (default): the full two-step list.
-   */
-  layout?: "panel" | "bar";
-  /** Bar → open the area list for people who would rather not tap the model. */
-  onShowList?: () => void;
-  /** Panel on a phone → go back to tapping the model. */
-  onHideList?: () => void;
 }
 
 export default function BodyPickerPanel({
@@ -91,9 +80,6 @@ export default function BodyPickerPanel({
   countsByArea = {},
   moreSymptoms = [],
   onBrowseAll,
-  layout = "panel",
-  onShowList,
-  onHideList,
 }: BodyPickerPanelProps) {
   // The filter belongs to one part: jumping to another part (from the body or
   // a chip) starts with an empty filter.
@@ -150,50 +136,9 @@ export default function BodyPickerPanel({
     </div>
   );
 
-  if (layout === "bar") {
-    return (
-      <div
-        className="bg-white border-t border-line shadow-[0_-4px_16px_rgba(15,23,42,0.08)] px-3 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
-        onPointerDown={(e) => e.stopPropagation()}
-        role="toolbar"
-        aria-label="Body picker"
-      >
-        <p className="text-center text-sm font-semibold text-slate-700 mb-2">
-          Tap the part of the body that hurts
-        </p>
-        <div className="flex items-center gap-2">
-          {sideSwitch}
-          <button
-            type="button"
-            onClick={onShowList}
-            className="min-h-11 px-3 rounded-xl border border-slate-300 text-sm font-semibold text-slate-700"
-          >
-            List
-          </button>
-          <button
-            type="button"
-            onClick={onSearch}
-            disabled={count === 0}
-            className="btn-3d-primary ml-auto min-h-11 px-4 rounded-xl text-sm font-bold disabled:opacity-50"
-          >
-            {count === 0 ? "Search" : `Search (${count})`}
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex items-center justify-center w-11 h-11 rounded-xl text-slate-500 hover:bg-slate-100"
-            aria-label="Close body picker"
-          >
-            <IconClose size={18} />
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div
-      className="flex flex-col h-full bg-white border border-line rounded-t-2xl lg:rounded-2xl shadow-xl overflow-hidden"
+      className="flex flex-col h-full bg-white border border-line rounded-2xl shadow-xl overflow-hidden"
       onPointerDown={(e) => e.stopPropagation()}
       role="dialog"
       aria-label="Choose symptoms by body area"
@@ -214,22 +159,7 @@ export default function BodyPickerPanel({
           </button>
         ) : null}
         {/* Front/Back stays available while picking symptoms, so the other side is one tap away. */}
-        {onSymptomStep ? (
-          sideSwitch
-        ) : (
-          <>
-            {sideSwitch}
-            {onHideList && (
-              <button
-                type="button"
-                onClick={onHideList}
-                className="min-h-9 px-3 rounded-xl text-sm font-semibold text-brand-ink hover:bg-brand/10"
-              >
-                Tap on body
-              </button>
-            )}
-          </>
-        )}
+        {sideSwitch}
 
         <button
           type="button"

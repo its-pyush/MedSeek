@@ -25,6 +25,7 @@ import {
 } from "./regionHierarchy";
 import { PART_IDS, PART_INDEX, BODY_MODEL_URL, labelVertices, type BodyId } from "./body/segmentBody";
 import BodyPickerPanel from "./BodyPickerPanel";
+import BodyChips from "./BodyChips";
 import { useTheme } from "./ThemeToggle";
 import { useSymptomCatalog } from "@/lib/symptoms";
 import { createPortal } from "react-dom";
@@ -734,6 +735,14 @@ function getActiveParts(
  */
 const ZOOM_MIN_DIST: [number, number] = [2.9, 3.2];
 
+/**
+ * Phone "chips" layout: camera distance while an area is open, and how far the
+ * body moves left (as a share of half the visible width) so the symptom chips
+ * have the right-hand ~44% of the screen to themselves.
+ */
+const CHIPS_ZOOM_DIST = 4.0;
+const CHIPS_SHIFT = 0.44;
+
 /* ─── Rotating 3D Body Mesh Component ────────────────────────── */
 
 /** A tap on the body: the part under the finger and the area it belongs to. */
@@ -761,6 +770,8 @@ interface RotatingBodyProps {
   dark?: boolean;
   /** Which body mesh to show. Fixed for the component's life (the parent remounts it on change). */
   bodyId?: BodyId;
+  /** Phone chips layout: frame the open area in the left part of the screen. */
+  chips?: boolean;
 }
 
 /** Distinct colour per part for the dev paint mode (same palette as `npm run body:render`). */
@@ -787,6 +798,7 @@ function RotatingBody({
   paintParts = false,
   dark = false,
   bodyId = "male",
+  chips = false,
 }: RotatingBodyProps) {
   const groupRef = useRef<THREE.Group>(null!);
   const invalidate = useThree((s) => s.invalidate);
@@ -1104,19 +1116,26 @@ function RotatingBody({
     if (mode === "zoom" && activeMajorId) {
       const major = getMajor(activeMajorId);
       if (major) {
-        // The list sits on the right on desktop; shift the camera so the
-        // framed area is centred in the space that is left.
-        targetCamX = isMobileView ? 0 : 0.60;
-        targetLookX = isMobileView ? 0 : 0.60;
         const focusY = body?.centerY[major.id] ?? centerY;
         targetLookY = focusY;
         targetCamY = focusY;
-        // Never closer than ZOOM_MIN_DIST: the neighbouring areas must stay in
-        // view so the user can tap straight across to them.
-        targetCamZ = Math.max(
-          major.zoom[isMobileView ? 1 : 0],
-          ZOOM_MIN_DIST[isMobileView ? 1 : 0]
-        );
+        if (chips) {
+          // Phone chips layout: the chips take the right of the screen, so the
+          // camera moves right and the body sits in the left part.
+          targetCamZ = Math.max(major.zoom[1], CHIPS_ZOOM_DIST);
+          targetCamX = targetLookX = targetCamZ * tanHalfFov * aspect * CHIPS_SHIFT;
+        } else {
+          // The list sits on the right on desktop; shift the camera so the
+          // framed area is centred in the space that is left.
+          targetCamX = isMobileView ? 0 : 0.60;
+          targetLookX = isMobileView ? 0 : 0.60;
+          // Never closer than ZOOM_MIN_DIST: the neighbouring areas must stay in
+          // view so the user can tap straight across to them.
+          targetCamZ = Math.max(
+            major.zoom[isMobileView ? 1 : 0],
+            ZOOM_MIN_DIST[isMobileView ? 1 : 0]
+          );
+        }
       }
     }
 
@@ -1223,12 +1242,13 @@ interface HumanBodyModelProps {
   /** Opens the full symptom list, filtered to the given area or part (null = everything). */
   onBrowseAll?: (areaId: string | null) => void;
   /**
-   * Phone behaviour: while choosing an area the picker is only a slim bar and
-   * the model keeps the screen; the list appears after an area is tapped.
+   * "panel" (default, desktop): tap the model to start, symptoms in BodyPickerPanel.
+   * "chips" (phones): the model is live from the start and the symptoms of the
+   * tapped part appear as chips in a column beside the body.
    */
-  tapFirst?: boolean;
-  /** Tells the page how much room the picker needs right now. */
-  onPickerLayoutChange?: (layout: "bar" | "panel") => void;
+  variant?: "panel" | "chips";
+  /** Chips variant: shown in the top-right corner while the whole body is in view. */
+  cornerControl?: React.ReactNode;
   /** Which body to show (male or female mesh). */
   body?: BodyId;
 }
@@ -1241,8 +1261,8 @@ export default function HumanBodyModel({
   panelContainer,
   onSearchRequested,
   onBrowseAll,
-  tapFirst = false,
-  onPickerLayoutChange,
+  variant = "panel",
+  cornerControl,
   body = "male",
 }: HumanBodyModelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -1269,7 +1289,9 @@ export default function HumanBodyModel({
 
   // Two-Tier Mode & Selection State
   // mode: "full" = full body major category proxies active; "zoom" = framed sub-region proxies active
-  const [selectMode, setSelectMode] = useState(false);
+  const chips = variant === "chips";
+  // Phones: the body is the whole page, so it can be tapped straight away.
+  const [selectMode, setSelectMode] = useState(chips);
   useEffect(() => {
     onSelectModeChange?.(selectMode);
   }, [selectMode, onSelectModeChange]);
@@ -1469,16 +1491,7 @@ export default function HumanBodyModel({
     return REGION_HIERARCHY.filter((m) => m.view === view || m.view === "both");
   }, [isBackView]);
 
-  // Phone: the area list is opt-in; by default areas are chosen by tapping the model.
-  const [areaListOpen, setAreaListOpen] = useState(false);
-  const onSymptomStep = Boolean(subRegionData && activeSubRegionId);
-  const pickerLayout: "bar" | "panel" = tapFirst && !onSymptomStep && !areaListOpen ? "bar" : "panel";
-  useEffect(() => {
-    onPickerLayoutChange?.(pickerLayout);
-  }, [pickerLayout, onPickerLayoutChange]);
-
   const exitSelectMode = () => {
-    setAreaListOpen(false);
     setSelectMode(false);
     setMode("full");
     setActiveMajorId(null);
@@ -1544,9 +1557,6 @@ export default function HumanBodyModel({
         exitSelectMode();
         onSearchRequested?.();
       }}
-      layout={pickerLayout}
-      onShowList={() => setAreaListOpen(true)}
-      onHideList={tapFirst ? () => setAreaListOpen(false) : undefined}
     />
   );
 
@@ -1576,6 +1586,10 @@ export default function HumanBodyModel({
         }}
         style={{ background: "transparent" }}
         frameloop="demand"
+        onPointerMissed={() => {
+          // Phones: a tap beside the body closes the chips and shows the whole body again.
+          if (chips && !isDraggingRef.current && mode === "zoom") handleBackToFullMode();
+        }}
       >
         <FrameDriver
           active={inView && (selectMode || awake)}
@@ -1604,12 +1618,13 @@ export default function HumanBodyModel({
             onRegionHover={setHoveredGroupId}
             paintParts={paintParts}
             dark={dark}
+            chips={chips}
           />
         </Suspense>
       </Canvas>
 
       {/* ─── Dev only: colour each body part to check the boundaries ─── */}
-      {process.env.NODE_ENV !== "production" && (
+      {process.env.NODE_ENV !== "production" && !chips && (
         <button
           type="button"
           onClick={() => setPaintParts((v) => !v)}
@@ -1644,8 +1659,24 @@ export default function HumanBodyModel({
         </>
       )}
 
+      {/* ─── Phones: back to the whole body, front/back, and the chips ─── */}
+      {chips && (
+        <BodyChips
+          zoomed={mode === "zoom"}
+          isBackView={isBackView}
+          onShowFront={snapToFront}
+          onShowBack={snapToBack}
+          onFullBody={handleBackToFullMode}
+          region={subRegionData}
+          selectedSymptoms={activeSymptoms}
+          onToggleSymptom={toggleSymptom}
+          onMore={onBrowseAll && activeSubRegionId ? () => onBrowseAll(activeSubRegionId) : undefined}
+          cornerControl={cornerControl}
+        />
+      )}
+
       {/* ─── Picking: one panel, rendered where the page wants it ─── */}
-      {selectMode &&
+      {selectMode && !chips &&
         (panelContainer ? (
           createPortal(pickerPanel, panelContainer)
         ) : (
